@@ -163,6 +163,10 @@
     }
   }
 
+  .compass-card__cta--mobile {
+    display: none;
+  }
+
   .compass-card__powered {
     grid-column: 2;
     grid-row: 3;
@@ -505,27 +509,187 @@
     }
   }
 
-  @media (max-width: 900px) {
-    .compass-card__header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .main-content {
-        padding: 0 20px 0 20px;
-    }
-  }
-
   @media (max-width: 720px) {
+    .site-header {
+      padding: 13px 20px;
+    }
+
+    .language-btn {
+      display: none;
+    }
+
     .main-content {
-        padding: 0;
+      padding: 0;
     }
+
     .compass-card {
-        border-radius: 0;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--dark-teal);
+      background-image: url(assets/blur.png);
     }
-    .site-footer, .site-footer__links {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: .75rem;
+
+    .compass-card__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 30px 30px 0 30px;
+      background: transparent;
+      position: relative;
+      z-index: 2;
+      order: 1;
+    }
+
+    .compass-card__intro {
+      max-width: none;
+    }
+
+    .compass-card__title {
+      font-size: 29px;
+      margin-bottom: 12px;
+    }
+
+    .compass-card__description {
+      font-size: 16px;
+      max-width: 298px;
+    }
+
+    .compass-card__description svg {
+      width: 28px;
+      height: 28px;
+      min-width: 28px !important;
+    }
+
+    .compass-card__cta--desktop {
+      display: none;
+    }
+
+    .compass-card__powered {
+      position: relative;
+      bottom: auto;
+      right: auto;
+      align-self: center;
+      margin: 0 auto;
+      padding-bottom: 32px;
+      z-index: 2;
+      order: 4;
+    }
+
+    .compass-menu {
+      position: relative;
+      padding: 30px;
+      flex-grow: 0;
+      z-index: 1;
+      order: 2;
+    }
+
+    .compass-menu .cm-blur-motion,
+    .compass-menu .overlay-color,
+    .compass-menu .overlay-grain {
+      display: none;
+    }
+
+    .compass-card__cta--mobile {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      margin: 24px auto 28px;
+      z-index: 2;
+      position: relative;
+      order: 3;
+    }
+
+    .cm-center {
+      width: 100%;
+      height: auto;
+      box-shadow: none;
+      border-radius: 0;
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+
+    .cm-needle,
+    .cm-center-dividers,
+    .cm-edge-glow,
+    .cm-edge-highlight,
+    .cm-description {
+      display: none;
+    }
+
+    .cm-options {
+      position: static;
+      width: 100%;
+      height: auto;
+      border-radius: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .cm-option {
+      position: static;
+      width: auto;
+      height: 75px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      justify-content: flex-start;
+      padding: 10px 14px;
+      transform: none !important;
+      transition: border-color 0.15s ease;
+    }
+
+    .compass-card__intro,
+    .compass-card__description {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .cm-option:hover,
+    .cm-option:focus-visible {
+      transform: none !important;
+      border-color: #fff;
+    }
+
+    .cm-option:hover span,
+    .cm-option:focus-visible span {
+      color: var(--green);
+    }
+
+    .cm-option:nth-child(1) {
+      order: 1;
+      border-color: #fff;
+    }
+
+    .cm-option:nth-child(1) span {
+      color: var(--green);
+    }
+
+    .cm-option:nth-child(2) { order: 3; }
+    .cm-option:nth-child(3) { order: 2; }
+    .cm-option:nth-child(4) { order: 4; }
+    .cm-option:nth-child(5) { order: 6; }
+    .cm-option:nth-child(6) { order: 5; }
+
+    .cm-option-text {
+      text-align: left;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .site-footer {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .site-footer__links {
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
   }
