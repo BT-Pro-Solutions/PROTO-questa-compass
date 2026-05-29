@@ -1,32 +1,306 @@
 :root {
-    --background: #1F404D;
-    --teal: #076375;
+    --dark-teal: #076375;
+    --teal: #4ABEA7;
     --green: #B2D236;
-    --scaledSize: clamp(100px, 20vw, 300px);
+    --scaledSize: clamp(140px, 15vw, 230px);
+    --gray-text: #606060;
+    --border-gray: #c0c0c0;
   }
-  
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   body {
-    background: var(--background);
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--gray-text);
   }
-  
-  .compass-menu {
+
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 40px;
+    flex-shrink: 0;
+  }
+
+  .site-logo {
+    display: block;
+    line-height: 0;
+  }
+
+  .site-logo img {
+    display: block;
+    height: 71px;
+    width: auto;
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .language-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 0;
+  }
+
+  .language-btn img {
+    display: block;
+    height: 49px;
+    width: auto;
+  }
+
+  .btn-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 16px 21px;
+    background: #fff;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 15px;
+    color: #000;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .main-content {
+    flex: 1;
+    flex-grow: 1;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 40px 0px 40px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .compass-card {
     position: relative;
-    border: 1px solid white;
-    padding: var(--scaledSize);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 22px;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .compass-card__header {
+    background: rgba(0,0,0,.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px;
+    z-index: 3;
+  }
+  .compass-card__intro {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: 600px;
+  }
+
+  .compass-card__title {
+    margin: 0 0 16px;
+    font-weight: 800;
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.2;
+    color: #fff;
+  }
+
+  .compass-card__description {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #fff;
+  }
+
+  .compass-card__description strong {
+    font-weight: 700;
+  }
+
+  .compass-card__info-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .compass-card__cta {
+    min-height: 46px;
+    padding: 16px 21px;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    background: transparent;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 15px;
+    text-decoration: none;
+    white-space: nowrap;
+    pointer-events: auto;
+    &:hover {
+        color: var(--dark-teal);
+        background: #fff;
+    }
+  }
+
+  .compass-card__powered {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end;
+    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    pointer-events: auto;
+    position: absolute;
+    bottom: 40px; 
+    right: 40px;
+    z-index: 4;
+  }
+
+  .compass-card__powered-label {
+    font-size: 12px;
+    line-height: 15px;
+    color: #fff;
+  }
+
+  .questa-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+  }
+
+  .questa-brand__mark {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .questa-brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .questa-brand__name {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  .questa-brand__tagline {
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  .site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 40px;
+    font-size: 12px;
+    line-height: normal;
+    flex-shrink: 0;
+  }
+
+  .site-footer__copyright {
+    margin: 0;
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .site-footer__links a {
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .compass-menu {
+    padding: 15vh 50px;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .overlay-grain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(assets/grain.png) repeat;
+    mix-blend-mode: color-dodge;
+    z-index: 1;
+  }
+
+  .overlay-color {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--dark-teal);
+    opacity: .5;
+  }
+
+  .cm-blur-motion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
   .cm-center {
-    width: clamp(100px, 20vw, 300px);
-    height: clamp(100px, 20vw, 300px);
-    box-shadow: inset 0 0 0 15px var(--teal);
+    width: clamp(200px, 23vw, 350px);
+    height: clamp(200px, 23vw, 350px);
+    box-shadow: inset 0 0 0 5px #fff;
     border-radius: 900px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    z-index: 2;
   }
   
   .cm-needle {
@@ -35,12 +309,69 @@
     width: 20%;
     height: auto;
     transform-origin: center 57%;
+    z-index: 1;
+  }
+
+  .cm-description {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    font-size: 14px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 2;
+    display: grid;
+  }
+
+  .cm-description-item {
+    grid-area: 1 / 1;
+    margin: 0;
+    font-size: clamp(11px, 1.2vw, 13px);
+    line-height: 1.4;
+    font-weight: 500;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      visibility 0s linear 0.2s;
+  }
+
+  .cm-description-item.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      visibility 0s linear 0s;
+  }
+
+  .cm-description-item em {
+    font-style: normal;
+    color: var(--green);
   }
   
+.cm-center-dividers {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    mask-image: radial-gradient(circle, transparent calc(70% - 5px), black calc(70% - 4.5px), black 100%);
+}
+
   .cm-center-divider {
     width: 100%;
     height: 5px;
-    background: var(--background);
+    background: var(--dark-teal);
     position: absolute;
     left: 0;
     top: 50%;
@@ -55,49 +386,20 @@
   .cm-center-divider:nth-child(3){
     transform: rotate(-60deg);
   }
-  
-  .cm-center-line {
-    height: var(--scaledSize);
-    width: 2px;
-    background: var(--teal);
+
+  .cm-edge-glow {
+    background: radial-gradient(circle, var(--green) 50%, transparent 70%);
+    width: 120%;
+    height: 120%;
+    border-radius: 50%;
     position: absolute;
-    left: 50%;
-    bottom: 50%;
-    transform-origin: bottom center;
-    transform: rotate(0deg);
-  }
-  
-  .cm-center-line-active {
-    background: #fff;
-    opacity: 0;
+    transform-origin: center;
+    mask-image: radial-gradient(ellipse 50% 18% at 50% 5%, rgba(0, 0, 0, 0.683) 0%, transparent 90%);
     transition: opacity 0.2s ease;
-  }
-
-  .compass-menu.is-link-hover .cm-center-line-active {
-    opacity: 1;
-  }
-
-  .cm-center-line:nth-child(2){
-    transform: rotate(60deg);
+    opacity: 0;
   }
   
-  .cm-center-line:nth-child(3){
-    transform: rotate(120deg);
-  }
-  
-  .cm-center-line:nth-child(4){
-    transform: rotate(180deg);
-  }
-  
-  .cm-center-line:nth-child(5){
-    transform: rotate(240deg);
-  }
-  .cm-center-line:nth-child(6){
-    transform: rotate(300deg);
-  }
-  
-  .cm-locked-rotation {
-    background: conic-gradient(#fff 0deg, #fff 0deg, transparent 0deg);
+  .cm-edge-highlight {
     width: 100%;
     height: 100%;
     border-radius: 50%;
@@ -108,18 +410,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    &::after {
-      content:'';
-      background: var(--background);
-      width: calc(100% - 30px);
-      height: calc(100% - 30px);
-      border-radius: 50%;
-      display: block;
-    }
+    /* Mask out the center so it's transparent, showing edges only */
+    mask-image: radial-gradient(circle, transparent calc(70% - 5px), black calc(70% - 4.5px), black 100%);
   }
 
-  .compass-menu.is-link-hover .cm-locked-rotation {
-    background: conic-gradient(#fff 0deg, #fff 60deg, transparent 60deg);
+  .compass-menu.is-link-hover {
+    .cm-edge-highlight {
+        background: conic-gradient(var(--green) 0deg, var(--green) 60deg, transparent 60deg);
+    }
+    .cm-edge-glow {
+        opacity: 1;
+    }
   }
 
   .cm-options {
@@ -133,11 +434,9 @@
     justify-content: center;
   }
   .cm-option {
-    background: var(--background);
     position: absolute;
     width: clamp(50px, 10vw, 100px);
     height: clamp(50px, 10vw, 100px);
-    box-shadow: inset 0 0 0 2px var(--teal);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -145,16 +444,20 @@
     text-decoration: none;
     color: inherit;
     &:hover {
-      box-shadow: inset 0 0 0 4px white;
+        span {
+            color: var(--green);
+        }
     }
   }
   .cm-option-text {
-    text-shadow: 0 3px var(--background), 0 -3px var(--background), 3px 0 var(--background), -3px 0 var(--background);
     color: white;
     paint-order: stroke fill;
     text-transform: uppercase;
     text-decoration: none!important;
     text-align: center;
+    line-height: 1em;
+    font-weight: 700;
+    font-size: clamp(14px, 1.5vw, 20px);
     span {
       color: var(--teal);
     }
@@ -162,28 +465,67 @@
   
   .cm-option:nth-child(1){
     transform: translate(0, calc(-1 * var(--scaledSize)));
+    &:hover {
+        transform: translate(0, calc(-1 * var(--scaledSize))) scale(1.2);
+    }
   }
   
   .cm-option:nth-child(2){
     transform: translate(calc(var(--scaledSize)), calc(-1 * var(--scaledSize) * .55));
+    &:hover {
+        transform: translate(calc(var(--scaledSize)), calc(-1 * var(--scaledSize) * .55)) scale(1.2);
+    }
   }
   
   .cm-option:nth-child(3){
     transform: translate(calc(var(--scaledSize)), calc(var(--scaledSize) * .55));
+    &:hover {
+        transform: translate(calc(var(--scaledSize)), calc(var(--scaledSize) * .55)) scale(1.2);
+    }
   }
   
   .cm-option:nth-child(4){
     transform: translate(0, calc(-1 * calc(-1 * var(--scaledSize))));
+    &:hover {
+        transform: translate(0, calc(-1 * calc(-1 * var(--scaledSize)))) scale(1.2);
+    }
   }
   
   .cm-option:nth-child(5){
     transform: translate(calc(-1 * var(--scaledSize)), calc(var(--scaledSize) * .55));
+    &:hover {
+        transform: translate(calc(-1 * var(--scaledSize)), calc(var(--scaledSize) * .55)) scale(1.2);
+    }
   }
   
   .cm-option:nth-child(6){
     transform: translate(calc(-1 * var(--scaledSize)), calc(-1 * var(--scaledSize) * .55));
+    &:hover {
+        transform: translate(calc(-1 * var(--scaledSize)), calc(-1 * var(--scaledSize) * .55)) scale(1.2);
+    }
   }
-  
-  body {
-    font-family: sans-serif;
+
+  @media (max-width: 900px) {
+    .compass-card__header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .main-content {
+        padding: 0 20px 0 20px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .main-content {
+        padding: 0;
+    }
+    .compass-card {
+        border-radius: 0;
+    }
+    .site-footer, .site-footer__links {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: .75rem;
+    }
   }

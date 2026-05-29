@@ -2,9 +2,10 @@
   const compassMenu = document.querySelector('.compass-menu');
   const centerEl = document.querySelector('.cm-center');
   const needle = document.querySelector('.cm-needle');
-  const lockedRotation = document.querySelector('.cm-locked-rotation');
-  const lines = document.querySelectorAll('.cm-center-line');
+  const edgeHighlight = document.querySelector('.cm-edge-highlight');
+  const edgeGlow = document.querySelector('.cm-edge-glow');
   const options = document.querySelectorAll('.cm-option');
+  const descriptions = document.querySelectorAll('.cm-description-item');
 
   const ITEM_ANGLES = [0, 60, 120, 180, 240, 300];
   const LOCKED_OFFSET = -30;
@@ -36,16 +37,16 @@
 
   function setActiveItem(index) {
     compassMenu.classList.add('is-link-hover');
-    lockedRotation.style.transform = `rotate(${ITEM_ANGLES[index] + LOCKED_OFFSET}deg)`;
-
-    lines.forEach((line, i) => {
-      line.classList.toggle('cm-center-line-active', i === index);
+    edgeHighlight.style.transform = `rotate(${ITEM_ANGLES[index] + LOCKED_OFFSET}deg)`;
+    edgeGlow.style.transform = `rotate(${ITEM_ANGLES[index]}deg)`;
+    descriptions.forEach((item, i) => {
+      item.classList.toggle('is-active', i === index);
     });
   }
 
   function clearActiveItem() {
     compassMenu.classList.remove('is-link-hover');
-    lines.forEach((line) => line.classList.remove('cm-center-line-active'));
+    descriptions.forEach((item) => item.classList.remove('is-active'));
   }
 
   document.addEventListener('mousemove', (e) => {
