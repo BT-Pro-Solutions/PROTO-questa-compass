@@ -1,14 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROTO-questa-compass</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compass — Questa Education Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="compass-menu">
-        <div class="cm-center-line-group">
+  <header class="site-header">
+    <a href="#" class="site-logo" aria-label="Compass home">
+      <svg class="site-logo__mark" width="49" height="56" viewBox="0 0 49 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="24.5" cy="31" r="22" stroke="#58595B" stroke-width="1.2" fill="none"/>
+        <path d="M24.5 14 L33.5 42 L24.5 34 L15.5 42 Z" fill="#B2D236"/>
+      </svg>
+      <span class="site-logo__word">COMPASS</span>
+    </a>
+    <div class="site-header__actions">
+      <img class="language-selector desktop-only" src="assets/language-selector.png" alt="Language / Idioma" width="184" height="49">
+      <a href="#" class="btn btn-login">Log In</a>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="hero-card">
+      <div class="hero-card__overlay" aria-hidden="true"></div>
+      <div class="hero-card__noise" aria-hidden="true"></div>
+
+      <div class="hero-card__top">
+        <div class="hero-intro">
+          <h1 class="hero-intro__title">Select A Finder Topic</h1>
+          <p class="hero-intro__text">
+            <img class="hero-intro__icon" src="assets/info-icon.svg" alt="" width="28" height="28">
+            <span><strong>Compass</strong> is a free tool for finding resources related to careers, learning, financial aid, and personal improvement.</span>
+          </p>
+        </div>
+        <a href="#" class="btn btn-outline desktop-only">Not sure where to start?</a>
+      </div>
+
+      <!-- Desktop: circular compass menu -->
+      <div class="compass-menu desktop-only" aria-label="Finder topics">
+        <div class="cm-outer-arc" aria-hidden="true"></div>
+        <div class="cm-center-line-group" aria-hidden="true">
           <div class="cm-center-line"></div>
           <div class="cm-center-line"></div>
           <div class="cm-center-line"></div>
@@ -17,53 +52,83 @@
           <div class="cm-center-line"></div>
         </div>
         <div class="cm-center">
-          <div class="cm-locked-rotation"></div>
-          <div class="cm-center-divider"></div>
-          <div class="cm-center-divider"></div>
-          <div class="cm-center-divider"></div>
-          <svg class="cm-needle" width="53" height="75" viewBox="0 0 53 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div class="cm-locked-rotation" aria-hidden="true"></div>
+          <div class="cm-center-divider" aria-hidden="true"></div>
+          <div class="cm-center-divider" aria-hidden="true"></div>
+          <div class="cm-center-divider" aria-hidden="true"></div>
+          <svg class="cm-needle" width="53" height="75" viewBox="0 0 53 75" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M26.1466 57.5412L52.2932 74.2187L26.1466 6.48649e-06L0 74.2188L26.1466 57.5412Z" fill="#B2D236"/>
           </svg>
+          <p class="cm-description">Find a <em>career</em> that fits your talents.</p>
           <div class="cm-options">
-          <a href="#" class="cm-option">
-            <div class="cm-option-text">
-              <span>Find</span>
-              Something 1
-            </div>
-          </a>
-          <a href="#" class="cm-option">
-            <div class="cm-option-text">
-              <span>Find</span>
-              Something 2
-            </div>
-          </a>
-          <a href="#" class="cm-option">
-            <div class="cm-option-text">
-              <span>Find</span>
-              Something 3
-            </div>
-          </a>
-          <a href="#" class="cm-option">
-            <div class="cm-option-text">
-              <span>Find</span>
-              Something 4
-            </div>
-          </a>
-          <a href="#" class="cm-option">
-            <div class="cm-option-text">
-              <span>Find</span>
-              Something 5
-            </div>
-          </a>
-          <a href="#" class="cm-option">
-            <div class="cm-option-text">
-              <span>Find</span>
-              Something 6
-            </div>
-          </a>
+            <a href="#" class="cm-option is-active" data-index="0">
+              <span class="cm-option-text"><span class="cm-option-find">Find</span> Careers</span>
+            </a>
+            <a href="#" class="cm-option" data-index="1">
+              <span class="cm-option-text"><span class="cm-option-find">Find</span> Education<br>Help</span>
+            </a>
+            <a href="#" class="cm-option" data-index="2">
+              <span class="cm-option-text"><span class="cm-option-find">Find</span> Funding</span>
+            </a>
+            <a href="#" class="cm-option" data-index="3">
+              <span class="cm-option-text"><span class="cm-option-find">Find</span> Learning<br>Help</span>
+            </a>
+            <a href="#" class="cm-option" data-index="4">
+              <span class="cm-option-text"><span class="cm-option-find">Find</span> Education<br>&amp; Training</span>
+            </a>
+            <a href="#" class="cm-option" data-index="5">
+              <span class="cm-option-text"><span class="cm-option-find">Find</span> Personal<br>Help</span>
+            </a>
           </div>
         </div>
       </div>
-    <script src="script.js"></script>
+
+      <!-- Mobile: topic button grid -->
+      <div class="topic-grid mobile-only" aria-label="Finder topics">
+        <a href="#" class="topic-btn is-active" data-index="0">
+          <span class="topic-btn__find">Find</span>
+          <span class="topic-btn__label">Careers</span>
+        </a>
+        <a href="#" class="topic-btn" data-index="2">
+          <span class="topic-btn__find">Find</span>
+          <span class="topic-btn__label">Funding</span>
+        </a>
+        <a href="#" class="topic-btn" data-index="1">
+          <span class="topic-btn__find">Find</span>
+          <span class="topic-btn__label">Education Help</span>
+        </a>
+        <a href="#" class="topic-btn" data-index="3">
+          <span class="topic-btn__find">Find</span>
+          <span class="topic-btn__label">Learning Help</span>
+        </a>
+        <a href="#" class="topic-btn" data-index="5">
+          <span class="topic-btn__find">Find</span>
+          <span class="topic-btn__label">Personal Help</span>
+        </a>
+        <a href="#" class="topic-btn" data-index="4">
+          <span class="topic-btn__find">Find</span>
+          <span class="topic-btn__label">Education &amp; Training</span>
+        </a>
+      </div>
+
+      <a href="#" class="btn btn-outline mobile-only">Not sure where to start?</a>
+
+      <div class="powered-by">
+        <p class="powered-by__label">Powered By</p>
+        <img class="powered-by__logo" src="assets/questa-logo.png" alt="Questa Education Foundation" width="155" height="33">
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p class="site-footer__copy">&copy; 2026 Questa Education Foundation</p>
+    <nav class="site-footer__links" aria-label="Footer">
+      <a href="#">Share Your Feedback</a>
+      <a href="#">Take a Break</a>
+      <a href="#">Privacy Policy</a>
+    </nav>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
