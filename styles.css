@@ -13,6 +13,10 @@
     box-sizing: border-box;
   }
 
+  [hidden] {
+    display: none !important;
+  }
+
   body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
@@ -80,6 +84,39 @@
     white-space: nowrap;
   }
 
+  .quincy-callout {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    gap: 1.5rem;
+    color: #fff;
+    z-index: 1;
+    padding: 0 20px;
+    text-decoration: none;
+    font-size: 13px;
+    width: 350px;
+    max-width: 100%;
+    align-items: center;
+
+    img {
+        width: 80px;
+        height: auto;
+    }
+    p {
+        margin: 0;
+    }
+    h3 {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 0;
+    }
+    span {
+        color: var(--green);
+        text-decoration: underline;
+    }
+  }
+
   .main-content {
     flex: 1;
     flex-grow: 1;
@@ -91,6 +128,7 @@
   }
 
   .compass-card {
+    background: var(--dark-teal);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -314,6 +352,41 @@
     height: auto;
     transform-origin: center 57%;
     z-index: 1;
+  }
+
+  .cm-needle-line {
+    position: absolute;
+    width: 2px;
+    left: 0px;
+    margin-left: -2px;
+    top: 0;
+    transform-origin: top center;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+     rgba(255, 255, 255, 0.4) 0%,
+     rgba(255, 255, 255, 0.4) 50%,
+      transparent 50%,
+      transparent 100%
+    );
+    background-size: 2px 32px;
+    animation: cm-needle-line-flow 1.5s linear infinite;
+    mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  }
+
+  .compass-menu.is-pointer-active .cm-needle-line {
+    opacity: 1;
+  }
+
+  @keyframes cm-needle-line-flow {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 0 -32px;
+    }
   }
 
   .cm-description {
@@ -612,6 +685,7 @@
     }
 
     .cm-needle,
+    .cm-needle-line,
     .cm-center-dividers,
     .cm-edge-glow,
     .cm-edge-highlight,
@@ -691,5 +765,202 @@
       flex-direction: column;
       align-items: center;
       gap: 12px;
+    }
+  }
+
+  /* ============================================================
+     Quiz Back Button (in compass-card__header)
+  ============================================================ */
+
+  .compass-card__header-actions {
+    display: contents;
+  }
+
+  .quiz-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 12px 21px;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    background: transparent;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .quiz-back-btn:hover {
+    background: #fff;
+    color: var(--dark-teal);
+  }
+
+  .quiz-back-btn svg {
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+     Quiz View
+  ============================================================ */
+
+  .quiz-view {
+    display: none;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 40px 60px;
+    text-align: center;
+  }
+
+  .quiz-view[aria-hidden="false"] {
+    display: flex;
+  }
+
+  .quiz-view__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Reuse existing overlay classes; they're also inside quiz-view */
+
+  .quiz-content,
+  .quiz-final {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 760px;
+    width: 100%;
+  }
+
+  .quiz-quincy {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .quiz-counter {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.4;
+  }
+
+  .quiz-counter__num {
+    font-weight: 500;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.68);
+  }
+
+  .quiz-question {
+    margin: 0;
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.45;
+    max-width: 720px;
+  }
+
+  .quiz-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .quiz-actions--single {
+    justify-content: center;
+  }
+
+  .quiz-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 28px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .quiz-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .quiz-btn--yes {
+    background: var(--green);
+    color: #1f404d;
+    font-weight: 700;
+  }
+
+  .quiz-btn--no {
+    background: #1f404d;
+    color: #fff;
+    font-weight: 700;
+    min-width: 100px;
+  }
+
+  /* ============================================================
+     Compass card quiz-active state
+  ============================================================ */
+
+  .compass-card.quiz-active .compass-menu,
+  .compass-card.quiz-active .compass-card__cta--mobile,
+  .compass-card.quiz-active .quincy-callout {
+    display: none !important;
+  }
+
+  /* ============================================================
+     Quiz responsive
+  ============================================================ */
+
+  @media (max-width: 720px) {
+    .quiz-view {
+      padding: 32px 24px 40px;
+      flex-grow: 1;
+      order: 2;
+    }
+
+    .quiz-view__video {
+      display: none;
+    }
+
+    .quiz-question {
+      font-size: 18px;
+    }
+
+    .quiz-counter {
+      font-size: 20px;
+    }
+
+    .quiz-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .quiz-btn {
+      width: 100%;
+      padding: 18px 20px;
     }
   }

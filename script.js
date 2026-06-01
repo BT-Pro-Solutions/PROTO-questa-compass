@@ -2,6 +2,7 @@
   const compassMenu = document.querySelector('.compass-menu');
   const centerEl = document.querySelector('.cm-center');
   const needle = document.querySelector('.cm-needle');
+  const needleLine = document.querySelector('.cm-needle-line');
   const edgeHighlight = document.querySelector('.cm-edge-highlight');
   const edgeGlow = document.querySelector('.cm-edge-glow');
   const options = document.querySelectorAll('.cm-option');
@@ -15,6 +16,56 @@
   let needleTarget = 0;
   let needleAngle = 0;
   let needleVelocity = 0;
+  let isPointerInMenu = false;
+
+  const NEEDLE_ASPECT = 75 / 53;
+  const NEEDLE_WIDTH_RATIO = 0.2;
+  const NEEDLE_TOP_OFFSET = -0.025;
+  const NEEDLE_ORIGIN_RATIO = 0.57;
+
+  function getNeedleTip(displayAngle) {
+    const centerRect = centerEl.getBoundingClientRect();
+    const centerW = centerRect.width;
+    const centerH = centerRect.height;
+    const needleH = centerW * NEEDLE_WIDTH_RATIO * NEEDLE_ASPECT;
+    const pivotX = centerRect.left + centerW / 2;
+    const pivotY =
+      centerRect.top +
+      centerH / 2 +
+      centerH * NEEDLE_TOP_OFFSET +
+      needleH * (NEEDLE_ORIGIN_RATIO - 0.5);
+    const tipDist = needleH * NEEDLE_ORIGIN_RATIO;
+    const angleRad = (displayAngle * Math.PI) / 180;
+
+    return {
+      x: pivotX + Math.sin(angleRad) * tipDist,
+      y: pivotY - Math.cos(angleRad) * tipDist,
+    };
+  }
+
+  function updateNeedleLine() {
+    if (!needleLine || !isPointerInMenu) return;
+
+    const centerRect = centerEl.getBoundingClientRect();
+    const startX = centerRect.left + centerRect.width / 2;
+    const startY = centerRect.top + centerRect.height / 2;
+
+    const dx = mouseX - startX;
+    const dy = mouseY - startY;
+    const length = Math.hypot(dx, dy);
+
+    if (length < 12) {
+      needleLine.style.height = '0';
+      return;
+    }
+
+    const rotation = (Math.atan2(-dx, dy) * 180) / Math.PI;
+
+    needleLine.style.left = `${centerRect.width / 2}px`;
+    needleLine.style.top = `${centerRect.height / 2}px`;
+    needleLine.style.height = `${length}px`;
+    needleLine.style.transform = `rotate(${rotation}deg)`;
+  }
 
   function normalizeAngle(deg) {
     let angle = deg % 360;
@@ -64,7 +115,16 @@
     });
   });
 
-  compassMenu.addEventListener('mouseleave', clearActiveItem);
+  compassMenu.addEventListener('mouseenter', () => {
+    isPointerInMenu = true;
+    compassMenu.classList.add('is-pointer-active');
+  });
+
+  compassMenu.addEventListener('mouseleave', () => {
+    isPointerInMenu = false;
+    compassMenu.classList.remove('is-pointer-active');
+    clearActiveItem();
+  });
 
   function animateNeedle() {
     const spring = 0.1;
@@ -84,10 +144,122 @@
     const displayAngle = needleAngle + wobble;
 
     needle.style.transform = `rotate(${displayAngle}deg)`;
+    updateNeedleLine();
     requestAnimationFrame(animateNeedle);
   }
 
   needleTarget = getMouseAngle();
   needleAngle = needleTarget;
   animateNeedle();
+})();
+
+// ============================================================
+// Quiz / Guiding Questions
+// ============================================================
+(function () {
+  const QUESTIONS = [
+    {
+      text: 'Do you need help building the academic skills or confidence needed to succeed in college, training, or other education after high school?',
+      yesLabel: 'YES — Find Learning Help',
+    },
+    {
+      text: 'Are you looking for help discovering a career path that fits your skills, interests, or experience?',
+      yesLabel: 'YES — Find Careers',
+    },
+    {
+      text: 'Are you looking for guidance on applying to or enrolling in a college, university, or higher education program?',
+      yesLabel: 'YES — Find Education Help',
+    },
+    {
+      text: 'Do you need help finding scholarships, grants, financial aid, or other funding for your education?',
+      yesLabel: 'YES — Find Funding',
+    },
+    {
+      text: 'Are you interested in vocational training, apprenticeships, or professional certification programs?',
+      yesLabel: 'YES — Find Education & Training',
+    },
+    {
+      text: 'Are you looking for resources to support your personal development, mental wellness, or everyday life skills?',
+      yesLabel: 'YES — Find Personal Help',
+    },
+  ];
+
+  const card        = document.querySelector('.compass-card');
+  const quizView    = document.getElementById('quizView');
+  const quizContent = document.getElementById('quizContent');
+  const quizFinal   = document.getElementById('quizFinal');
+  const quizNum     = document.getElementById('quizNum');
+  const quizQuestion= document.getElementById('quizQuestion');
+  const quizYes     = document.getElementById('quizYes');
+  const backBtns    = document.querySelectorAll('.js-quiz-close');
+  const openTriggers= document.querySelectorAll('.js-quiz-open');
+  const ctaDesktop  = document.querySelector('.compass-card__cta--desktop');
+  const backBtn     = document.querySelector('.quiz-back-btn');
+
+  let currentIndex = 0;
+
+  function showQuestion(index) {
+    const q = QUESTIONS[index];
+    quizNum.textContent      = `(${index + 1} of ${QUESTIONS.length})`;
+    quizQuestion.textContent = q.text;
+    quizYes.textContent      = q.yesLabel;
+
+    quizContent.hidden = false;
+    quizFinal.hidden   = true;
+  }
+
+  function openQuiz() {
+    currentIndex = 0;
+    showQuestion(0);
+
+    card.classList.add('quiz-active');
+    quizView.setAttribute('aria-hidden', 'false');
+
+    if (ctaDesktop) ctaDesktop.hidden = true;
+    if (backBtn)    backBtn.hidden    = false;
+  }
+
+  function closeQuiz() {
+    card.classList.remove('quiz-active');
+    quizView.setAttribute('aria-hidden', 'true');
+
+    if (ctaDesktop) ctaDesktop.hidden = false;
+    if (backBtn)    backBtn.hidden    = true;
+  }
+
+  function advanceQuestion() {
+    currentIndex += 1;
+    if (currentIndex >= QUESTIONS.length) {
+      quizContent.hidden = true;
+      quizFinal.hidden   = false;
+    } else {
+      showQuestion(currentIndex);
+    }
+  }
+
+  // Open triggers: both "Not sure where to start?" links and the Quincy callout
+  openTriggers.forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      openQuiz();
+    });
+  });
+
+  // Close triggers: "Back To Main" and "Browse Topics"
+  backBtns.forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeQuiz();
+    });
+  });
+
+  // "No" button advances to next question
+  document.querySelectorAll('.js-quiz-no').forEach((el) => {
+    el.addEventListener('click', advanceQuestion);
+  });
+
+  // "YES" button — no action yet (placeholder for future topic routing)
+  quizYes.addEventListener('click', () => {
+    // Future: navigate to the selected topic
+  });
 })();

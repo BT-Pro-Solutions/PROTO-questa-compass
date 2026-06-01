@@ -36,7 +36,15 @@
                     </p>
                 </div>
 
-                <a href="#" class="compass-card__cta compass-card__cta--desktop">Not sure where to start?</a>
+                <div class="compass-card__header-actions">
+                    <a href="#" class="compass-card__cta compass-card__cta--desktop js-quiz-open">Not sure where to start?</a>
+                    <button class="quiz-back-btn js-quiz-close" hidden type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Back To Main
+                    </button>
+                </div>
             </div>
 
                 <div class="compass-card__powered">
@@ -59,6 +67,7 @@
                   <svg class="cm-needle" width="53" height="75" viewBox="0 0 53 75" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M26.1466 57.5412L52.2932 74.2187L26.1466 6.48649e-06L0 74.2188L26.1466 57.5412Z" fill="#B2D236"/>
                   </svg>
+                  <div class="cm-needle-line" aria-hidden="true"></div>
                   <div class="cm-description" aria-live="polite">
                     <p class="cm-description-item">Find a <em>career</em> that fits your talents.</p>
                     <p class="cm-description-item">Find a path to <em>higher education</em>.</p>
@@ -108,7 +117,40 @@
                 </div>
             </div>
 
-            <a href="#" class="compass-card__cta compass-card__cta--mobile">Not sure where to start?</a>
+            <a href="#" class="compass-card__cta compass-card__cta--mobile js-quiz-open">Not sure where to start?</a>
+            <a href="#" class="quincy-callout js-quiz-open">
+                <img src="assets/Quincy-Corner.png" alt="Quincy">
+                <div>
+                    <h3>Not sure where to start?</h3>
+                    <p><span>Answer a few questions</span> and we’ll find the right tools for you.</p>
+                </div>
+            </a>
+
+            <!-- Quiz question view -->
+            <div class="quiz-view" id="quizView" aria-hidden="true">
+                <video src="assets/blur-loop-compressed.mp4" autoplay muted loop playsinline class="cm-blur-motion quiz-view__video"></video>
+                <div class="overlay-color"></div>
+                <div class="overlay-grain"></div>
+
+                <div class="quiz-content" id="quizContent">
+                    <img src="assets/Quincy-Circle.png" alt="Quincy" class="quiz-quincy">
+                    <p class="quiz-counter">Guiding Help Questions <span class="quiz-counter__num" id="quizNum"></span></p>
+                    <p class="quiz-question" id="quizQuestion"></p>
+                    <div class="quiz-actions">
+                        <button class="quiz-btn quiz-btn--yes" id="quizYes" type="button"></button>
+                        <button class="quiz-btn quiz-btn--no js-quiz-no" type="button">No</button>
+                    </div>
+                </div>
+
+                <div class="quiz-final" id="quizFinal" hidden>
+                    <img src="assets/Quincy-Circle.png" alt="Quincy" class="quiz-quincy">
+                    <p class="quiz-counter">All Done!</p>
+                    <p class="quiz-question">We've explored all available topics — but you can still browse them directly using the finder above.</p>
+                    <div class="quiz-actions quiz-actions--single">
+                        <button class="quiz-btn quiz-btn--yes js-quiz-close" type="button">Browse Topics</button>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>
