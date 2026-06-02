@@ -62,9 +62,9 @@
           placeholder: 'Please Select...',
           required: true,
           options: [
-            { value: 'hs', label: 'High School — currently attending or pursuing HSE' },
-            { value: 'young-adult', label: 'Young Adult Learner — completed HS, ages 18–24' },
-            { value: 'adult', label: 'Adult Learner — age 25 and older' },
+            { value: 'hs', label: 'Attending High School' },
+            { value: 'young-adult', label: 'Young Adult (18–24) Learner' },
+            { value: 'adult', label: 'Adult (25+) Learner' },
           ],
         },
         {

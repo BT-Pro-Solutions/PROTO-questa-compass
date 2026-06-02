@@ -7,6 +7,7 @@
     partialSeeMoreHint: '(unrelated to {topic})',
     collapsedSeeMore: 'Show all {count}',
     collapsedSeeMoreHint: '(unrelated to {topic})',
+    showOnlyRelated: 'Show only related fields',
   };
 
   function formatSectionCopy(template, count, topicName) {
@@ -27,6 +28,11 @@
     const hint = hintTemplate ? formatSectionCopy(hintTemplate, count, topicName) : '';
     const hintHtml = hint ? ` <span class="builder-see-more__hint">${hint}</span>` : '';
     return label + hintHtml;
+  }
+
+  function formatSeeMoreButton(contentHtml, expanded) {
+    const prefix = expanded ? '-' : '+';
+    return `<span class="builder-see-more__prefix" aria-hidden="true">${prefix}</span> ${contentHtml}`;
   }
 
   function getFieldValue(profile, fieldId) {
@@ -62,6 +68,34 @@
 
   let activeMultiselectField = null;
   let pendingSelections = [];
+
+  function updateInfoNoteVisibility() {
+    if (isUniversalProfile) return;
+    const infoNote = document.querySelector('.builder-info-note');
+    if (infoNote) infoNote.hidden = manuallyExpandedSections.size > 0;
+  }
+
+  function clearNonPromotedFields(sectionId, section) {
+    const updates = {};
+    section.fields.forEach((field) => {
+      if (!fieldVisible(field, profile)) return;
+      if (fieldPromotedForTopic(topicKey, sectionId, field.id)) return;
+      updates[field.id] = field.type === 'multiselect' ? [] : '';
+    });
+    if (Object.keys(updates).length) {
+      saveProfile(updates);
+      profile = { ...profile, ...updates };
+    }
+  }
+
+  function collapseSectionToRelated(sectionId) {
+    const section = SECTIONS[sectionId];
+    if (!section) return;
+    clearNonPromotedFields(sectionId, section);
+    manuallyExpandedSections.delete(sectionId);
+    updateInfoNoteVisibility();
+    renderSections();
+  }
 
   function applyUniversalProfileMode() {
     document.body.classList.add('builder-universal');
@@ -198,10 +232,15 @@
 
     const fieldsHtml = fieldsToShow.map(renderField).join('');
     const hiddenCount = fullyOpen ? 0 : visibleFields.length - fieldsToShow.length;
-    const showSeeMore = hiddenCount > 0;
+    const manuallyExpanded = manuallyExpandedSections.has(sectionId);
+    const showSeeMore = hiddenCount > 0 || manuallyExpanded;
+    const seeMoreExpanded = manuallyExpanded;
 
     const stateClass = fullyOpen ? 'is-open' : isPartial ? 'is-partial' : 'is-collapsed';
-    const seeMoreHtml = buildSeeMoreHtml(isPartial, hiddenCount, topicName);
+    const seeMoreContent = seeMoreExpanded
+      ? SECTION_COPY.showOnlyRelated
+      : buildSeeMoreHtml(isPartial, hiddenCount, topicName);
+    const seeMoreHtml = formatSeeMoreButton(seeMoreContent, seeMoreExpanded);
     const hintText = isPartial ? SECTION_COPY.partialHint : isCollapsed ? '' : '';
 
     return `
@@ -214,7 +253,7 @@
         </div>
         ${hintText ? `<p class="builder-section__hint">${hintText}</p>` : ''}
         ${fieldsHtml ? `<div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>` : ''}
-        ${showSeeMore ? `<div class="builder-section__footer"><button type="button" class="builder-see-more" data-section="${sectionId}">${seeMoreHtml}</button></div>` : ''}
+        ${showSeeMore ? `<div class="builder-section__footer"><button type="button" class="builder-see-more${seeMoreExpanded ? ' is-expanded' : ''}" data-section="${sectionId}" aria-expanded="${seeMoreExpanded}">${seeMoreHtml}</button></div>` : ''}
       </section>`;
   }
 
@@ -360,10 +399,18 @@
 
     sectionsRoot.querySelectorAll('.builder-see-more').forEach((btn) => {
       btn.addEventListener('click', () => {
-        manuallyExpandedSections.add(btn.dataset.section);
-        renderSections();
+        const sectionId = btn.dataset.section;
+        if (manuallyExpandedSections.has(sectionId)) {
+          collapseSectionToRelated(sectionId);
+        } else {
+          manuallyExpandedSections.add(sectionId);
+          updateInfoNoteVisibility();
+          renderSections();
+        }
       });
     });
+
+    updateInfoNoteVisibility();
   }
 
   function hasMinimumProfile() {
