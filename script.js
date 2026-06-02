@@ -278,6 +278,13 @@
     window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
   });
 
+  document.querySelectorAll('.js-quiz-create-profile').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = 'profile-builder.html?mode=universal&expand=all';
+    });
+  });
+
   document.querySelectorAll('.cm-option').forEach((option, index) => {
     option.addEventListener('click', (e) => {
       e.preventDefault();

@@ -35,17 +35,17 @@
   }
 
   const params = new URLSearchParams(window.location.search);
-  const topicKey = params.get('topic') || getProfile().topic || 'funding';
-  const topic = TOPICS[topicKey] || TOPICS.funding;
-  const expandAll = params.get('expand') === 'all';
-  const topicName = topic.title.replace(/^Find\s+/i, '');
+  const isUniversalProfile = params.get('mode') === 'universal';
+  const topicKey = isUniversalProfile ? null : params.get('topic') || getProfile().topic || 'funding';
+  const topic = topicKey ? TOPICS[topicKey] || TOPICS.funding : null;
+  const expandAll = params.get('expand') === 'all' || isUniversalProfile;
+  const topicName = topic ? topic.title.replace(/^Find\s+/i, '') : '';
 
-  CompassProfile.setTopic(topicKey);
+  if (topicKey) CompassProfile.setTopic(topicKey);
 
   const sectionsRoot = document.getElementById('sectionsRoot');
   const topicTitle = document.getElementById('topicTitle');
   const infoNoteTopicName = document.getElementById('infoNoteTopicName');
-  const splitPathModal = document.getElementById('splitPathModal');
   const createAccountModal = document.getElementById('createAccountModal');
   const profileForm = document.getElementById('profileForm');
   const multiselectModal = document.getElementById('multiselectModal');
@@ -63,11 +63,37 @@
   let activeMultiselectField = null;
   let pendingSelections = [];
 
-  topicTitle.textContent = topic.title.replace(/^Find\s+/i, '').toUpperCase();
-  if (infoNoteTopicName) infoNoteTopicName.textContent = topicName;
+  function applyUniversalProfileMode() {
+    document.body.classList.add('builder-universal');
+
+    const eyebrow = document.querySelector('.builder-intro__eyebrow');
+    const introDesc = document.querySelector('.builder-intro__desc');
+    const infoNote = document.querySelector('.builder-info-note');
+    const jumpBtn = document.getElementById('jumpToResultsBtn');
+    const saveBtn = document.getElementById('continueProfileBtn');
+
+    if (eyebrow) eyebrow.hidden = true;
+    if (introDesc) {
+      introDesc.textContent =
+        "Complete your profile now so it's ready whenever you explore a Compass topic.";
+    }
+    if (infoNote) infoNote.hidden = true;
+    if (jumpBtn) jumpBtn.textContent = 'Browse a Topic';
+    if (saveBtn) saveBtn.textContent = 'Save';
+
+    topicTitle.textContent = 'YOUR PROFILE';
+  }
+
+  if (isUniversalProfile) {
+    applyUniversalProfileMode();
+  } else {
+    topicTitle.textContent = topic.title.replace(/^Find\s+/i, '').toUpperCase();
+    if (infoNoteTopicName) infoNoteTopicName.textContent = topicName;
+  }
 
   function isSectionFullyOpen(sectionId) {
-    return allSectionsExpanded || sectionExpanded(topicKey, sectionId) || manuallyExpandedSections.has(sectionId);
+    if (isUniversalProfile || allSectionsExpanded) return true;
+    return sectionExpanded(topicKey, sectionId) || manuallyExpandedSections.has(sectionId);
   }
 
   function getPromotedFields(sectionId, visibleFields) {
@@ -348,22 +374,6 @@
     window.location.href = `results.html?topic=${encodeURIComponent(topicKey)}`;
   }
 
-  function showSplitPath() {
-    splitPathModal.hidden = false;
-  }
-
-  function hideSplitPath() {
-    splitPathModal.hidden = true;
-  }
-
-  function expandAllSections() {
-    allSectionsExpanded = true;
-    Object.keys(SECTIONS).forEach((id) => manuallyExpandedSections.add(id));
-    renderSections();
-    hideSplitPath();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
   function openCreateAccount() {
     createAccountModal.hidden = false;
   }
@@ -395,17 +405,23 @@
   });
 
   document.getElementById('jumpToResultsBtn').addEventListener('click', () => {
+    if (isUniversalProfile) {
+      window.location.href = 'index.html';
+      return;
+    }
     if (hasMinimumProfile()) goToResults();
     else alert('Please select at least Student Level and Residency to see results.');
   });
 
   document.getElementById('continueProfileBtn').addEventListener('click', () => {
-    if (hasMinimumProfile()) showSplitPath();
+    if (isUniversalProfile) {
+      saveProfile(profile);
+      alert('Profile saved! (prototype demo)');
+      return;
+    }
+    if (hasMinimumProfile()) goToResults();
     else alert('Please select at least Student Level and Residency first.');
   });
-
-  document.getElementById('modalJumpBtn').addEventListener('click', goToResults);
-  document.getElementById('modalContinueBtn').addEventListener('click', expandAllSections);
 
   document.querySelectorAll('.js-create-account').forEach((btn) => {
     btn.addEventListener('click', openCreateAccount);

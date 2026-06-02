@@ -8,7 +8,8 @@
   const config = getTopicResultsConfig(topicKey);
 
   const PER_PAGE = 8;
-  let activeFilters = 0;
+  const MATCH_LABELS = ['Some', 'Fair', 'Strong'];
+  const MATCH_THUMB_COLORS = ['#e53935', '#ffb300', '#4caf50'];
 
   const filtersRoot = document.getElementById('filtersRoot');
   const resultsList = document.getElementById('resultsList');
@@ -24,51 +25,107 @@
     return 'Some Match';
   }
 
-  function renderFilter(filter) {
-    if (filter.type === 'match-strength') {
-      const options = filter.options
-        .map(
-          (opt, i) =>
-            `<label class="results-filter-option"><input type="radio" name="match-strength" value="${opt}"${i === 2 ? ' checked' : ''}> ${opt}</label>`
-        )
-        .join('');
-      return `
-        <div class="results-filter-group">
-          <span class="results-filter-label">${filter.label}</span>
-          ${filter.hint ? `<p class="results-filter-hint">${filter.hint}</p>` : ''}
-          <div class="results-filter-radios">${options}</div>
-        </div>`;
-    }
+  function renderTooltip(text) {
+    if (!text) return '';
+    return `<button type="button" class="builder-tooltip" aria-label="More info" data-tip="${text.replace(/"/g, '&quot;')}">?</button>`;
+  }
 
-    if (filter.type === 'toggle') {
-      return `
-        <div class="results-filter-group results-filter-group--row">
-          <label class="results-filter-toggle">
-            <input type="checkbox" data-filter="${filter.id}">
-            <span>${filter.label}</span>
+  function renderFilterLabel(filter) {
+    const label = filter.label.toUpperCase();
+    return `
+      <div class="results-filter-label-row">
+        <span class="results-filter-label">${label}</span>
+        ${renderTooltip(filter.tooltip)}
+      </div>`;
+  }
+
+  function renderMatchStrengthFilter(filter) {
+    const labelsHtml = MATCH_LABELS.map(
+      (label, i) =>
+        `<button type="button" class="results-match-slider__label${i === 0 ? ' is-active' : ''}" data-match-index="${i}">${label}</button>`
+    ).join('');
+
+    return `
+      <div class="results-filter-group results-filter-group--match">
+        ${renderFilterLabel(filter)}
+        ${filter.hint ? `<p class="results-filter-hint">${filter.hint}</p>` : ''}
+        <div class="results-match-slider">
+          <div class="results-match-slider__track" aria-hidden="true">
+            <span class="results-match-slider__tick" style="left: 50%"></span>
+            <span class="results-match-slider__tick" style="left: 100%"></span>
+          </div>
+          <input type="range" class="results-match-slider__input" id="matchStrengthSlider" min="0" max="2" value="0" step="1" aria-label="Match strength" data-filter="match-strength">
+          <div class="results-match-slider__labels">${labelsHtml}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderCheckboxFilter(filter) {
+    return `
+      <div class="results-filter-group results-filter-group--check">
+        <div class="results-filter-check-row">
+          <label class="results-filter-check">
+            <input type="checkbox" class="results-filter-check__input" data-filter="${filter.id}">
+            <span class="results-filter-check__box" aria-hidden="true"></span>
+            <span class="results-filter-check__text">${filter.label.toUpperCase()}</span>
           </label>
-        </div>`;
-    }
+          ${renderTooltip(filter.tooltip)}
+        </div>
+      </div>`;
+  }
 
-    if (filter.type === 'select') {
-      const opts = filter.options
-        .map((opt) => `<option value="${opt}">${opt}</option>`)
-        .join('');
-      return `
-        <div class="results-filter-group">
-          <label class="results-filter-label" for="filter-${filter.id}">${filter.label}</label>
-          <select class="results-filter-select" id="filter-${filter.id}" data-filter="${filter.id}">
-            ${opts}
-          </select>
-        </div>`;
-    }
+  function renderSelectFilter(filter) {
+    const opts = filter.options.map((opt) => `<option value="${opt}">${opt}</option>`).join('');
+    return `
+      <div class="results-filter-group">
+        ${renderFilterLabel(filter)}
+        <select class="results-filter-select" id="filter-${filter.id}" data-filter="${filter.id}">
+          ${opts}
+        </select>
+      </div>`;
+  }
 
+  function renderFilter(filter) {
+    if (filter.type === 'match-strength') return renderMatchStrengthFilter(filter);
+    if (filter.type === 'toggle' || filter.type === 'checkbox') return renderCheckboxFilter(filter);
+    if (filter.type === 'select') return renderSelectFilter(filter);
     return '';
+  }
+
+  function setMatchStrengthUI(index) {
+    const slider = document.getElementById('matchStrengthSlider');
+    if (!slider) return;
+    const i = Math.max(0, Math.min(2, Number(index)));
+    slider.value = i;
+    slider.style.setProperty('--thumb-color', MATCH_THUMB_COLORS[i]);
+    filtersRoot.querySelectorAll('.results-match-slider__label').forEach((btn, idx) => {
+      btn.classList.toggle('is-active', idx === i);
+    });
+  }
+
+  function bindMatchStrength() {
+    const slider = document.getElementById('matchStrengthSlider');
+    if (!slider) return;
+
+    setMatchStrengthUI(0);
+
+    slider.addEventListener('input', () => {
+      setMatchStrengthUI(slider.value);
+      updateFilterCount();
+    });
+
+    filtersRoot.querySelectorAll('.results-match-slider__label').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        setMatchStrengthUI(btn.dataset.matchIndex);
+        updateFilterCount();
+      });
+    });
   }
 
   function renderFilters() {
     filtersRoot.innerHTML = config.filters.map(renderFilter).join('');
-    filtersRoot.querySelectorAll('select, input').forEach((el) => {
+    bindMatchStrength();
+    filtersRoot.querySelectorAll('select, input[type="checkbox"]').forEach((el) => {
       el.addEventListener('change', updateFilterCount);
     });
     updateFilterCount();
@@ -83,9 +140,10 @@
     filtersRoot.querySelectorAll('input[type="checkbox"]:checked').forEach(() => {
       count += 1;
     });
+    const slider = document.getElementById('matchStrengthSlider');
+    if (slider && Number(slider.value) > 0) count += 1;
     const keyword = document.getElementById('keywordSearch').value.trim();
     if (keyword) count += 1;
-    activeFilters = count;
     filterCount.textContent = `(${count})`;
   }
 
@@ -96,8 +154,7 @@
     filtersRoot.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
       cb.checked = false;
     });
-    const strongRadio = filtersRoot.querySelector('input[name="match-strength"][value="Strong"]');
-    if (strongRadio) strongRadio.checked = true;
+    setMatchStrengthUI(0);
     document.getElementById('keywordSearch').value = '';
     updateFilterCount();
   }
@@ -117,7 +174,7 @@
           <h3 class="results-item__title">${opp.title}</h3>
           <p class="results-item__meta"><strong>Key dates &amp; amount</strong> ${opp.keyDates}</p>
           <p class="results-item__desc">${opp.desc}</p>
-          <a href="${detailUrl(opp.id)}" class="results-item__link">View Full Details</a>
+          <a href="${detailUrl(opp.id)}" class="builder-btn builder-btn--secondary results-item__btn">View Full Details</a>
         </div>
         ${matchHtml}
       </article>`;
@@ -144,10 +201,12 @@
   }
 
   function renderSortOptions() {
-    sortSelect.innerHTML = config.sortOptions.map((opt, i) => {
-      const selected = i === 0 ? ' selected' : '';
-      return `<option${selected}>${opt}</option>`;
-    }).join('');
+    sortSelect.innerHTML = config.sortOptions
+      .map((opt, i) => {
+        const selected = i === 0 ? ' selected' : '';
+        return `<option${selected}>${opt}</option>`;
+      })
+      .join('');
   }
 
   document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
@@ -164,10 +223,14 @@
 
   const createAccountModal = document.getElementById('createAccountModal');
   document.querySelectorAll('.js-create-account').forEach((btn) => {
-    btn.addEventListener('click', () => { createAccountModal.hidden = false; });
+    btn.addEventListener('click', () => {
+      createAccountModal.hidden = false;
+    });
   });
   document.querySelectorAll('.js-close-account').forEach((el) => {
-    el.addEventListener('click', () => { createAccountModal.hidden = true; });
+    el.addEventListener('click', () => {
+      createAccountModal.hidden = true;
+    });
   });
   document.getElementById('accountSubmitBtn').addEventListener('click', () => {
     saveProfile({ accountCreated: true });
