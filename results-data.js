@@ -1,0 +1,306 @@
+(function (global) {
+  const PLACEHOLDER_OPPORTUNITIES = [
+    {
+      id: 1,
+      title: 'EARN Indiana',
+      keyDates: 'Open Year-Round',
+      type: 'Scholarship',
+      amount: '$2,000',
+      desc: "EARN Indiana is the state's work-study program. Students with financial need have access to resume-building, experiential, paid internships, while employers receive state matching funds for hiring these students.",
+      description:
+        "EARN (Employment Aid Readiness Network) Indiana is the state's work-study program. Students with financial need have access to resume-building, experiential, paid internships, while employers receive state matching funds—50% of the student's hourly rate—for hiring these students.",
+      eligibility: ['Young Adult Learner', 'Adult Learner'],
+      match: 'strong',
+      status: 'open',
+    },
+    {
+      id: 2,
+      title: '1st Source Bank — Employer Tuition Assistance',
+      keyDates: 'Up to $6,000 per year | Open Year-Round',
+      type: 'Scholarship',
+      amount: 'Up to $6,000',
+      desc: 'Tuition expenses are covered up to a maximum of $6,000 per year for full-time employees and up to $3,000 for part-time employees.',
+      description:
+        '1st Source Bank supports professional development for colleagues who wish to continue their education. Tuition expenses are covered up to a maximum of $6,000 per year for full-time employees.',
+      eligibility: ['Adult Learner'],
+      match: 'strong',
+      status: 'open',
+    },
+    {
+      id: 3,
+      title: 'Learn More Indiana and Indiana529 Contest',
+      keyDates: '$1,000 | Closed 11/21/25',
+      type: 'Scholarship',
+      amount: '$1,000',
+      desc: 'Partnership providing $1,000 Indiana529 Savings Plan account deposits to five Hoosier students in grades K-12.',
+      description:
+        'Learn More Indiana and Indiana529 are partnering to provide $1,000 Indiana529 Savings Plan account deposits to five Hoosier students in grades K-12.',
+      eligibility: ['High School'],
+      match: 'strong',
+      status: 'closed',
+    },
+    {
+      id: 4,
+      title: 'Indiana Association for College Admission Counseling Scholarship',
+      keyDates: '$500 to $1,000 | Closed 12/19/25',
+      type: 'Scholarship',
+      amount: '$500 – $1,000',
+      desc: 'Open to high school seniors attending an Indiana high school and planning to enter an Indiana college or university.',
+      description:
+        'The INACAC scholarship is open to high school seniors that attend an Indiana high school and are planning to enter an Indiana College or University.',
+      eligibility: ['High School'],
+      match: 'fair',
+      status: 'closed',
+    },
+    {
+      id: 5,
+      title: 'Beacon Credit Union Scholarship',
+      keyDates: '$2,500 | Closed 1/31/26',
+      type: 'Scholarship',
+      amount: '$2,500',
+      desc: 'Five $2,500 scholarships for students entering their freshman year in the fall of 2026 who are members of Beacon Credit Union.',
+      description:
+        'Beacon Credit Union is making available five (5) $2,500 scholarships to five (5) students who are entering their freshman year in the fall of 2026.',
+      eligibility: ['High School'],
+      match: 'fair',
+      status: 'closed',
+    },
+    {
+      id: 6,
+      title: 'Frank O\'Bannon Grant',
+      keyDates: 'Varies | Closed 4/15/26',
+      type: 'Grant',
+      amount: 'Varies',
+      desc: 'Designed to provide access for Hoosier students to attend eligible postsecondary institutions. Eligibility based on financial need as determined by the FAFSA.',
+      description:
+        "The Frank O'Bannon Grant is designed to provide access for Hoosier students to attend eligible public, private, and proprietary postsecondary institutions.",
+      eligibility: ['Young Adult Learner', 'Adult Learner'],
+      match: 'some',
+      status: 'closed',
+    },
+    {
+      id: 7,
+      title: 'Questa Scholars Program',
+      keyDates: 'Multi-year | Open Year-Round',
+      type: 'Scholarship',
+      amount: 'Varies',
+      desc: 'Multi-year scholarship for Allen County high school graduates pursuing postsecondary education.',
+      description:
+        'The Questa Scholars Program provides multi-year scholarship support for Allen County high school graduates.',
+      eligibility: ['High School', 'Young Adult Learner'],
+      match: 'strong',
+      status: 'open',
+    },
+    {
+      id: 8,
+      title: '21st Century Scholars',
+      keyDates: 'Full tuition | Open Year-Round',
+      type: 'Grant',
+      amount: 'Full tuition',
+      desc: 'State grant covering up to four years of tuition at Indiana colleges for eligible students who enroll in 7th or 8th grade.',
+      description:
+        'The 21st Century Scholars program covers up to four years of tuition at Indiana colleges for eligible students.',
+      eligibility: ['High School', 'Young Adult Learner'],
+      match: 'strong',
+      status: 'open',
+    },
+  ];
+
+  const TOPIC_RESULTS = {
+    funding: {
+      resultLabel: 'Funding Opportunities',
+      totalCount: 693,
+      showMatchStrength: true,
+      sortOptions: ['% Match', 'Name', 'Recently Created', 'Opening Soon', 'Closing Soon'],
+      filters: [
+        {
+          type: 'match-strength',
+          label: 'Match Strength',
+          hint: 'Show all opportunities with some match scores and above',
+          options: ['Some', 'Fair', 'Strong'],
+        },
+        { type: 'toggle', id: 'show-questa', label: 'Show Only Questa' },
+        { type: 'select', id: 'gpa-required', label: 'GPA Required', options: ['Show All', 'Yes', 'No'] },
+        { type: 'select', id: 'financial-need', label: 'Financial Need Required', options: ['Show All', 'Yes', 'No'] },
+        { type: 'select', id: 'multi-year', label: 'Multi-Year / Renewable', options: ['Show All', 'Yes', 'No'] },
+        { type: 'select', id: 'accepting-applications', label: 'Accepting Applications', options: ['Show All', 'Yes', 'No'] },
+        {
+          type: 'select',
+          id: 'residency',
+          label: 'Residency',
+          options: ['Show All', 'Allen County', 'Adams County', 'DeKalb County', 'Other Indiana'],
+        },
+        { type: 'select', id: 'gpa', label: 'GPA', options: ['Show All', '2.0+', '2.5+', '3.0+', '3.5+', '4.0'] },
+        {
+          type: 'select',
+          id: 'program-types',
+          label: 'Program Type',
+          options: ['Select', 'Associate Degree', "Bachelor's Degree", 'Certificate', 'Licensure'],
+        },
+        {
+          type: 'select',
+          id: 'college-interest',
+          label: 'College Interest',
+          options: ['Select', 'Ivy Tech Community College', 'Purdue University Fort Wayne', 'Indiana University'],
+        },
+        {
+          type: 'select',
+          id: 'training-provider',
+          label: 'Training Provider',
+          options: ['Select', 'Elevator Constructors Local 44', 'Ivy Tech Community College'],
+        },
+        {
+          type: 'select',
+          id: 'field-of-study',
+          label: 'Fields of Study or Trades',
+          options: ['Select', 'Healthcare', 'Business', 'Skilled Trades'],
+        },
+      ],
+    },
+    careers: {
+      resultLabel: 'Career Resources',
+      totalCount: 24,
+      showMatchStrength: false,
+      sortOptions: ['Name', 'Recently Added', 'Relevance'],
+      filters: [
+        {
+          type: 'select',
+          id: 'residency',
+          label: 'Residency',
+          options: ['Show All', 'Allen County', 'Adams County', 'DeKalb County', 'Other Indiana'],
+        },
+        {
+          type: 'select',
+          id: 'career-interests',
+          label: 'Career Interests',
+          options: ['Show All', 'Healthcare', 'Technology', 'Skilled Trades', 'Business'],
+        },
+        {
+          type: 'select',
+          id: 'student-level',
+          label: 'Student Level',
+          options: ['Show All', 'High School', 'Young Adult', 'Adult Learner'],
+        },
+      ],
+    },
+    'education-help': {
+      resultLabel: 'Education Resources',
+      totalCount: 18,
+      showMatchStrength: false,
+      sortOptions: ['Name', 'Recently Added', 'Relevance'],
+      filters: [
+        {
+          type: 'select',
+          id: 'program-types',
+          label: 'Program Type',
+          options: ['Select', 'Certificate', "Bachelor's Degree", 'Associate Degree'],
+        },
+        {
+          type: 'select',
+          id: 'college-interest',
+          label: 'College Interest',
+          options: ['Select', 'Ivy Tech', 'Purdue Fort Wayne', 'Indiana University'],
+        },
+        {
+          type: 'select',
+          id: 'field-of-study',
+          label: 'Field of Study',
+          options: ['Select', 'Healthcare', 'Business', 'Education'],
+        },
+        {
+          type: 'select',
+          id: 'residency',
+          label: 'Residency',
+          options: ['Show All', 'Allen County', 'Other Indiana'],
+        },
+      ],
+    },
+    'learning-help': {
+      resultLabel: 'Learning Resources',
+      totalCount: 12,
+      showMatchStrength: false,
+      sortOptions: ['Name', 'Recently Added'],
+      filters: [
+        {
+          type: 'select',
+          id: 'student-level',
+          label: 'Student Level',
+          options: ['Show All', 'High School', 'Young Adult', 'Adult Learner'],
+        },
+        {
+          type: 'select',
+          id: 'residency',
+          label: 'Residency',
+          options: ['Show All', 'Allen County', 'Other Indiana'],
+        },
+      ],
+    },
+    'education-training': {
+      resultLabel: 'Training Programs',
+      totalCount: 31,
+      showMatchStrength: false,
+      sortOptions: ['Name', 'Recently Added', 'Opening Soon'],
+      filters: [
+        {
+          type: 'select',
+          id: 'program-types',
+          label: 'Program Type',
+          options: ['Select', 'Certificate', 'Apprenticeship', 'Licensure'],
+        },
+        {
+          type: 'select',
+          id: 'training-provider',
+          label: 'Training Provider',
+          options: ['Select', 'Elevator Constructors Local 44', 'Ivy Tech', 'NE Indiana Apprenticeship Hub'],
+        },
+        {
+          type: 'select',
+          id: 'field-of-study',
+          label: 'Field of Study or Trades',
+          options: ['Select', 'Skilled Trades', 'Healthcare', 'Technology'],
+        },
+        {
+          type: 'select',
+          id: 'residency',
+          label: 'Residency',
+          options: ['Show All', 'Allen County', 'Other Indiana'],
+        },
+      ],
+    },
+    'personal-help': {
+      resultLabel: 'Personal Support Resources',
+      totalCount: 15,
+      showMatchStrength: false,
+      sortOptions: ['Name', 'Recently Added'],
+      filters: [
+        {
+          type: 'select',
+          id: 'residency',
+          label: 'Residency',
+          options: ['Show All', 'Allen County', 'Other Indiana'],
+        },
+        {
+          type: 'select',
+          id: 'health-related',
+          label: 'Health Related',
+          options: ['Show All', 'Mental wellness', 'General wellness', 'Disability services'],
+        },
+      ],
+    },
+  };
+
+  function getTopicResultsConfig(topicKey) {
+    return TOPIC_RESULTS[topicKey] || TOPIC_RESULTS.funding;
+  }
+
+  function getOpportunity(id) {
+    return PLACEHOLDER_OPPORTUNITIES.find((o) => o.id === Number(id)) || PLACEHOLDER_OPPORTUNITIES[0];
+  }
+
+  global.CompassResults = {
+    PLACEHOLDER_OPPORTUNITIES,
+    TOPIC_RESULTS,
+    getTopicResultsConfig,
+    getOpportunity,
+  };
+})(window);

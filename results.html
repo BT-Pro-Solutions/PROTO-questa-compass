@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Search Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-results">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <button class="btn-login js-create-account" type="button">Create Account</button>
+            <a href="#" class="btn-login">Log In</a>
+        </div>
+    </header>
+
+    <main class="main-content main-content--builder">
+        <div class="results-page results-page--wide">
+            <a href="index.html" class="builder-back">&larr; Back to Home</a>
+
+            <div class="results-search-banner">
+                <h2 class="results-search-banner__title">Already know what you&apos;re looking for?</h2>
+                <p class="results-search-banner__text">Search for keywords below.</p>
+                <div class="results-search-banner__row">
+                    <input type="search" class="results-keyword-input" id="keywordSearch" placeholder="Search keywords…" autocomplete="off">
+                    <button type="button" class="builder-btn builder-btn--primary results-go-btn" id="searchGoBtn">Go</button>
+                </div>
+            </div>
+
+            <div class="results-layout results-layout--filters">
+                <aside class="results-filters" id="filtersPanel">
+                    <h2 class="results-filters__heading">Filters</h2>
+                    <div id="filtersRoot"></div>
+                    <button type="button" class="results-clear-btn" id="clearFiltersBtn">Clear All</button>
+
+                    <div class="results-filters-login">
+                        <h3 class="results-filters-login__title">Keep Your Progress</h3>
+                        <ul class="results-filters-login__list">
+                            <li>Save your preferences</li>
+                            <li>Favorite specific opportunities</li>
+                            <li>Get notified of new opportunities that match your profile</li>
+                        </ul>
+                        <a href="#" class="builder-btn builder-btn--secondary builder-btn--full">Log In</a>
+                        <p class="results-filters-login__footer">Or, <button type="button" class="results-filters-login__link js-create-account">Create your Free Account</button></p>
+                    </div>
+                </aside>
+
+                <div class="results-main">
+                    <header class="results-main__header">
+                        <h1 class="results-main__title" id="resultsHeading">Results</h1>
+                        <div class="results-main__toolbar">
+                            <button type="button" class="results-toolbar-btn" id="changeFiltersBtn">Change Filters <span class="results-toolbar-btn__count" id="filterCount">(0)</span></button>
+                            <label class="results-sort">
+                                <span class="results-sort__label">Sort By</span>
+                                <select class="results-sort__select" id="sortSelect"></select>
+                            </label>
+                            <button type="button" class="results-toolbar-btn results-toolbar-btn--print">Print</button>
+                        </div>
+                        <p class="results-main__range" id="resultsRange"></p>
+                    </header>
+
+                    <div class="results-list" id="resultsList"></div>
+
+                    <nav class="results-pagination" id="resultsPagination" aria-label="Results pages"></nav>
+
+                    <a href="#" class="results-continue-link" id="continueProfileLink">Continue building your profile for even better results &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="builder-modal" id="createAccountModal" hidden>
+        <div class="builder-modal__backdrop js-close-account"></div>
+        <div class="builder-modal__panel builder-modal__panel--account" role="dialog" aria-labelledby="accountTitle">
+            <button type="button" class="builder-modal__close js-close-account" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="accountTitle">Create Your Free Account</h2>
+            <p class="builder-modal__text">Save your preferences, favorite opportunities, and get notified when new matches appear.</p>
+            <div class="builder-account-fields">
+                <label class="builder-field">
+                    <span class="builder-field__label">First Name</span>
+                    <input type="text" class="builder-input" placeholder="First name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Last Name</span>
+                    <input type="text" class="builder-input" placeholder="Last name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Email Address</span>
+                    <input type="email" class="builder-input" placeholder="you@example.com">
+                </label>
+            </div>
+            <button type="button" class="builder-btn builder-btn--primary builder-btn--full" id="accountSubmitBtn">Create Account</button>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="profile-data.js"></script>
+    <script src="results-data.js"></script>
+    <script src="results.js"></script>
+</body>
+</html>

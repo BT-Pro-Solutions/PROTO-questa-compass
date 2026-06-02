@@ -159,29 +159,44 @@
 (function () {
   const QUESTIONS = [
     {
+      topic: 'learning-help',
       text: 'Do you need help building the academic skills or confidence needed to succeed in college, training, or other education after high school?',
       yesLabel: 'YES — Find Learning Help',
     },
     {
+      topic: 'careers',
       text: 'Are you looking for help discovering a career path that fits your skills, interests, or experience?',
       yesLabel: 'YES — Find Careers',
     },
     {
+      topic: 'education-help',
       text: 'Are you looking for guidance on applying to or enrolling in a college, university, or higher education program?',
       yesLabel: 'YES — Find Education Help',
     },
     {
+      topic: 'funding',
       text: 'Do you need help finding scholarships, grants, financial aid, or other funding for your education?',
       yesLabel: 'YES — Find Funding',
     },
     {
+      topic: 'education-training',
       text: 'Are you interested in vocational training, apprenticeships, or professional certification programs?',
       yesLabel: 'YES — Find Education & Training',
     },
     {
+      topic: 'personal-help',
       text: 'Are you looking for resources to support your personal development, mental wellness, or everyday life skills?',
       yesLabel: 'YES — Find Personal Help',
     },
+  ];
+
+  const MENU_TOPICS = [
+    'careers',
+    'education-help',
+    'funding',
+    'learning-help',
+    'education-training',
+    'personal-help',
   ];
 
   const card        = document.querySelector('.compass-card');
@@ -258,8 +273,18 @@
     el.addEventListener('click', advanceQuestion);
   });
 
-  // "YES" button — no action yet (placeholder for future topic routing)
   quizYes.addEventListener('click', () => {
-    // Future: navigate to the selected topic
+    const topic = QUESTIONS[currentIndex].topic;
+    window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+  });
+
+  document.querySelectorAll('.cm-option').forEach((option, index) => {
+    option.addEventListener('click', (e) => {
+      e.preventDefault();
+      const topic = MENU_TOPICS[index];
+      if (topic) {
+        window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+      }
+    });
   });
 })();

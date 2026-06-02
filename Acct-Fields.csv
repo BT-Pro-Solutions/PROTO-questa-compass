@@ -1,0 +1,34 @@
+,,,,,,,,
+,Profile Section,Field,CFF Profile Builder,Directory Profile Builder,"Full Profile
+(same for CFF & Directory)",CFF Result Page Filters,Directory Result Page Filters,SalesForce Account / Application
+,About You,First Name,,,X,,,X
+,About You,Last Name,,,X,,,X
+,About You,Email Address,,,X,,,X
+,Getting Started,Resource Category Needs (6 guiding questions),,X,X,,X,
+,Getting Started,Resource Subcategory Needs,,X,X,,X,
+,Getting Started,Resource Category & Subcategory Updates (Prompt for updates when profile holders login),,X,X,,,
+,About You,Student Level,X,X,X,Consider adding,X,X
+,About You,Residency,X,X,X,X,X,X
+,About You,High School Attending – HS only ,X,X – HS only,Need to Add,,,X
+,About You,HS GPA – HS only ,X,,Need to Add ,X – which is this – HS or College?,,
+,About You,Enrollment Status,X,X,X,,X,X
+,About You,College GPA – Young Adult+ only,X,,X,X – which is this – HS or College?,,X
+,Your Education Interests,Program Types,X,,X,X,,
+,Your Education Interests,Colleges of Interest,X,X – Currently enrolled only,X,X,,X
+,Your Education Interests,Field of Study or Trades (Major),X,,X,X,,X
+,Your Education Interests,Training Provider,X,,X,X,,
+,Your Financial Aid Preferences,GPA Requirement?,,,Remove,X,,
+,Your Financial Aid Preferences,Financial Need Requirement?,,,Remove,X,,
+,Your Financial Aid Preferences,Multi-Year / Renewable,,,Remove,X,,
+,Your Financial Aid Preferences,Accepting Applications,,,Remove,X,,
+,Your Financial Aid Preferences,Funding Opportunity Type,,,Remove,X,,
+,Your Financial Aid Preferences,Show Only Questa,,,,X,,
+,Identity Groups,Race,Optional ,Optional ,X,,,X
+,Identity Groups,Ethnicity,Optional,Optional,X,,,X
+,Identity Groups,Gender,Optional,Optional,X,,,X
+,Identity Groups,Specifically Designed For,Optional,Optional,X,,,
+,Identity Groups,Activities & Affiliations,Optional,Optional,X,,,
+,Identity Groups,Health Related,Optional,Optional,X,,,
+,Identity Groups,Employer Affiliation,Optional,Optional,X,,,
+,Identity Groups,Military / Public Service Affiliation,Optional,Optional,X,,,
+,Identity Groups,Career Interests,Optional,Optional,X,,,

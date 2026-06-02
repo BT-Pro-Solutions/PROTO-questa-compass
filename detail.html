@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Resource Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-detail">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <button class="btn-login js-create-account" type="button">Create Account</button>
+            <a href="#" class="btn-login">Log In</a>
+        </div>
+    </header>
+
+    <main class="main-content main-content--builder">
+        <div class="detail-page" id="detailRoot">
+            <a href="#" class="builder-back" id="backLink">&larr; Back to Search Results</a>
+
+            <article class="detail-card">
+                <header class="detail-card__header">
+                    <div class="detail-card__title-row">
+                        <h1 class="detail-card__title" id="detailTitle"></h1>
+                        <span class="detail-card__status" id="detailStatus"></span>
+                    </div>
+                    <p class="detail-card__subtitle" id="detailSubtitle">Resource Details</p>
+                    <span class="detail-match detail-match--strong" id="detailMatch" hidden></span>
+                </header>
+
+                <section class="detail-section">
+                    <h2 class="detail-section__title">Basic Information</h2>
+                    <dl class="detail-info-grid">
+                        <div>
+                            <dt>Amount</dt>
+                            <dd id="detailAmount"></dd>
+                        </div>
+                        <div>
+                            <dt>Type</dt>
+                            <dd id="detailType"></dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="detail-section">
+                    <h2 class="detail-section__title">Description</h2>
+                    <p class="detail-section__body" id="detailDescription"></p>
+                </section>
+
+                <section class="detail-section">
+                    <h2 class="detail-section__title">Eligibility Criteria</h2>
+                    <p class="detail-section__label">Student Levels:</p>
+                    <ul class="detail-eligibility" id="detailEligibility"></ul>
+                </section>
+
+                <div class="detail-actions">
+                    <a href="#" class="builder-btn builder-btn--primary">Learn More and Apply</a>
+                    <a href="#" class="builder-btn builder-btn--secondary" id="backLinkBottom">Back to Search Results</a>
+                </div>
+            </article>
+
+            <aside class="detail-sidebar">
+                <div class="builder-login-card">
+                    <div class="builder-login-card__icon-wrap" aria-hidden="true">
+                        <svg class="builder-login-card__icon" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="6" y="8" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="18" cy="16" r="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 24c0-2.2 2.7-4 6-4s6 1.8 6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h2 class="builder-login-card__title">Keep Your Progress</h2>
+                    <ul class="builder-login-card__list">
+                        <li>
+                            <span class="builder-login-card__check" aria-hidden="true">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                            Save your preferences
+                        </li>
+                        <li>
+                            <span class="builder-login-card__check" aria-hidden="true">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                            Favorite specific opportunities
+                        </li>
+                        <li>
+                            <span class="builder-login-card__check" aria-hidden="true">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                            Get notified of new opportunities that match your needs.
+                        </li>
+                    </ul>
+                    <a href="#" class="builder-login-card__btn">Log In</a>
+                    <p class="builder-login-card__footer">Or, <button type="button" class="builder-login-card__link js-create-account">Create your Free Account</button></p>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <div class="builder-modal" id="createAccountModal" hidden>
+        <div class="builder-modal__backdrop js-close-account"></div>
+        <div class="builder-modal__panel builder-modal__panel--account" role="dialog" aria-labelledby="accountTitle">
+            <button type="button" class="builder-modal__close js-close-account" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="accountTitle">Create Your Free Account</h2>
+            <p class="builder-modal__text">Save your preferences, favorite opportunities, and get notified when new matches appear.</p>
+            <div class="builder-account-fields">
+                <label class="builder-field">
+                    <span class="builder-field__label">First Name</span>
+                    <input type="text" class="builder-input" placeholder="First name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Last Name</span>
+                    <input type="text" class="builder-input" placeholder="Last name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Email Address</span>
+                    <input type="email" class="builder-input" placeholder="you@example.com">
+                </label>
+            </div>
+            <button type="button" class="builder-btn builder-btn--primary builder-btn--full" id="accountSubmitBtn">Create Account</button>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="profile-data.js"></script>
+    <script src="results-data.js"></script>
+    <script src="detail.js"></script>
+</body>
+</html>

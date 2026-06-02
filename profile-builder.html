@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Build Your Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-profile-builder">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login">Log In</a>
+        </div>
+    </header>
+
+    <main class="main-content main-content--builder">
+        <div class="builder-page">
+            <a href="index.html" class="builder-back">&larr; Back to Home</a>
+
+            <div class="builder-layout">
+                <div class="builder-main">
+                    <header class="builder-intro">
+                        <p class="builder-intro__eyebrow">Let&apos;s find</p>
+                        <h1 class="builder-intro__title" id="topicTitle"></h1>
+                        <p class="builder-intro__desc">These details will help provide accurate results for you.</p>
+                        <div class="builder-info-note">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"><path fill="#fff" d="M12 0a11.97 11.97 0 0 1 8.484 3.514A11.97 11.97 0 0 1 24 11.999l-.004.295a11.97 11.97 0 0 1-3.51 8.19A11.97 11.97 0 0 1 12 24a11.97 11.97 0 0 1-8.485-3.516A11.97 11.97 0 0 1 0 11.999a11.97 11.97 0 0 1 3.516-8.485A11.97 11.97 0 0 1 11.999 0zm0 1.846A10.12 10.12 0 0 0 4.82 4.82v.002a10.12 10.12 0 0 0-2.974 7.178v.002a10.12 10.12 0 0 0 2.629 6.817l.344.361.002.002a10.12 10.12 0 0 0 7.178 2.973h.002a10.12 10.12 0 0 0 7.178-2.973l.002-.002a10.12 10.12 0 0 0 2.973-7.178v-.002a10.12 10.12 0 0 0-2.973-7.178l-.002-.002a10.12 10.12 0 0 0-7.178-2.973z"/><path fill="#fff" fill-rule="evenodd" d="M12 4.8a1.385 1.385 0 1 1 0 2.77 1.385 1.385 0 0 1 0-2.77" clip-rule="evenodd"/><path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.277 17.539V9.785h-1.108m-.83 7.753h3.876"/></svg>
+                            <p> Questions that don't apply to <span class="builder-info-note__topic-name" id="infoNoteTopicName"></span> are hidden. 
+                                <br><i>You can still answer them for future Compass searches if desired.</i>
+                            </p>
+                        </div>
+                    </header>
+
+                    <form class="builder-form" id="profileForm">
+                        <div id="sectionsRoot"></div>
+                    </form>
+                </div>
+
+                <aside class="builder-sidebar">
+                    <div class="builder-login-card">
+                        <div class="builder-login-card__icon-wrap" aria-hidden="true">
+                            <svg class="builder-login-card__icon" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="6" y="8" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="18" cy="16" r="4" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 24c0-2.2 2.7-4 6-4s6 1.8 6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h2 class="builder-login-card__title">Keep Your Progress</h2>
+                        <ul class="builder-login-card__list">
+                            <li>
+                                <span class="builder-login-card__check" aria-hidden="true">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="10" fill="currentColor"/>
+                                        <path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                                Save your preferences
+                            </li>
+                            <li>
+                                <span class="builder-login-card__check" aria-hidden="true">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="10" fill="currentColor"/>
+                                        <path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                                Favorite specific opportunities
+                            </li>
+                            <li>
+                                <span class="builder-login-card__check" aria-hidden="true">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="10" fill="currentColor"/>
+                                        <path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                                Get notified of new opportunities that match your needs.
+                            </li>
+                        </ul>
+                        <a href="#" class="builder-login-card__btn">Log In</a>
+                        <p class="builder-login-card__footer">Or, <button type="button" class="builder-login-card__link js-create-account">Create your Free Account</button></p>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="builder-actions-sticky">
+                <div class="builder-actions-sticky__inner">
+                    <button type="button" class="builder-btn builder-btn--secondary" id="jumpToResultsBtn">Skip To All Results</button>
+                    <button type="button" class="builder-btn builder-btn--primary" id="continueProfileBtn">Save & Continue</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="builder-modal" id="splitPathModal" hidden>
+        <div class="builder-modal__backdrop"></div>
+        <div class="builder-modal__panel" role="dialog" aria-labelledby="splitPathTitle">
+            <h2 class="builder-modal__title" id="splitPathTitle">You&apos;re ready to see results!</h2>
+            <p class="builder-modal__text">Jump to results now, or keep building your profile for even better matches across all Compass tools.</p>
+            <div class="builder-modal__actions">
+                <button type="button" class="builder-btn builder-btn--secondary" id="modalJumpBtn">Jump to Results</button>
+                <button type="button" class="builder-btn builder-btn--primary" id="modalContinueBtn">Continue Building Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="builder-modal builder-modal--multiselect" id="multiselectModal" hidden>
+        <div class="builder-modal__backdrop js-close-multiselect"></div>
+        <div class="builder-modal__panel builder-modal__panel--multiselect" role="dialog" aria-labelledby="multiselectTitle">
+            <button type="button" class="builder-modal__close js-close-multiselect" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="multiselectTitle"></h2>
+            <p class="builder-modal__text" id="multiselectDesc"></p>
+            <div class="builder-ms-search-area">
+                <label class="builder-ms-search-label" for="multiselectSearch">Search</label>
+                <input type="search" class="builder-ms-search-input" id="multiselectSearch" placeholder="Type to search…" autocomplete="off">
+                <p class="builder-ms-count" id="multiselectCount"></p>
+                <div class="builder-ms-selected" id="multiselectSelected"></div>
+            </div>
+            <div class="builder-ms-list" id="multiselectList" role="listbox" aria-multiselectable="true"></div>
+            <div class="builder-modal__actions builder-modal__actions--end">
+                <button type="button" class="builder-btn builder-btn--cancel" id="multiselectCancelBtn">Cancel</button>
+                <button type="button" class="builder-btn builder-btn--apply" id="multiselectApplyBtn">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="builder-modal" id="createAccountModal" hidden>
+        <div class="builder-modal__backdrop js-close-account"></div>
+        <div class="builder-modal__panel builder-modal__panel--account" role="dialog" aria-labelledby="accountTitle">
+            <button type="button" class="builder-modal__close js-close-account" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="accountTitle">Create Your Free Account</h2>
+            <p class="builder-modal__text">Save your preferences, favorite opportunities, and get notified when new matches appear.</p>
+            <div class="builder-account-fields">
+                <label class="builder-field">
+                    <span class="builder-field__label">First Name</span>
+                    <input type="text" class="builder-input" placeholder="First name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Last Name</span>
+                    <input type="text" class="builder-input" placeholder="Last name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Email Address</span>
+                    <input type="email" class="builder-input" placeholder="you@example.com">
+                </label>
+            </div>
+            <button type="button" class="builder-btn builder-btn--primary builder-btn--full" id="accountSubmitBtn">Create Account</button>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="profile-data.js"></script>
+    <script src="profile-builder.js"></script>
+</body>
+</html>
