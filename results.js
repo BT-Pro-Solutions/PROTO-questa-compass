@@ -217,7 +217,7 @@
   });
 
   document.getElementById('continueProfileLink').href =
-    `profile-builder.html?topic=${encodeURIComponent(topicKey)}&expand=all`;
+    `profile-builder.html?topic=${encodeURIComponent(topicKey)}&expand=all&from=results`;
 
   document.title = `Compass — ${topic.title} Results`;
 

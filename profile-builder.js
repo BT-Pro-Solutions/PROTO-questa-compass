@@ -1,5 +1,5 @@
 (function () {
-  const { TOPICS, SECTIONS, getProfile, saveProfile, fieldVisible, fieldPromotedForTopic, sectionExpanded } = CompassProfile;
+  const { TOPICS, SECTIONS, getProfile, saveProfile, clearProfile, setTopic, fieldVisible, fieldPromotedForTopic, sectionExpanded } = CompassProfile;
 
   const SECTION_COPY = {
     partialHint: '',
@@ -44,10 +44,17 @@
   const isUniversalProfile = params.get('mode') === 'universal';
   const topicKey = isUniversalProfile ? null : params.get('topic') || getProfile().topic || 'funding';
   const topic = topicKey ? TOPICS[topicKey] || TOPICS.funding : null;
-  const expandAll = params.get('expand') === 'all' || isUniversalProfile;
+  const isAccordionMode = isUniversalProfile;
+  const expandAllSections = params.get('expand') === 'all' && !isAccordionMode;
+  const fromResults = params.get('from') === 'results';
   const topicName = topic ? topic.title.replace(/^Find\s+/i, '') : '';
 
-  if (topicKey) CompassProfile.setTopic(topicKey);
+  if (!fromResults) {
+    clearProfile();
+    if (topicKey) setTopic(topicKey);
+  } else if (topicKey) {
+    setTopic(topicKey);
+  }
 
   const sectionsRoot = document.getElementById('sectionsRoot');
   const topicTitle = document.getElementById('topicTitle');
@@ -63,8 +70,28 @@
   const multiselectList = document.getElementById('multiselectList');
 
   let profile = getProfile();
-  let allSectionsExpanded = expandAll;
-  const manuallyExpandedSections = new Set(expandAll ? Object.keys(SECTIONS) : []);
+  let allSectionsExpanded = expandAllSections;
+  const manuallyExpandedSections = new Set(expandAllSections ? Object.keys(SECTIONS) : []);
+  let accordionOpenSection = null;
+
+  function getFirstVisibleSectionId() {
+    for (const [id, section] of Object.entries(SECTIONS)) {
+      if (section.fields.some((f) => fieldVisible(f, profile))) return id;
+    }
+    return Object.keys(SECTIONS)[0];
+  }
+
+  function ensureAccordionSectionValid() {
+    if (!isAccordionMode) return;
+    const section = SECTIONS[accordionOpenSection];
+    const hasVisible =
+      section && section.fields.some((field) => fieldVisible(field, profile));
+    if (!hasVisible) accordionOpenSection = getFirstVisibleSectionId();
+  }
+
+  if (isAccordionMode) {
+    accordionOpenSection = getFirstVisibleSectionId();
+  }
 
   let activeMultiselectField = null;
   let pendingSelections = [];
@@ -126,7 +153,8 @@
   }
 
   function isSectionFullyOpen(sectionId) {
-    if (isUniversalProfile || allSectionsExpanded) return true;
+    if (isAccordionMode) return accordionOpenSection === sectionId;
+    if (allSectionsExpanded) return true;
     return sectionExpanded(topicKey, sectionId) || manuallyExpandedSections.has(sectionId);
   }
 
@@ -214,9 +242,33 @@
     return null;
   }
 
+  function renderAccordionSection(sectionId, section, visibleFields) {
+    const isOpen = accordionOpenSection === sectionId;
+    const fieldsHtml = isOpen ? visibleFields.map(renderField).join('') : '';
+    const stateClass = isOpen ? 'is-open' : 'is-collapsed';
+
+    return `
+      <section class="builder-section builder-section--accordion ${stateClass}" data-section="${sectionId}">
+        <div class="builder-section__header">
+          <div class="builder-section__toggle-row">
+            <button type="button" class="builder-section__toggle" data-accordion-toggle="${sectionId}" aria-expanded="${isOpen}" aria-controls="section-fields-${sectionId}">
+              <span class="builder-section__toggle-prefix" aria-hidden="true">${isOpen ? '−' : '+'}</span>
+              <span class="builder-section__title">${section.title}</span>
+            </button>
+            ${section.tooltip ? renderTooltip(section.tooltip) : ''}
+          </div>
+        </div>
+        ${fieldsHtml ? `<div class="builder-section__fields" id="section-fields-${sectionId}"><div class="builder-grid">${fieldsHtml}</div></div>` : ''}
+      </section>`;
+  }
+
   function renderSection(sectionId, section) {
     const visibleFields = section.fields.filter((f) => fieldVisible(f, profile));
     if (!visibleFields.length) return '';
+
+    if (isAccordionMode) {
+      return renderAccordionSection(sectionId, section, visibleFields);
+    }
 
     const fullyOpen = isSectionFullyOpen(sectionId);
     const promotedFields = getPromotedFields(sectionId, visibleFields);
@@ -380,8 +432,20 @@
     });
   }
 
+  function bindAccordionToggles() {
+    sectionsRoot.querySelectorAll('[data-accordion-toggle]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        if (e.target.closest('.builder-tooltip')) return;
+        const sectionId = btn.dataset.accordionToggle;
+        accordionOpenSection = accordionOpenSection === sectionId ? null : sectionId;
+        renderSections();
+      });
+    });
+  }
+
   function renderSections() {
     profile = getProfile();
+    ensureAccordionSectionValid();
     sectionsRoot.innerHTML = Object.entries(SECTIONS)
       .map(([id, section]) => renderSection(id, section))
       .join('');
@@ -396,6 +460,8 @@
     });
 
     bindMultiselectEvents();
+
+    if (isAccordionMode) bindAccordionToggles();
 
     sectionsRoot.querySelectorAll('.builder-see-more').forEach((btn) => {
       btn.addEventListener('click', () => {

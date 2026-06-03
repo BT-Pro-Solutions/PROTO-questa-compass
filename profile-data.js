@@ -281,6 +281,14 @@
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, ...data }));
   }
 
+  function clearProfile() {
+    sessionStorage.removeItem(STORAGE_KEY);
+  }
+
+  function startTopic(topic) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ topic }));
+  }
+
   function setTopic(topic) {
     saveProfile({ topic });
   }
@@ -329,6 +337,8 @@
     MENU_TOPIC_MAP,
     getProfile,
     saveProfile,
+    clearProfile,
+    startTopic,
     setTopic,
     getTopic,
     fieldVisible,

@@ -1283,11 +1283,16 @@
   }
 
   .builder-section__fields {
-    padding: 20px 28px 0;
+    padding: 4px 28px 0;
   }
 
   .builder-section.is-open .builder-section__fields {
+    padding-top: 8px;
     padding-bottom: 28px;
+  }
+
+  .builder-section--accordion.is-open .builder-section__fields {
+    padding-top: 4px;
   }
 
   .builder-section__footer {
@@ -1342,6 +1347,72 @@
     padding-bottom: 0;
   }
 
+  .builder-section--accordion {
+    overflow: visible;
+  }
+
+  .builder-section--accordion .builder-section__header {
+    padding: 0;
+  }
+
+  .builder-section--accordion.is-collapsed .builder-section__header {
+    padding-bottom: 0;
+  }
+
+  .builder-section--accordion.is-open .builder-section__header {
+    padding-bottom: 4px;
+  }
+
+  .builder-section__toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    position: relative;
+  }
+
+  .builder-section__toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  .builder-section__toggle:hover .builder-section__title {
+    text-decoration: underline;
+  }
+
+  .builder-section__toggle-prefix {
+    flex-shrink: 0;
+    width: 1ch;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--dark-teal);
+  }
+
+  .builder-section--accordion .builder-section__title {
+    display: block;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--dark-teal);
+  }
+
+  .builder-section__toggle-row .builder-tooltip {
+    flex-shrink: 0;
+  }
+
   .builder-field {
     position: relative;
   }
@@ -1355,8 +1426,9 @@
   .builder-field__head {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
+    gap: 8px;
+    margin-bottom: 8px;
+    position: relative;
   }
 
   .builder-field__label {
@@ -1395,17 +1467,26 @@
   .builder-tooltip:hover::after {
     content: attr(data-tip);
     position: absolute;
-    transform: translateY(-100%);
-    margin-top: -8px;
+    left: 0;
+    bottom: calc(100% + 8px);
     max-width: 260px;
     padding: 8px 12px;
     background: #1f404d;
     color: #fff;
     font-size: 12px;
     font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
     border-radius: 6px;
-    z-index: 10;
+    z-index: 20;
     pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .builder-section__toggle-row .builder-tooltip:hover::after {
+    left: auto;
+    right: 0;
   }
 
   .builder-helper-link {

@@ -199,6 +199,12 @@
     'personal-help',
   ];
 
+  function navigateToTopicProfile(topic) {
+    CompassProfile.clearProfile();
+    CompassProfile.setTopic(topic);
+    window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+  }
+
   const card        = document.querySelector('.compass-card');
   const quizView    = document.getElementById('quizView');
   const quizContent = document.getElementById('quizContent');
@@ -274,13 +280,13 @@
   });
 
   quizYes.addEventListener('click', () => {
-    const topic = QUESTIONS[currentIndex].topic;
-    window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+    navigateToTopicProfile(QUESTIONS[currentIndex].topic);
   });
 
   document.querySelectorAll('.js-quiz-create-profile').forEach((el) => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
+      CompassProfile.clearProfile();
       window.location.href = 'profile-builder.html?mode=universal&expand=all';
     });
   });
@@ -289,9 +295,7 @@
     option.addEventListener('click', (e) => {
       e.preventDefault();
       const topic = MENU_TOPICS[index];
-      if (topic) {
-        window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
-      }
+      if (topic) navigateToTopicProfile(topic);
     });
   });
 })();
