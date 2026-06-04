@@ -147,6 +147,7 @@
 
   if (isUniversalProfile) {
     applyUniversalProfileMode();
+    profileForm.setAttribute('novalidate', '');
   } else {
     topicTitle.textContent = topic.title.replace(/^Find\s+/i, '').toUpperCase();
     if (infoNoteTopicName) infoNoteTopicName.textContent = topicName;
@@ -200,6 +201,12 @@
       : '';
     const fullWidthClass = field.fullWidth ? ' builder-field--full' : '';
 
+    const requiredMark = field.required
+      ? ' <span class="builder-field__required" aria-hidden="true">*</span>'
+      : '';
+    const optionalMark = field.optional ? ' <em>(optional)</em>' : '';
+    const requiredAttr = field.required ? ' required' : '';
+
     let input = '';
     if (field.type === 'multiselect') {
       const selected = getFieldValue(profile, field.id);
@@ -214,18 +221,21 @@
         const selected = value === val ? ' selected' : '';
         return `<option value="${val}"${selected}>${label}</option>`;
       }).join('');
-      input = `<select class="builder-select" name="${field.id}" data-field="${field.id}">
+      input = `<select class="builder-select" id="${field.id}" name="${field.id}" data-field="${field.id}"${requiredAttr}>
         <option value="">${field.placeholder || 'Select'}</option>
         ${opts}
       </select>`;
     } else {
-      input = `<input type="text" class="builder-input" name="${field.id}" data-field="${field.id}" value="${value || ''}" placeholder="${field.placeholder || ''}">`;
+      input = `<input type="text" class="builder-input" id="${field.id}" name="${field.id}" data-field="${field.id}" value="${value || ''}" placeholder="${field.placeholder || ''}"${requiredAttr}>`;
     }
+
+    const labelFor = field.type !== 'multiselect' ? ` for="${field.id}"` : '';
+    const labelTag = field.type !== 'multiselect' ? 'label' : 'span';
 
     return `
       <div class="builder-field${fullWidthClass}" data-field-wrap="${field.id}">
         <div class="builder-field__head">
-          <span class="builder-field__label">${field.label}${field.optional ? ' <em>(optional)</em>' : ''}</span>
+          <${labelTag} class="builder-field__label"${labelFor}>${field.label}${requiredMark}${optionalMark}</${labelTag}>
           ${field.tooltip ? renderTooltip(field.tooltip) : ''}
         </div>
         ${helperText}
@@ -479,10 +489,6 @@
     updateInfoNoteVisibility();
   }
 
-  function hasMinimumProfile() {
-    return Boolean(profile['student-level'] && profile.residency);
-  }
-
   function goToResults() {
     window.location.href = `results.html?topic=${encodeURIComponent(topicKey)}`;
   }
@@ -522,18 +528,19 @@
       window.location.href = 'index.html';
       return;
     }
-    if (hasMinimumProfile()) goToResults();
-    else alert('Please select at least Student Level and Residency to see results.');
+    goToResults();
   });
 
-  document.getElementById('continueProfileBtn').addEventListener('click', () => {
+  profileForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
     if (isUniversalProfile) {
       saveProfile(profile);
       alert('Profile saved! (prototype demo)');
       return;
     }
-    if (hasMinimumProfile()) goToResults();
-    else alert('Please select at least Student Level and Residency first.');
+
+    goToResults();
   });
 
   document.querySelectorAll('.js-create-account').forEach((btn) => {
@@ -549,8 +556,6 @@
     closeCreateAccount();
     alert('Account created! (prototype demo)');
   });
-
-  profileForm.addEventListener('submit', (e) => e.preventDefault());
 
   renderSections();
 })();

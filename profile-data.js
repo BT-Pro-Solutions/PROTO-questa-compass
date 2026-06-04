@@ -16,10 +16,8 @@
     },
     'education-help': {
       title: 'Find Education Help',
-      expandedSections: ['about-you'],
-      promotedFieldsBySection: {
-        'education-interests': ['program-types', 'college-interest', 'field-of-study'],
-      },
+      expandedSections: ['about-you', 'education-interests'],
+      promotedFieldsBySection: {},
     },
     funding: {
       title: 'Find Funding',
@@ -73,6 +71,7 @@
           tooltip: 'Many opportunities are limited to residents of specific counties or states.',
           type: 'select',
           placeholder: 'Please Select...',
+          required: true,
           options: ['Allen County, IN', 'Adams County, IN', 'DeKalb County, IN', 'Other Indiana', 'Out of State'],
         },
         {
