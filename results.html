@@ -24,7 +24,13 @@
 
     <main class="main-content main-content--builder">
         <div class="results-page results-page--wide">
-            <a href="index.html" class="builder-back">&larr; Back to Home</a>
+            <nav class="site-breadcrumbs" aria-label="Breadcrumb">
+                <ol class="site-breadcrumbs__list">
+                    <li class="site-breadcrumbs__item"><a href="index.html">Home</a></li>
+                    <li class="site-breadcrumbs__item"><a href="#" id="breadcrumbProfileLink">Profile Builder</a></li>
+                    <li class="site-breadcrumbs__item site-breadcrumbs__item--current" aria-current="page">Results</li>
+                </ol>
+            </nav>
 
             <div class="results-search-banner">
                 <h2 class="results-search-banner__title">Already know what you&apos;re looking for?</h2>

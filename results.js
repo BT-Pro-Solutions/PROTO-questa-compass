@@ -216,8 +216,10 @@
     document.getElementById('filtersPanel').scrollIntoView({ behavior: 'smooth' });
   });
 
-  document.getElementById('continueProfileLink').href =
-    `profile-builder.html?topic=${encodeURIComponent(topicKey)}&expand=all&from=results`;
+  const profileBuilderUrl = `profile-builder.html?topic=${encodeURIComponent(topicKey)}&from=results`;
+
+  document.getElementById('breadcrumbProfileLink').href = profileBuilderUrl;
+  document.getElementById('continueProfileLink').href = `${profileBuilderUrl}&expand=all`;
 
   document.title = `Compass — ${topic.title} Results`;
 
