@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-account">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login js-login">Log In</a>
+        </div>
+    </header>
+
+    <div data-user-nav data-active-nav="account"></div>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="14" r="6" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M10 32c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <rect x="24" y="22" width="10" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M27 22v-2a2 2 0 0 1 4 0v2" stroke="currentColor" stroke-width="2"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Account</h1>
+        <p class="portal-hero__subtitle">Manage your notifications and account security.</p>
+    </section>
+
+    <main class="portal-content">
+        <section class="portal-section">
+            <h2 class="portal-section__title">Notification Preferences</h2>
+            <p class="portal-section__desc">We&apos;ll let you know when deadlines are approaching, or new opportunities become available.</p>
+
+            <table class="notif-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Notification Type</th>
+                        <th scope="col">Emails</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Upcoming Deadlines</td>
+                        <td><label class="notif-check"><input type="checkbox"><span class="notif-check__box" aria-hidden="true"></span></label></td>
+                    </tr>
+                    <tr>
+                        <td>New Opportunities</td>
+                        <td><label class="notif-check"><input type="checkbox"><span class="notif-check__box" aria-hidden="true"></span></label></td>
+                    </tr>
+                    <tr>
+                        <td>Login Reminders</td>
+                        <td><label class="notif-check"><input type="checkbox"><span class="notif-check__box" aria-hidden="true"></span></label></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button type="button" class="builder-btn builder-btn--primary portal-save-btn">Save</button>
+        </section>
+
+        <section class="portal-section">
+            <h2 class="portal-section__title portal-section__title--teal">Password Reset</h2>
+            <p class="portal-section__desc">Keep your account secure with a new password.</p>
+            <button type="button" class="builder-btn builder-btn--primary security-reset-btn" id="resetPasswordBtn">Send Password Reset Email</button>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.4"></script>
+    <script>
+      document.querySelector('.portal-save-btn').addEventListener('click', () => {
+        alert('Preferences saved! (prototype demo)');
+      });
+
+      document.getElementById('resetPasswordBtn').addEventListener('click', () => {
+        alert('Password reset email sent! (prototype demo)');
+      });
+    </script>
+</body>
+</html>

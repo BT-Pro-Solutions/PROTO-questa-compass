@@ -42,7 +42,7 @@
   }
 
   document.getElementById('detailEligibility').innerHTML = opp.eligibility
-    .map((level) => `<li>${level}</li>`)
+    .map((level) => `<span class="detail-eligibility__tag">${level}</span>`)
     .join('');
 
   const matchEl = document.getElementById('detailMatch');
@@ -52,8 +52,20 @@
     matchEl.className = `detail-match detail-match--${opp.match}`;
   }
 
-  document.getElementById('backLink').href = returnUrl;
   document.getElementById('backLinkBottom').href = returnUrl;
+
+  const favoriteBtn = document.getElementById('detailFavoriteBtn');
+  function syncFavoriteButton(active) {
+    favoriteBtn.classList.toggle('is-active', active);
+    favoriteBtn.setAttribute('aria-pressed', String(active));
+    favoriteBtn.setAttribute('aria-label', active ? 'Remove from favorites' : 'Save to favorites');
+    favoriteBtn.querySelector('.favorite-btn__label').textContent = active ? 'Saved' : 'Save';
+  }
+
+  syncFavoriteButton(CompassFavorites.isFavorite(oppId));
+  favoriteBtn.addEventListener('click', () => {
+    syncFavoriteButton(CompassFavorites.toggleFavorite(oppId));
+  });
 
   const createAccountModal = document.getElementById('createAccountModal');
   document.querySelectorAll('.js-create-account').forEach((btn) => {

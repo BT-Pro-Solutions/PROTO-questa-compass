@@ -19,33 +19,48 @@
                 <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
             </button>
             <button class="btn-login js-create-account" type="button">Create Account</button>
-            <a href="#" class="btn-login">Log In</a>
+            <a href="#" class="btn-login js-login">Log In</a>
         </div>
     </header>
 
+    <section class="detail-hero" id="detailHero">
+        <div class="detail-hero__cover" id="detailHeroCover" aria-hidden="true"></div>
+        <div class="detail-hero__content">
+            <div class="detail-hero__icon" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="15" r="7" stroke="currentColor" stroke-width="2.5"/>
+                    <path d="M13 24.5L20 34L27 24.5V20.5L20 17L13 20.5V24.5Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1 class="detail-hero__title" id="detailTitle"></h1>
+            <p class="detail-hero__subtitle" id="detailSubtitle">Funding Opportunity Details</p>
+        </div>
+    </section>
+
     <main class="main-content main-content--builder">
         <div class="detail-page" id="detailRoot">
-
             <article class="detail-card">
-                <header class="detail-card__header">
-
-                    <a href="#" class="builder-back" id="backLink">&larr; Back to Search Results</a>
-                    <div class="detail-card__title-row">
-                        <h1 class="detail-card__title" id="detailTitle"></h1>
+                <div class="detail-card__meta">
+                    <div class="detail-card__meta-start">
                         <span class="detail-card__status" id="detailStatus"></span>
+                        <span class="detail-match" id="detailMatch" hidden></span>
                     </div>
-                    <p class="detail-card__subtitle" id="detailSubtitle">Resource Details</p>
-                    <span class="detail-match detail-match--strong" id="detailMatch" hidden></span>
-                </header>
+                    <button type="button" class="favorite-btn favorite-btn--detail" id="detailFavoriteBtn" aria-label="Save to favorites" aria-pressed="false">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+                            <path class="favorite-btn__icon" d="M11 19.35S3.5 14.28 3.5 8.88C3.5 6.47 5.47 4.5 7.88 4.5c1.54 0 3.04.74 3.62 1.9.58-1.16 2.08-1.9 3.62-1.9 2.41 0 4.38 1.97 4.38 4.38 0 5.4-7.5 10.47-7.5 10.47z" stroke="currentColor" stroke-width="1.75"/>
+                        </svg>
+                        <span class="favorite-btn__label">Save</span>
+                    </button>
+                </div>
 
                 <section class="detail-section">
                     <h2 class="detail-section__title">Basic Information</h2>
                     <dl class="detail-info-grid">
-                        <div>
+                        <div class="detail-info-row">
                             <dt>Amount</dt>
                             <dd id="detailAmount"></dd>
                         </div>
-                        <div>
+                        <div class="detail-info-row">
                             <dt>Type</dt>
                             <dd id="detailType"></dd>
                         </div>
@@ -59,48 +74,33 @@
 
                 <section class="detail-section">
                     <h2 class="detail-section__title">Eligibility Criteria</h2>
-                    <p class="detail-section__label">Student Levels:</p>
-                    <ul class="detail-eligibility" id="detailEligibility"></ul>
+                    <p class="detail-section__label">Student Levels</p>
+                    <div class="detail-eligibility" id="detailEligibility"></div>
                 </section>
 
                 <div class="detail-actions">
-                    <a href="#" class="builder-btn builder-btn--primary">Learn More and Apply</a>
-                    <a href="#" class="builder-btn builder-btn--secondary" id="backLinkBottom">Back to Search Results</a>
+                    <a href="#" class="builder-btn builder-btn--primary detail-actions__primary">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                            <path d="M7 2H3.5A1.5 1.5 0 002 3.5V14a1.5 1.5 0 001.5 1.5H14A1.5 1.5 0 0015.5 14V10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                            <path d="M11 2h5v5M16 2L8 10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Learn More and Apply
+                    </a>
+                    <a href="#" class="detail-actions__back" id="backLinkBottom">Back to Search Results</a>
                 </div>
             </article>
 
             <aside class="detail-sidebar">
-                <div class="builder-login-card">
-                    <div class="builder-login-card__icon-wrap" aria-hidden="true">
-                        <svg class="builder-login-card__icon" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="6" y="8" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2"/>
-                            <circle cx="18" cy="16" r="4" stroke="currentColor" stroke-width="2"/>
-                            <path d="M12 24c0-2.2 2.7-4 6-4s6 1.8 6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <div class="builder-help-card">
+                    <div class="builder-help-card__icon-wrap" aria-hidden="true">
+                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="2"/>
+                            <path d="M18 24v.01M18 12v6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                         </svg>
                     </div>
-                    <h2 class="builder-login-card__title">Keep Your Progress</h2>
-                    <ul class="builder-login-card__list">
-                        <li>
-                            <span class="builder-login-card__check" aria-hidden="true">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </span>
-                            Save your preferences
-                        </li>
-                        <li>
-                            <span class="builder-login-card__check" aria-hidden="true">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </span>
-                            Favorite specific opportunities
-                        </li>
-                        <li>
-                            <span class="builder-login-card__check" aria-hidden="true">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M6 10.5L8.5 13L14 7.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </span>
-                            Get notified of new opportunities that match your needs.
-                        </li>
-                    </ul>
-                    <a href="#" class="builder-login-card__btn">Log In</a>
-                    <p class="builder-login-card__footer">Or, <button type="button" class="builder-login-card__link js-create-account">Create your Free Account</button></p>
+                    <h2 class="builder-help-card__title">Need Help?</h2>
+                    <p class="builder-help-card__text">Have a question or need guidance? Connect with a Questa staff member who can help.</p>
+                    <a href="https://www.questafoundation.org/contact" class="builder-help-card__btn" target="_blank" rel="noopener noreferrer">Connect with a Questa Staff Member</a>
                 </div>
             </aside>
         </div>
@@ -140,7 +140,9 @@
     </footer>
 
     <script src="profile-data.js"></script>
+    <script src="auth.js?v=1.0.4"></script>
     <script src="results-data.js"></script>
+    <script src="favorites.js"></script>
     <script src="detail.js"></script>
 </body>
 </html>

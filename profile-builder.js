@@ -47,9 +47,10 @@
   const isAccordionMode = isUniversalProfile;
   const expandAllSections = params.get('expand') === 'all' && !isAccordionMode;
   const fromResults = params.get('from') === 'results';
+  const fromProfile = params.get('from') === 'profile';
   const topicName = topic ? topic.title.replace(/^Find\s+/i, '') : '';
 
-  if (!fromResults) {
+  if (!fromResults && !fromProfile) {
     clearProfile();
     if (topicKey) setTopic(topicKey);
   } else if (topicKey) {
@@ -130,8 +131,13 @@
     const eyebrow = document.querySelector('.builder-intro__eyebrow');
     const introDesc = document.querySelector('.builder-intro__desc');
     const infoNote = document.querySelector('.builder-info-note');
+    const intro = document.querySelector('.builder-intro');
     const jumpBtn = document.getElementById('jumpToResultsBtn');
     const saveBtn = document.getElementById('continueProfileBtn');
+    const loggedIn =
+      typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
+
+    if (loggedIn && intro) intro.hidden = true;
 
     if (eyebrow) eyebrow.hidden = true;
     if (introDesc) {

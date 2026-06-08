@@ -170,13 +170,14 @@
 
     return `
       <article class="results-item">
+        ${CompassFavorites.favoriteButtonHtml(opp.id)}
         <div class="results-item__body">
           <h3 class="results-item__title">${opp.title}</h3>
           <p class="results-item__meta"><strong>Key dates &amp; amount</strong> ${opp.keyDates}</p>
           <p class="results-item__desc">${opp.desc}</p>
           <a href="${detailUrl(opp.id)}" class="builder-btn builder-btn--secondary results-item__btn">View Full Details</a>
         </div>
-        ${matchHtml}
+        ${matchHtml ? `<div class="results-item__aside">${matchHtml}</div>` : ''}
       </article>`;
   }
 
@@ -189,6 +190,7 @@
     resultsRange.textContent = `Showing 1 - ${shown} of ${total} Results`;
 
     resultsList.innerHTML = items.slice(0, PER_PAGE).map(renderResultCard).join('');
+    CompassFavorites.bindFavoriteButtons(resultsList);
 
     resultsPagination.innerHTML = `
       <button type="button" class="results-pagination__btn" disabled aria-label="Previous page">&laquo;</button>

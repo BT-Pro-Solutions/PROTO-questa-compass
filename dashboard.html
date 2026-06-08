@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — My Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-dashboard">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login js-login">Log In</a>
+        </div>
+    </header>
+
+    <div data-user-nav data-active-nav="dashboard"></div>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="4" y="4" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2.5"/>
+                <rect x="23" y="4" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2.5"/>
+                <rect x="4" y="23" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2.5"/>
+                <rect x="23" y="23" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2.5"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">My Dashboard</h1>
+        <p class="portal-hero__subtitle">The latest on the funding opportunities that interest you.</p>
+    </section>
+
+    <main class="portal-content">
+        <div class="dashboard-actions">
+            <a href="profile-builder.html?mode=universal&amp;from=profile" class="dashboard-action">
+                <div class="dashboard-action__icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <circle cx="14" cy="10" r="4.5" stroke="currentColor" stroke-width="2"/>
+                        <path d="M6 23c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h2 class="dashboard-action__title">Update Your Profile</h2>
+                <p class="dashboard-action__desc">Keep your profile up to date so Compass can surface the scholarships, programs, and resources that fit you best.</p>
+                <span class="dashboard-action__cta">Edit Profile &rarr;</span>
+            </a>
+            <a href="compass.html" class="dashboard-action">
+                <div class="dashboard-action__icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M14 6.5L16 14H14l2 7.5L14 14h-2L14 6.5z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h2 class="dashboard-action__title">Pick a Topic to Explore</h2>
+                <p class="dashboard-action__desc">Select a Compass topic — careers, education, funding, and more — to browse opportunities matched to your interests.</p>
+                <span class="dashboard-action__cta">Open Compass &rarr;</span>
+            </a>
+        </div>
+
+        <section class="portal-section">
+            <h2 class="portal-section__title">Your Saved Items</h2>
+
+            <div class="saved-tabs" role="tablist" aria-label="Saved items">
+                <button type="button" class="saved-tabs__tab is-active" role="tab" aria-selected="true">Due Soon (0)</button>
+                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false">Won (0)</button>
+                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false">Applied (0)</button>
+                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false">Saved (0)</button>
+            </div>
+
+            <div class="saved-panel">
+                <p class="saved-panel__empty">You don&apos;t have any opportunity deadlines (within a week) approaching.</p>
+                <div class="saved-panel__views" aria-label="View options">
+                    <button type="button" class="saved-view-btn is-active" aria-label="List view" aria-pressed="true">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                            <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="saved-view-btn" aria-label="Grid view" aria-pressed="false">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                            <rect x="2" y="2" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="10.5" y="2" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="2" y="10.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="10.5" y="10.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.4"></script>
+    <script>
+      document.querySelectorAll('.saved-tabs__tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.saved-tabs__tab').forEach((t) => {
+            t.classList.remove('is-active');
+            t.setAttribute('aria-selected', 'false');
+          });
+          tab.classList.add('is-active');
+          tab.setAttribute('aria-selected', 'true');
+        });
+      });
+
+      document.querySelectorAll('.saved-view-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.saved-view-btn').forEach((b) => {
+            b.classList.remove('is-active');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btn.classList.add('is-active');
+          btn.setAttribute('aria-pressed', 'true');
+        });
+      });
+
+    </script>
+</body>
+</html>

@@ -8,6 +8,8 @@
   const options = document.querySelectorAll('.cm-option');
   const descriptions = document.querySelectorAll('.cm-description-item');
 
+  if (!compassMenu || !centerEl || !needle) return;
+
   const ITEM_ANGLES = [0, 60, 120, 180, 240, 300];
   const LOCKED_OFFSET = -30;
 
@@ -106,12 +108,38 @@
     needleTarget = getMouseAngle();
   });
 
+  const MENU_TOPICS = [
+    'careers',
+    'education-help',
+    'funding',
+    'learning-help',
+    'education-training',
+    'personal-help',
+  ];
+
+  function navigateFromCompassTopic(topic) {
+    const isLoggedIn = typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
+    if (isLoggedIn || document.body.classList.contains('page-compass')) {
+      CompassProfile.setTopic(topic);
+      window.location.href = `results.html?topic=${encodeURIComponent(topic)}`;
+      return;
+    }
+    CompassProfile.clearProfile();
+    CompassProfile.setTopic(topic);
+    window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+  }
+
   options.forEach((option, index) => {
     option.addEventListener('mouseenter', () => setActiveItem(index));
     option.addEventListener('mouseleave', (e) => {
       if (!e.relatedTarget?.closest('.cm-option')) {
         clearActiveItem();
       }
+    });
+    option.addEventListener('click', (e) => {
+      e.preventDefault();
+      const topic = MENU_TOPICS[index];
+      if (topic) navigateFromCompassTopic(topic);
     });
   });
 
@@ -222,6 +250,8 @@
   const ctaDesktop  = document.querySelector('.compass-card__cta--desktop');
   const backBtn     = document.querySelector('.quiz-back-btn');
 
+  if (!card) return;
+
   let currentIndex = 0;
 
   function showQuestion(index) {
@@ -284,9 +314,11 @@
     el.addEventListener('click', advanceQuestion);
   });
 
-  quizYes.addEventListener('click', () => {
-    navigateToTopicProfile(QUESTIONS[currentIndex].topic);
-  });
+  if (quizYes) {
+    quizYes.addEventListener('click', () => {
+      navigateToTopicProfile(QUESTIONS[currentIndex].topic);
+    });
+  }
 
   document.querySelectorAll('.js-quiz-create-profile').forEach((el) => {
     el.addEventListener('click', (e) => {
@@ -296,11 +328,4 @@
     });
   });
 
-  document.querySelectorAll('.cm-option').forEach((option, index) => {
-    option.addEventListener('click', (e) => {
-      e.preventDefault();
-      const topic = MENU_TOPICS[index];
-      if (topic) navigateToTopicProfile(topic);
-    });
-  });
 })();
