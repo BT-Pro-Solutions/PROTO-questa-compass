@@ -170,6 +170,41 @@
     return '<a href="#" class="btn-login js-login">Log In</a>';
   }
 
+  function renderHelpPromptCard() {
+    return `
+      <h2 class="builder-help-card__title">Need Assistance?</h2>
+      <p class="builder-help-card__text">Have a question or need guidance? Connect with a Questa staff member who can help.</p>
+      <a href="https://www.questafoundation.org/contact" class="builder-help-card__btn" target="_blank" rel="noopener noreferrer">Get Help</a>`;
+  }
+
+  function renderLoginPromptCard() {
+    return `
+      <div class="builder-login-card__icon-wrap" aria-hidden="true">
+        <svg class="builder-login-card__icon" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="6" y="8" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2"></rect>
+                                <circle cx="18" cy="16" r="4" stroke="currentColor" stroke-width="2"></circle>
+                                <path d="M12 24c0-2.2 2.7-4 6-4s6 1.8 6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                            </svg>
+      </div>
+      <h2 class="builder-login-card__title">Keep Your Progress</h2>
+      <ul class="builder-login-card__list">
+        <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Save your preferences</span></li>
+        <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Favorite specific opportunities</span></li>
+        <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Get notified of new opportunities that match your needs.</span></li>
+      </ul>
+      <a href="#" class="builder-login-card__btn js-login">Log In</a>
+      <p class="builder-login-card__footer">Or, <button class="builder-login-card__link js-create-account" type="button">Create your Free Account</button></p>`;
+  }
+
+  function updateAuthPromptCards() {
+    document.querySelectorAll('[data-auth-prompt]').forEach((card) => {
+      const extraClass = card.dataset.authPromptClass || '';
+      const baseClass = isLoggedIn() ? 'builder-help-card' : 'builder-login-card';
+      card.className = [baseClass, extraClass].filter(Boolean).join(' ');
+      card.innerHTML = isLoggedIn() ? renderHelpPromptCard() : renderLoginPromptCard();
+    });
+  }
+
   function updateHeader() {
     const actions = document.querySelector('.site-header__actions');
     if (!actions) return;
@@ -208,6 +243,7 @@
 
     document.body.classList.toggle('is-logged-in', loggedIn);
     applyLoggedInPageLayout();
+    updateAuthPromptCards();
 
     if (loggedIn) {
       bindUserMenu();

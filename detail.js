@@ -44,7 +44,7 @@
     providerSection.hidden = false;
     providerText.textContent = 'This resource is not currently connected to a provider account. Providers can request ownership and Questa staff will review before edit access is granted.';
     unclaimedCallout.hidden = false;
-    claimBtn.hidden = !isProvider;
+    if (claimBtn) claimBtn.hidden = !isProvider;
   } else if (opp.providerName) {
     providerSection.hidden = false;
     providerText.textContent = `Managed by ${opp.providerName}. Visibility status: approved by Questa staff.`;
@@ -86,9 +86,11 @@
   });
 
   const claimModal = document.getElementById('claimListingModal');
-  claimBtn.addEventListener('click', () => {
-    claimModal.hidden = false;
-  });
+  if (claimBtn) {
+    claimBtn.addEventListener('click', () => {
+      claimModal.hidden = false;
+    });
+  }
   document.querySelectorAll('.js-close-claim').forEach((el) => {
     el.addEventListener('click', () => {
       claimModal.hidden = true;
