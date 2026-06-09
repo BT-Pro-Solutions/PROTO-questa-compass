@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Add Multiple Listings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-provider">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login js-login">Log In</a>
+        </div>
+    </header>
+
+    <div data-user-nav data-active-nav="provider-services"></div>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="7" y="10" width="26" height="22" rx="3" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M14 18h12M14 24h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M28 8v6M25 11h6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Add Multiple Listings</h1>
+        <p class="portal-hero__subtitle">Upload a CSV file to submit several resources at once for Questa review.</p>
+    </section>
+
+    <main class="portal-content">
+        <section class="portal-section provider-form-card">
+            <p class="portal-section__desc">Community foundations and scholarship providers can use the template below to prepare multiple listings. Submissions will not go live until Questa staff approves them.</p>
+
+            <div class="provider-bulk-steps">
+                <article class="provider-bulk-step">
+                    <span class="provider-step-badge">1</span>
+                    <div>
+                        <h2 class="portal-section__title">Download the template</h2>
+                        <p class="portal-section__desc">Use this CSV format so your listings import correctly.</p>
+                        <button type="button" class="builder-btn builder-btn--secondary" id="downloadTemplateBtn">Download Template</button>
+                    </div>
+                </article>
+
+                <article class="provider-bulk-step">
+                    <span class="provider-step-badge">2</span>
+                    <div>
+                        <h2 class="portal-section__title">Upload your completed file</h2>
+                        <p class="portal-section__desc">Select the CSV file with your listing data.</p>
+                        <label class="provider-file-upload">
+                            <input type="file" id="bulkUploadInput" accept=".csv" hidden>
+                            <span class="provider-file-upload__label" id="bulkUploadLabel">Choose CSV file</span>
+                        </label>
+                    </div>
+                </article>
+            </div>
+
+            <div class="provider-form-actions">
+                <button type="button" class="builder-btn builder-btn--primary" id="submitBulkBtn" disabled>Submit for Questa Review</button>
+                <a href="provider-resources.html" class="detail-actions__back">Back to My Listings</a>
+            </div>
+        </section>
+    </main>
+
+    <div class="builder-modal" id="submitSuccessModal" hidden>
+        <div class="builder-modal__backdrop"></div>
+        <div class="builder-modal__panel builder-modal__panel--account" role="dialog" aria-labelledby="submitSuccessTitle">
+            <h2 class="builder-modal__title" id="submitSuccessTitle">Thank You</h2>
+            <p class="builder-modal__text">Questa will review this submission soon. You&apos;ll be notified once a decision is made.</p>
+            <a href="provider-resources.html" class="builder-btn builder-btn--primary builder-btn--full">Go to My Listings</a>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.5"></script>
+    <script>
+      const TEMPLATE_CSV = [
+        'title,category,organization,amount_key_dates,application_url,description,contact_name,contact_email',
+        'Example Scholarship,Funding,Example Foundation,"$2,500 | Open year-round",https://example.org/apply,Description of the resource,Alex Provider,alex@example.org',
+      ].join('\n');
+
+      document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
+        const blob = new Blob([TEMPLATE_CSV], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'compass-listing-template.csv';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+      const fileInput = document.getElementById('bulkUploadInput');
+      const fileLabel = document.getElementById('bulkUploadLabel');
+      const submitBtn = document.getElementById('submitBulkBtn');
+
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+          fileLabel.textContent = file.name;
+          submitBtn.disabled = false;
+        } else {
+          fileLabel.textContent = 'Choose CSV file';
+          submitBtn.disabled = true;
+        }
+      });
+
+      submitBtn.addEventListener('click', () => {
+        document.getElementById('submitSuccessModal').hidden = false;
+      });
+    </script>
+</body>
+</html>

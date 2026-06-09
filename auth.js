@@ -44,7 +44,7 @@
     },
     {
       id: 'provider-services',
-      label: 'Services',
+      label: 'My Listings',
       href: 'provider-resources.html',
       icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 4.5h12M3 9h12M3 13.5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>',
     },
@@ -66,6 +66,7 @@
     'provider-account.html',
     'provider-resources.html',
     'provider-resource-detail.html',
+    'provider-add-listings-bulk.html',
     'admin-dashboard.html',
   ];
 
@@ -107,7 +108,12 @@
     const params = new URLSearchParams(window.location.search);
 
     if (page === 'provider-account.html') return 'provider-account';
-    if (page === 'provider-resources.html' || page === 'provider-resource-detail.html') return 'provider-services';
+    if (
+      page === 'provider-resources.html'
+      || page === 'provider-resource-detail.html'
+      || page === 'provider-add-listing.html'
+      || page === 'provider-add-listings-bulk.html'
+    ) return 'provider-services';
     if (page === 'admin-dashboard.html') return 'admin-dashboard';
     if (page === 'dashboard.html') return 'dashboard';
     if (page === 'compass.html') return 'compass';

@@ -38,7 +38,6 @@
     <main class="portal-content">
         <section class="portal-section provider-form-card">
             <h2 class="portal-section__title">Organization Details</h2>
-            <p class="portal-section__desc">This pre-filled profile can come from provider self-registration or a Questa staff invitation.</p>
             <form class="provider-form-grid">
                 <label class="builder-field">
                     <span class="builder-field__label">Organization Name</span>
@@ -90,6 +89,12 @@
                 </tbody>
             </table>
         </section>
+
+        <section class="portal-section">
+            <h2 class="portal-section__title portal-section__title--teal">Password Reset</h2>
+            <p class="portal-section__desc">Keep your provider account secure with a new password.</p>
+            <button type="button" class="builder-btn builder-btn--primary security-reset-btn" id="resetPasswordBtn">Send Password Reset Email</button>
+        </section>
     </main>
 
     <footer class="site-footer">
@@ -105,6 +110,10 @@
     <script>
       document.getElementById('saveProviderAccountBtn').addEventListener('click', () => {
         alert('Provider account saved. (prototype demo)');
+      });
+
+      document.getElementById('resetPasswordBtn').addEventListener('click', () => {
+        alert('Password reset email sent! (prototype demo)');
       });
     </script>
 </body>

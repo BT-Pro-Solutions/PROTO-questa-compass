@@ -37,57 +37,80 @@
 
     <main class="portal-content">
         <section class="portal-section provider-form-card">
-            <a href="provider-resources.html" class="detail-actions__back">&larr; Back to Services</a>
+            <a href="provider-resources.html" class="detail-actions__back">&larr; Back to My Listings</a>
+
+            <div class="provider-error-banner" id="rejectionBanner" hidden>
+                <div class="provider-error-banner__icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="2"/>
+                        <path d="M11 7v5M11 15h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="provider-error-banner__title" id="rejectionTitle"></h2>
+                    <p class="provider-error-banner__text" id="rejectionMessage"></p>
+                    <ul class="provider-error-banner__list" id="rejectionReasons"></ul>
+                </div>
+            </div>
+
             <div class="provider-detail-head">
                 <div>
-                    <h2 class="portal-section__title">Bright Futures Renewable Scholarship</h2>
+                    <h2 class="portal-section__title" id="listingTitle"></h2>
                     <p class="portal-section__desc">Visible status shows whether Questa staff has approved this listing for public results.</p>
                 </div>
-                <span class="provider-status provider-status--approved">Approved by Questa staff</span>
+                <span class="provider-status" id="listingStatus"></span>
             </div>
 
             <form class="provider-form-grid">
                 <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Resource Title</span>
-                    <input type="text" class="builder-input" value="Bright Futures Renewable Scholarship">
+                    <input type="text" class="builder-input" id="fieldTitle">
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Resource Type</span>
-                    <select class="builder-input">
-                        <option>Scholarship</option>
-                        <option>Grant</option>
-                        <option>Training program</option>
-                        <option>Support service</option>
-                    </select>
+                    <input type="text" class="builder-input" id="fieldResourceType">
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Visibility Status</span>
-                    <input type="text" class="builder-input" value="Live in Compass results" readonly>
+                    <input type="text" class="builder-input" id="fieldVisibility" readonly>
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Key Dates / Amount</span>
-                    <input type="text" class="builder-input" value="Up to $4,000 • Open year-round">
+                    <input type="text" class="builder-input" id="fieldKeyDates">
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Contact Person</span>
-                    <input type="text" class="builder-input" value="Alex Provider">
+                    <input type="text" class="builder-input" id="fieldContact">
                 </label>
                 <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Description</span>
-                    <textarea class="builder-input provider-textarea">Renewable award for Allen County learners pursuing certificates, associate degrees, or bachelor&apos;s degrees.</textarea>
+                    <textarea class="builder-input provider-textarea" id="fieldDescription"></textarea>
                 </label>
                 <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Eligibility</span>
-                    <textarea class="builder-input provider-textarea">Open to adult learners and recent high school graduates who live in Allen County and plan to enroll in an eligible postsecondary program.</textarea>
+                    <textarea class="builder-input provider-textarea" id="fieldEligibility"></textarea>
                 </label>
             </form>
 
-            <div class="provider-form-actions">
+            <div class="provider-form-actions provider-form-actions--split">
                 <button type="button" class="builder-btn builder-btn--primary" id="saveResourceBtn">Save Changes</button>
-                <button type="button" class="builder-btn builder-btn--secondary" id="submitReviewBtn">Submit Update for Review</button>
+                <button type="button" class="builder-btn builder-btn--delete" id="deleteListingBtn">Delete Listing</button>
             </div>
         </section>
     </main>
+
+    <div class="builder-modal" id="deleteListingModal" hidden>
+        <div class="builder-modal__backdrop js-close-delete"></div>
+        <div class="builder-modal__panel builder-modal__panel--account" role="dialog" aria-labelledby="deleteListingTitle">
+            <button type="button" class="builder-modal__close js-close-delete" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="deleteListingTitle">Delete this listing?</h2>
+            <p class="builder-modal__text">Are you sure you want to delete <strong id="deleteListingName"></strong>? This action cannot be undone.</p>
+            <div class="builder-modal__actions builder-modal__actions--end">
+                <button type="button" class="builder-btn builder-btn--cancel js-close-delete">Cancel</button>
+                <button type="button" class="builder-btn builder-btn--delete" id="confirmDeleteBtn">Delete Listing</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="site-footer">
         <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
@@ -99,14 +122,63 @@
     </footer>
 
     <script src="auth.js?v=1.0.5"></script>
+    <script src="provider-listings-data.js"></script>
     <script>
-      document.getElementById('saveResourceBtn').addEventListener('click', () => {
-        alert('Draft changes saved. (prototype demo)');
-      });
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        const listing = CompassProviderListings.getListing(params.get('id'));
 
-      document.getElementById('submitReviewBtn').addEventListener('click', () => {
-        alert('Update submitted for Questa staff review. (prototype demo)');
-      });
+        const statusClass = {
+          approved: 'provider-status--approved',
+          pending: 'provider-status--pending',
+          claim: 'provider-status--review',
+          rejected: 'provider-status--rejected',
+        }[listing.status] || 'provider-status--pending';
+
+        document.title = `Compass — ${listing.title}`;
+        document.getElementById('listingTitle').textContent = listing.title;
+        document.getElementById('listingStatus').textContent = listing.statusLabel;
+        document.getElementById('listingStatus').className = `provider-status ${statusClass}`;
+        document.getElementById('fieldTitle').value = listing.title;
+        document.getElementById('fieldResourceType').value = listing.resourceType;
+        document.getElementById('fieldVisibility').value = listing.visibility;
+        document.getElementById('fieldKeyDates').value = listing.keyDates;
+        document.getElementById('fieldContact').value = listing.contact;
+        document.getElementById('fieldDescription').value = listing.description;
+        document.getElementById('fieldEligibility').value = listing.eligibility;
+
+        if (listing.status === 'rejected') {
+          const banner = document.getElementById('rejectionBanner');
+          banner.hidden = false;
+          document.getElementById('rejectionTitle').textContent = listing.rejectionTitle;
+          document.getElementById('rejectionMessage').textContent = listing.rejectionMessage;
+          document.getElementById('rejectionReasons').innerHTML = listing.rejectionReasons
+            .map((reason) => `<li>${reason}</li>`)
+            .join('');
+        }
+
+        document.getElementById('saveResourceBtn').addEventListener('click', () => {
+          alert('Changes saved and submitted for Questa review. (prototype demo)');
+        });
+
+        const deleteModal = document.getElementById('deleteListingModal');
+        document.getElementById('deleteListingName').textContent = listing.title;
+
+        document.getElementById('deleteListingBtn').addEventListener('click', () => {
+          deleteModal.hidden = false;
+        });
+
+        document.querySelectorAll('.js-close-delete').forEach((el) => {
+          el.addEventListener('click', () => {
+            deleteModal.hidden = true;
+          });
+        });
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+          deleteModal.hidden = true;
+          window.location.assign('provider-resources.html');
+        });
+      })();
     </script>
 </body>
 </html>
