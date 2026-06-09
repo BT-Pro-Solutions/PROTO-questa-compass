@@ -23,7 +23,7 @@
     },
     {
       id: 'search',
-      label: 'Search',
+      label: 'Browse',
       href: 'results.html',
       icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11.5 11.5L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
     },
@@ -47,6 +47,12 @@
       label: 'My Listings',
       href: 'provider-resources.html',
       icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 4.5h12M3 9h12M3 13.5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>',
+    },
+    {
+      id: 'provider-search',
+      label: 'Browse',
+      href: 'results.html',
+      icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11.5 11.5L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
     },
   ];
 
@@ -118,7 +124,9 @@
     if (page === 'dashboard.html') return 'dashboard';
     if (page === 'compass.html') return 'compass';
     if (page === 'security.html') return 'account';
-    if (page === 'results.html') return 'search';
+    if (page === 'results.html') {
+      return getUser().role === 'provider' ? 'provider-search' : 'search';
+    }
     if (page === 'profile-builder.html' && params.get('mode') === 'universal') return 'profile';
     return null;
   }
@@ -155,12 +163,12 @@
         : 'My Dashboard';
 
     return `
-      <a href="results.html" class="header-search-btn" aria-label="Search">
+      <button type="button" class="header-search-btn js-open-search" aria-label="Search">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
           <circle cx="9.5" cy="9.5" r="6.5" stroke="currentColor" stroke-width="2"/>
           <path d="M14.5 14.5L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-      </a>
+      </button>
       <div class="user-menu">
         <button type="button" class="user-avatar" id="userAvatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
           <span class="user-avatar__initials">${user.initials}</span>
@@ -360,6 +368,92 @@
     }, true);
   }
 
+  function getDefaultSearchTopic() {
+    if (typeof CompassProfile !== 'undefined') {
+      return CompassProfile.getProfile().topic || 'funding';
+    }
+    return 'funding';
+  }
+
+  function renderSearchModal() {
+    return `
+      <div class="builder-modal search-modal" id="headerSearchModal" hidden>
+        <div class="builder-modal__backdrop js-close-search"></div>
+        <div class="builder-modal__panel search-modal__panel" role="dialog" aria-labelledby="headerSearchTitle">
+          <button type="button" class="builder-modal__close js-close-search" aria-label="Close">&times;</button>
+          <h2 class="search-modal__title" id="headerSearchTitle">Already know what you&apos;re looking for?</h2>
+          <p class="search-modal__text">Search for keywords below.</p>
+          <form class="search-modal__form" id="headerSearchForm">
+            <label class="search-modal__field">
+              <input type="search" class="search-modal__input" id="headerSearchInput" placeholder="Search Keywords" autocomplete="off">
+              <span class="search-modal__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.75"/>
+                  <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </label>
+          </form>
+        </div>
+      </div>`;
+  }
+
+  function injectSearchModal() {
+    if (document.getElementById('headerSearchModal')) return;
+    document.body.insertAdjacentHTML('beforeend', renderSearchModal());
+  }
+
+  function openSearchModal() {
+    const modal = document.getElementById('headerSearchModal');
+    const input = document.getElementById('headerSearchInput');
+    if (!modal || !input) return;
+    modal.hidden = false;
+    input.value = '';
+    input.focus();
+  }
+
+  function closeSearchModal() {
+    const modal = document.getElementById('headerSearchModal');
+    if (modal) modal.hidden = true;
+  }
+
+  function submitHeaderSearch() {
+    const input = document.getElementById('headerSearchInput');
+    const keyword = input?.value.trim() || '';
+    const topic = getDefaultSearchTopic();
+    const url = keyword
+      ? `results.html?topic=${encodeURIComponent(topic)}&q=${encodeURIComponent(keyword)}`
+      : `results.html?topic=${encodeURIComponent(topic)}`;
+    window.location.assign(url);
+  }
+
+  function bindSearchModal() {
+    if (document.body.dataset.searchModalBound) return;
+    document.body.dataset.searchModalBound = '1';
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.js-open-search')) {
+        e.preventDefault();
+        openSearchModal();
+      }
+      if (e.target.closest('.js-close-search')) {
+        closeSearchModal();
+      }
+    });
+
+    document.getElementById('headerSearchForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitHeaderSearch();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('headerSearchModal');
+      if (e.key === 'Escape' && modal && !modal.hidden) {
+        closeSearchModal();
+      }
+    });
+  }
+
   function guardProtectedPages() {
     const page = getCurrentPage();
     if (PROTECTED_PAGES.includes(page) && !isLoggedIn()) {
@@ -369,6 +463,8 @@
 
   function init() {
     guardProtectedPages();
+    injectSearchModal();
+    bindSearchModal();
     updateHeader();
     injectUserNav();
     bindLoginTriggers();

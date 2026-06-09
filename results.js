@@ -6,6 +6,7 @@
   const topicKey = params.get('topic') || getProfile().topic || 'funding';
   const topic = TOPICS[topicKey] || TOPICS.funding;
   const config = getTopicResultsConfig(topicKey);
+  const searchQuery = params.get('q') || '';
 
   const PER_PAGE = 8;
   const MATCH_LABELS = ['Some', 'Fair', 'Strong'];
@@ -212,7 +213,11 @@
   }
 
   document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
-  document.getElementById('keywordSearch').addEventListener('input', updateFilterCount);
+  const keywordSearch = document.getElementById('keywordSearch');
+  if (searchQuery) {
+    keywordSearch.value = searchQuery;
+  }
+  keywordSearch.addEventListener('input', updateFilterCount);
   document.getElementById('searchGoBtn').addEventListener('click', updateFilterCount);
   document.getElementById('changeFiltersBtn').addEventListener('click', () => {
     document.getElementById('filtersPanel').scrollIntoView({ behavior: 'smooth' });
@@ -222,6 +227,12 @@
 
   document.getElementById('breadcrumbProfileLink').href = profileBuilderUrl;
   document.getElementById('continueProfileLink').href = `${profileBuilderUrl}&expand=all`;
+
+  if (typeof CompassAuth !== 'undefined'
+    && CompassAuth.isLoggedIn()
+    && CompassAuth.getUser().role === 'provider') {
+    document.getElementById('continueProfileLink').hidden = true;
+  }
 
   document.title = `Compass — ${topic.title} Results`;
 
@@ -245,4 +256,5 @@
   renderFilters();
   renderSortOptions();
   renderResults();
+  if (searchQuery) updateFilterCount();
 })();

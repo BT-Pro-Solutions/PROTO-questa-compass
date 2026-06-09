@@ -44,7 +44,6 @@
     providerSection.hidden = false;
     providerText.textContent = 'This resource is not currently connected to a provider account. Providers can request ownership and Questa staff will review before edit access is granted.';
     unclaimedCallout.hidden = false;
-    if (claimBtn) claimBtn.hidden = !isProvider;
   } else if (opp.providerName) {
     providerSection.hidden = false;
     providerText.textContent = `Managed by ${opp.providerName}. Visibility status: approved by Questa staff.`;
@@ -86,19 +85,45 @@
   });
 
   const claimModal = document.getElementById('claimListingModal');
-  if (claimBtn) {
-    claimBtn.addEventListener('click', () => {
-      claimModal.hidden = false;
-    });
+  const claimModalIntro = document.getElementById('claimModalIntro');
+  const claimModalSuccess = document.getElementById('claimModalSuccess');
+  const claimCalloutBtn = document.getElementById('claimListingCalloutBtn');
+
+  function resetClaimModal() {
+    claimModalIntro.hidden = false;
+    claimModalSuccess.hidden = true;
   }
-  document.querySelectorAll('.js-close-claim').forEach((el) => {
-    el.addEventListener('click', () => {
-      claimModal.hidden = true;
-    });
-  });
-  document.getElementById('submitClaimBtn').addEventListener('click', () => {
+
+  function openClaimModal() {
+    document.getElementById('claimListingIntro').textContent =
+      `Review the claim process for “${opp.title}” before submitting your request.`;
+    resetClaimModal();
+    claimModal.hidden = false;
+  }
+
+  function closeClaimModal() {
     claimModal.hidden = true;
-    alert('Claim submitted. Questa admin will review this request in the admin portal. (prototype demo)');
+    resetClaimModal();
+  }
+
+  if (claimCalloutBtn) {
+    claimCalloutBtn.addEventListener('click', openClaimModal);
+  }
+  if (claimBtn) {
+    claimBtn.addEventListener('click', openClaimModal);
+  }
+
+  document.querySelectorAll('.js-close-claim').forEach((el) => {
+    el.addEventListener('click', closeClaimModal);
+  });
+
+  document.getElementById('submitClaimBtn').addEventListener('click', () => {
+    if (isProvider) {
+      claimModalIntro.hidden = true;
+      claimModalSuccess.hidden = false;
+      return;
+    }
+    window.location.assign('provider-login.html');
   });
 
   const createAccountModal = document.getElementById('createAccountModal');

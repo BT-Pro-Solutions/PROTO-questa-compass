@@ -102,7 +102,7 @@
                     <p class="provider-callout__eyebrow">Unclaimed listing</p>
                     <h2 class="provider-callout__title">Are you the provider?</h2>
                     <p class="provider-callout__text">Provider partners can claim listings, keep details current, and receive Questa review status updates.</p>
-                    <a href="provider-login.html" class="builder-help-card__btn">Provider Login</a>
+                    <button type="button" class="builder-help-card__btn" id="claimListingCalloutBtn">Claim listing</button>
                 </div>
 
                 <div class="builder-help-card" data-auth-prompt>
@@ -140,31 +140,38 @@
 
     <div class="builder-modal" id="claimListingModal" hidden>
         <div class="builder-modal__backdrop js-close-claim"></div>
-        <div class="builder-modal__panel builder-modal__panel--account" role="dialog" aria-labelledby="claimListingTitle">
+        <div class="builder-modal__panel builder-modal__panel--claim" role="dialog" aria-labelledby="claimListingTitle">
             <button type="button" class="builder-modal__close js-close-claim" aria-label="Close">&times;</button>
-            <h2 class="builder-modal__title" id="claimListingTitle">Are you a provider?</h2>
-            <p class="builder-modal__text">Claiming connects this listing to your provider account. Questa staff will review your request and approve or deny access in the admin portal.</p>
-            <div class="builder-account-fields">
-                <label class="builder-field builder-field--full">
-                    <span class="builder-field__label">Organization Name</span>
-                    <input type="text" class="builder-input" value="Bright Futures Community Foundation">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Contact Name</span>
-                    <input type="text" class="builder-input" value="Alex Provider">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Contact Email</span>
-                    <input type="email" class="builder-input" value="alex@brightfutures.org">
-                </label>
-                <label class="builder-field builder-field--full">
-                    <span class="builder-field__label">How are you connected to this listing?</span>
-                    <textarea class="builder-input provider-textarea">I manage scholarship program information for this organization.</textarea>
-                </label>
+
+            <div id="claimModalIntro">
+                <h2 class="builder-modal__title" id="claimListingTitle">Claim Listing</h2>
+                <p class="builder-modal__text" id="claimListingIntro"></p>
+
+                <div class="claim-listing-info claim-listing-info--modal">
+                    <article>
+                        <h3 class="claim-listing-info__title">Who can claim a listing?</h3>
+                        <p>Provider partners who are authorized to manage listings on behalf of an organization may claim an unclaimed resource. You should only claim listings your organization operates or officially represents.</p>
+                    </article>
+                    <article>
+                        <h3 class="claim-listing-info__title">What happens after you claim?</h3>
+                        <p>Your claim is linked to your provider account and appears in My Listings with a claim-submitted status. You will not be able to edit the listing until Questa staff completes their review.</p>
+                    </article>
+                    <article>
+                        <h3 class="claim-listing-info__title">Questa staff review</h3>
+                        <p>Questa staff will approve or deny your claim request. If approved, you can manage the listing from your provider portal. Any edits you make after approval will also be reviewed by Questa staff before going live in Compass.</p>
+                    </article>
+                </div>
+
+                <div class="builder-modal__actions builder-modal__actions--end">
+                    <button type="button" class="builder-btn builder-btn--cancel js-close-claim">Cancel</button>
+                    <button type="button" class="builder-btn builder-btn--primary" id="submitClaimBtn">Claim listing</button>
+                </div>
             </div>
-            <div class="builder-modal__actions builder-modal__actions--end">
-                <button type="button" class="builder-btn builder-btn--cancel js-close-claim">Cancel</button>
-                <button type="button" class="builder-btn builder-btn--primary" id="submitClaimBtn">Submit Claim Request</button>
+
+            <div id="claimModalSuccess" hidden>
+                <h2 class="builder-modal__title">Claim requested</h2>
+                <p class="builder-modal__text">Your claim has been submitted. Questa staff will review your request and update the listing status in your provider portal.</p>
+                <a href="provider-resources.html" class="builder-btn builder-btn--primary builder-btn--full">Go to My Listings</a>
             </div>
         </div>
     </div>
