@@ -32,6 +32,24 @@
   document.getElementById('detailType').textContent = opp.type;
   document.getElementById('detailDescription').textContent = opp.description;
 
+  const providerSection = document.getElementById('providerOwnershipSection');
+  const providerText = document.getElementById('providerOwnershipText');
+  const unclaimedCallout = document.getElementById('unclaimedListingCallout');
+  const claimBtn = document.getElementById('claimListingBtn');
+  const isProvider = typeof CompassAuth !== 'undefined'
+    && CompassAuth.isLoggedIn()
+    && CompassAuth.getUser().role === 'provider';
+
+  if (opp.providerApprovalStatus === 'unclaimed') {
+    providerSection.hidden = false;
+    providerText.textContent = 'This resource is not currently connected to a provider account. Providers can request ownership and Questa staff will review before edit access is granted.';
+    unclaimedCallout.hidden = false;
+    claimBtn.hidden = !isProvider;
+  } else if (opp.providerName) {
+    providerSection.hidden = false;
+    providerText.textContent = `Managed by ${opp.providerName}. Visibility status: approved by Questa staff.`;
+  }
+
   const statusEl = document.getElementById('detailStatus');
   if (opp.status === 'open') {
     statusEl.textContent = 'Open';
@@ -65,6 +83,20 @@
   syncFavoriteButton(CompassFavorites.isFavorite(oppId));
   favoriteBtn.addEventListener('click', () => {
     syncFavoriteButton(CompassFavorites.toggleFavorite(oppId));
+  });
+
+  const claimModal = document.getElementById('claimListingModal');
+  claimBtn.addEventListener('click', () => {
+    claimModal.hidden = false;
+  });
+  document.querySelectorAll('.js-close-claim').forEach((el) => {
+    el.addEventListener('click', () => {
+      claimModal.hidden = true;
+    });
+  });
+  document.getElementById('submitClaimBtn').addEventListener('click', () => {
+    claimModal.hidden = true;
+    alert('Claim submitted. Questa admin will review this request in the admin portal. (prototype demo)');
   });
 
   const createAccountModal = document.getElementById('createAccountModal');

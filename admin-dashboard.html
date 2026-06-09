@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-provider">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login js-login">Log In</a>
+        </div>
+    </header>
+
+    <div data-user-nav data-active-nav="admin-dashboard"></div>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="7" y="8" width="26" height="24" rx="3" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M13 16h14M13 22h9M27 24l3 3 5-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Admin Dashboard</h1>
+        <p class="portal-hero__subtitle">Review pending resources, provider claims, and partner invitations.</p>
+    </section>
+
+    <main class="portal-content">
+        <section class="portal-section admin-metrics">
+            <article>
+                <span class="admin-metric__badge">4</span>
+                <h2>Resources Pending Approval</h2>
+                <p>Dashboard badge mirrors the email notice Questa staff receives.</p>
+            </article>
+            <article>
+                <span class="admin-metric__badge">2</span>
+                <h2>Claim Requests</h2>
+                <p>Providers waiting to manage unclaimed listings.</p>
+            </article>
+            <article>
+                <span class="admin-metric__badge">1</span>
+                <h2>Bulk Uploads</h2>
+                <p>CSV batch staged for scholarship review.</p>
+            </article>
+        </section>
+
+        <section class="portal-section provider-form-card">
+            <div class="provider-services-header">
+                <div>
+                    <h2 class="portal-section__title">Review Queue</h2>
+                    <p class="portal-section__desc">Approving a submitted listing with a contact person auto-creates a provider-role account and sends welcome/setup email.</p>
+                </div>
+                <button type="button" class="builder-btn builder-btn--primary" id="stubProviderBtn">Pre-stub Provider Account</button>
+            </div>
+
+            <div class="admin-review-list">
+                <article class="admin-review-item">
+                    <div>
+                        <span class="provider-status provider-status--pending">New listing</span>
+                        <h3>Regional STEM Completion Scholarship</h3>
+                        <p>Submitted by Alex Provider. Contact account will be created on approval.</p>
+                    </div>
+                    <div class="admin-review-item__actions">
+                        <button type="button" class="builder-btn builder-btn--primary js-admin-action">Approve</button>
+                        <button type="button" class="builder-btn builder-btn--secondary js-admin-action">Request Edits</button>
+                    </div>
+                </article>
+                <article class="admin-review-item">
+                    <div>
+                        <span class="provider-status provider-status--review">Claim request</span>
+                        <h3>EARN Indiana</h3>
+                        <p>Bright Futures Community Foundation requested ownership of an unclaimed listing.</p>
+                    </div>
+                    <div class="admin-review-item__actions">
+                        <button type="button" class="builder-btn builder-btn--primary js-admin-action">Approve Claim</button>
+                        <button type="button" class="builder-btn builder-btn--secondary js-admin-action">Deny</button>
+                    </div>
+                </article>
+                <article class="admin-review-item">
+                    <div>
+                        <span class="provider-status provider-status--pending">No contact attached</span>
+                        <h3>Questa Staff Added Resource</h3>
+                        <p>Staff-created entry can go live without a provider contact person.</p>
+                    </div>
+                    <div class="admin-review-item__actions">
+                        <button type="button" class="builder-btn builder-btn--primary js-admin-action">Approve</button>
+                        <button type="button" class="builder-btn builder-btn--secondary js-admin-action">Hold</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="portal-section provider-form-card">
+            <h2 class="portal-section__title">Invitation Preview</h2>
+            <p class="portal-section__desc">This represents the Questa-created account path: staff fills most information, sends invitation, and partner accepts to review/edit before finalizing.</p>
+            <div class="provider-invite-preview">
+                <p><strong>To:</strong> partner@communityfoundation.org</p>
+                <p><strong>Subject:</strong> Welcome to Questa Compass Provider Portal</p>
+                <p>Your provider account has been started by Questa staff. Click the invitation link to set your password, review pre-filled organization details, and finalize your service listings.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.5"></script>
+    <script>
+      document.getElementById('stubProviderBtn').addEventListener('click', () => {
+        alert('Provider account pre-stubbed and invitation email queued. (prototype demo)');
+      });
+
+      document.querySelectorAll('.js-admin-action').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          alert(`${btn.textContent.trim()} recorded. (prototype demo)`);
+        });
+      });
+    </script>
+</body>
+</html>

@@ -1,8 +1,8 @@
 (function (global) {
   const STORAGE_KEY = 'compass-session';
-  const DEFAULT_USER = { initials: 'KT', firstName: 'Kevin', lastName: 'Test' };
+  const DEFAULT_USER = { initials: 'KT', firstName: 'Kevin', lastName: 'Test', role: 'student' };
 
-  const USER_NAV_ITEMS = [
+  const STUDENT_NAV_ITEMS = [
     {
       id: 'dashboard',
       label: 'My Dashboard',
@@ -35,7 +35,39 @@
     },
   ];
 
-  const PROTECTED_PAGES = ['dashboard.html', 'security.html', 'compass.html'];
+  const PROVIDER_NAV_ITEMS = [
+    {
+      id: 'provider-account',
+      label: 'Account',
+      href: 'provider-account.html',
+      icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 16c.8-3.1 2.8-5 5.5-5s4.7 1.9 5.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    },
+    {
+      id: 'provider-services',
+      label: 'Services',
+      href: 'provider-resources.html',
+      icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 4.5h12M3 9h12M3 13.5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>',
+    },
+  ];
+
+  const ADMIN_NAV_ITEMS = [
+    {
+      id: 'admin-dashboard',
+      label: 'Admin Dashboard',
+      href: 'admin-dashboard.html',
+      icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h8M5 9h8M5 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    },
+  ];
+
+  const PROTECTED_PAGES = [
+    'dashboard.html',
+    'security.html',
+    'compass.html',
+    'provider-account.html',
+    'provider-resources.html',
+    'provider-resource-detail.html',
+    'admin-dashboard.html',
+  ];
 
   function getSession() {
     try {
@@ -51,7 +83,7 @@
   }
 
   function getUser() {
-    return getSession()?.user || DEFAULT_USER;
+    return { ...DEFAULT_USER, ...(getSession()?.user || {}) };
   }
 
   function login(user) {
@@ -74,6 +106,9 @@
     const page = getCurrentPage();
     const params = new URLSearchParams(window.location.search);
 
+    if (page === 'provider-account.html') return 'provider-account';
+    if (page === 'provider-resources.html' || page === 'provider-resource-detail.html') return 'provider-services';
+    if (page === 'admin-dashboard.html') return 'admin-dashboard';
     if (page === 'dashboard.html') return 'dashboard';
     if (page === 'compass.html') return 'compass';
     if (page === 'security.html') return 'account';
@@ -82,8 +117,14 @@
     return null;
   }
 
+  function getNavItemsForRole(role) {
+    if (role === 'provider') return PROVIDER_NAV_ITEMS;
+    if (role === 'admin') return ADMIN_NAV_ITEMS;
+    return STUDENT_NAV_ITEMS;
+  }
+
   function renderUserNav(activeId) {
-    const tabs = USER_NAV_ITEMS.map((item) => {
+    const tabs = getNavItemsForRole(getUser().role).map((item) => {
       const isActive = item.id === activeId;
       return `
         <a href="${item.href}" class="user-nav__tab${isActive ? ' is-active' : ''}"${isActive ? ' aria-current="page"' : ''}>
@@ -96,6 +137,17 @@
   }
 
   function renderLoggedInActions(user) {
+    const dashboardHref = user.role === 'provider'
+      ? 'provider-resources.html'
+      : user.role === 'admin'
+        ? 'admin-dashboard.html'
+        : 'dashboard.html';
+    const dashboardLabel = user.role === 'provider'
+      ? 'Provider Portal'
+      : user.role === 'admin'
+        ? 'Admin Dashboard'
+        : 'My Dashboard';
+
     return `
       <a href="results.html" class="header-search-btn" aria-label="Search">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
@@ -108,7 +160,7 @@
           <span class="user-avatar__initials">${user.initials}</span>
         </button>
         <div class="user-menu__dropdown" id="userMenuDropdown" hidden>
-          <a href="dashboard.html" class="user-menu__item">My Dashboard</a>
+          <a href="${dashboardHref}" class="user-menu__item">${dashboardLabel}</a>
           <a href="index.html" class="user-menu__item user-menu__item--logout js-logout">Log Out</a>
         </div>
       </div>`;
@@ -127,9 +179,20 @@
     const loggedIn = isLoggedIn();
     const user = getUser();
 
-    actions.querySelectorAll('.js-login, .btn-login:not(.js-create-account), .header-search-btn, .user-menu').forEach((el) => {
+    actions.querySelectorAll('.js-login, .header-search-btn, .user-menu').forEach((el) => {
       el.remove();
     });
+
+    const staticProviderLink = actions.querySelector('.js-provider-static');
+    if (loggedIn && staticProviderLink) {
+      staticProviderLink.remove();
+    }
+
+    if (!loggedIn && staticProviderLink) {
+      document.body.classList.toggle('is-logged-in', false);
+      applyLoggedInPageLayout();
+      return;
+    }
 
     const fragment = document.createDocumentFragment();
     const temp = document.createElement('div');
@@ -238,7 +301,7 @@
 
   function bindLoginTriggers() {
     document.addEventListener('click', (e) => {
-      const loginBtn = e.target.closest('.js-login, a.btn-login:not(.js-create-account)');
+      const loginBtn = e.target.closest('.js-login');
       if (!loginBtn || loginBtn.classList.contains('js-create-account')) return;
 
       e.preventDefault();

@@ -3732,7 +3732,7 @@
     position: relative;
     background: #2d6a76;
     border-radius: 28px;
-    padding: 52px 28px 32px;
+    padding: 28px 32px;
     text-align: center;
     color: #fff;
   }
@@ -3797,6 +3797,285 @@
     background: rgba(255, 255, 255, 0.12);
   }
 
+  .page-provider {
+    background: #fff;
+  }
+
+  .provider-auth-card,
+  .provider-form-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .provider-auth-card__eyebrow,
+  .provider-callout__eyebrow {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--dark-teal);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .provider-auth-card .builder-field,
+  .provider-form-grid .builder-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .provider-auth-card__actions,
+  .provider-form-actions,
+  .provider-services-header__actions,
+  .admin-review-item__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .provider-auth-card__note {
+    margin: 18px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--gray-text);
+  }
+
+  .provider-link-button {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--dark-teal);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .provider-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
+  }
+
+  .provider-textarea {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+
+  .provider-onboarding-paths,
+  .admin-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .provider-onboarding-paths article,
+  .admin-metrics article,
+  .provider-bulk-upload,
+  .provider-review-note,
+  .provider-invite-preview {
+    border-radius: 10px;
+    background: #f4f8f9;
+    padding: 20px;
+  }
+
+  .provider-onboarding-paths h2,
+  .admin-metrics h2,
+  .provider-bulk-upload h2 {
+    margin: 8px 0;
+    font-size: 18px;
+    color: #1f404d;
+  }
+
+  .provider-onboarding-paths p,
+  .admin-metrics p,
+  .provider-bulk-upload p,
+  .provider-invite-preview p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .provider-step-badge,
+  .admin-metric__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--green);
+    color: #1f404d;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .provider-services-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    max-width: 1100px;
+  }
+
+  .provider-resource-list,
+  .admin-review-list {
+    display: grid;
+    gap: 16px;
+  }
+
+  .provider-resource-card,
+  .admin-review-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 22px 24px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .provider-resource-card h3,
+  .admin-review-item h3 {
+    margin: 8px 0;
+    font-size: 18px;
+    color: #1f404d;
+  }
+
+  .provider-resource-card p,
+  .admin-review-item p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .provider-resource-card__main {
+    flex: 1;
+  }
+
+  .provider-resource-card__meta {
+    margin-top: 10px !important;
+    color: #6f7f86;
+    font-weight: 600;
+  }
+
+  .provider-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .provider-status--approved {
+    background: #e8f5e8;
+    color: #2d6a3e;
+  }
+
+  .provider-status--pending {
+    background: #fff8e6;
+    color: #8a6d00;
+  }
+
+  .provider-status--review {
+    background: #e8f4f6;
+    color: var(--dark-teal);
+  }
+
+  .provider-detail-head,
+  .provider-bulk-upload {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 20px 0 24px;
+  }
+
+  .provider-review-note {
+    margin-bottom: 24px;
+    color: #1f404d;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .provider-check {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f404d;
+  }
+
+  .provider-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
+  }
+
+  .provider-callout {
+    margin-bottom: 24px;
+    border-radius: 10px;
+    background: #fff;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .provider-callout__title {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1f404d;
+  }
+
+  .provider-callout__text {
+    margin: 0 0 18px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .provider-callout .builder-help-card__btn {
+    border-color: var(--dark-teal);
+    color: var(--dark-teal);
+  }
+
+  .provider-callout .builder-help-card__btn:hover {
+    background: #e8f4f6;
+  }
+
+  .admin-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 1100px;
+  }
+
+  .admin-metric__badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 18px;
+  }
+
+  .results-search-banner__text--link {
+    margin-top: 12px;
+  }
+
+  .results-search-banner__text--link a {
+    color: var(--dark-teal);
+    font-weight: 800;
+  }
+
   @media (max-width: 720px) {
     .user-nav__inner {
       overflow-x: auto;
@@ -3820,5 +4099,20 @@
 
     .portal-content {
       padding: 28px 16px 48px;
+    }
+
+    .provider-form-grid,
+    .provider-onboarding-paths,
+    .admin-metrics {
+      grid-template-columns: 1fr;
+    }
+
+    .provider-services-header,
+    .provider-resource-card,
+    .admin-review-item,
+    .provider-detail-head,
+    .provider-bulk-upload {
+      flex-direction: column;
+      align-items: stretch;
     }
   }

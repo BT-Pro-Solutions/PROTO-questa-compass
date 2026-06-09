@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Provider Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-provider">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login js-login">Log In</a>
+        </div>
+    </header>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="7" y="12" width="26" height="18" rx="3" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M14 12V9a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v3" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M13 20h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Provider Portal</h1>
+        <p class="portal-hero__subtitle">A semi-hidden area for partner organizations to manage Compass listings.</p>
+    </section>
+
+    <main class="portal-content portal-content--narrow">
+        <section class="portal-section provider-auth-card">
+            <p class="provider-auth-card__eyebrow">Partner access</p>
+            <h2 class="portal-section__title">Manage Your Services</h2>
+            <p class="portal-section__desc">Sign in as a provider to add resources, edit your listings, and see Questa approval status before services go live.</p>
+            <label class="builder-field">
+                <span class="builder-field__label">Email Address</span>
+                <input type="email" class="builder-input" value="alex@brightfutures.org">
+            </label>
+            <label class="builder-field">
+                <span class="builder-field__label">Password</span>
+                <input type="password" class="builder-input" value="password">
+            </label>
+            <div class="provider-auth-card__actions">
+                <button type="button" class="builder-btn builder-btn--primary" id="providerLoginBtn">Log In as Provider</button>
+                <a href="provider-create-account.html" class="builder-btn builder-btn--secondary">Create Provider Account</a>
+            </div>
+            <p class="provider-auth-card__note">Questa staff can also <button type="button" class="provider-link-button" id="adminLoginBtn">open the admin review dashboard</button> for this prototype.</p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.5"></script>
+    <script>
+      document.getElementById('providerLoginBtn').addEventListener('click', () => {
+        CompassAuth.login({ initials: 'AP', firstName: 'Alex', lastName: 'Provider', role: 'provider' });
+        window.location.assign('provider-resources.html');
+      });
+
+      document.getElementById('adminLoginBtn').addEventListener('click', () => {
+        CompassAuth.login({ initials: 'QA', firstName: 'Questa', lastName: 'Admin', role: 'admin' });
+        window.location.assign('admin-dashboard.html');
+      });
+    </script>
+</body>
+</html>

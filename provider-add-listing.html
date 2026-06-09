@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Add a New Listing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-provider">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="provider-login.html" class="btn-login js-provider-static">Provider Login</a>
+        </div>
+    </header>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="8" y="8" width="24" height="24" rx="3" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M20 14v12M14 20h12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Add a New Listing</h1>
+        <p class="portal-hero__subtitle">Anyone can submit a resource. It will not go live until Questa staff approves it.</p>
+    </section>
+
+    <main class="portal-content">
+        <section class="portal-section provider-form-card">
+            <div class="provider-review-note">
+                <strong>Approval workflow:</strong> When Questa approves a submitted listing with a contact person, a provider account is auto-created with provider role and a welcome email with setup steps is sent.
+            </div>
+
+            <form class="provider-form-grid">
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Resource Title</span>
+                    <input type="text" class="builder-input" value="Regional STEM Completion Scholarship">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Category</span>
+                    <select class="builder-input">
+                        <option>Funding</option>
+                        <option>Careers</option>
+                        <option>Education Help</option>
+                        <option>Learning Help</option>
+                        <option>Education &amp; Training</option>
+                        <option>Personal Help</option>
+                    </select>
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Provider Organization</span>
+                    <input type="text" class="builder-input" value="Bright Futures Community Foundation">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Amount / Key Dates</span>
+                    <input type="text" class="builder-input" value="$2,500 • Opens August 1">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Application URL</span>
+                    <input type="url" class="builder-input" value="https://brightfutures.example.org/stem">
+                </label>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Description</span>
+                    <textarea class="builder-input provider-textarea">Scholarship for students completing STEM-related certificates, associate degrees, or bachelor&apos;s degrees.</textarea>
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Contact Person Name</span>
+                    <input type="text" class="builder-input" value="Alex Provider">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Contact Person Email</span>
+                    <input type="email" class="builder-input" value="alex@brightfutures.org">
+                </label>
+                <label class="provider-check builder-field--full">
+                    <input type="checkbox" id="noContactCheck">
+                    <span>Questa staff entry: add this resource with no contact person attached.</span>
+                </label>
+            </form>
+
+            <div class="provider-bulk-upload" id="bulkUploadPanel">
+                <div>
+                    <h2>Bulk Upload for Funding Providers</h2>
+                    <p>Community foundations and scholarship providers can upload a CSV template for multiple awards.</p>
+                </div>
+                <button type="button" class="builder-btn builder-btn--secondary" id="bulkUploadBtn">Upload CSV Template</button>
+            </div>
+
+            <div class="provider-form-actions">
+                <button type="button" class="builder-btn builder-btn--primary" id="submitListingBtn">Submit for Questa Review</button>
+                <a href="provider-resources.html" class="detail-actions__back">Back to Services</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.5"></script>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'bulk') {
+        document.getElementById('bulkUploadPanel').scrollIntoView();
+      }
+
+      document.getElementById('bulkUploadBtn').addEventListener('click', () => {
+        alert('CSV template selected. Bulk rows would be staged for Questa review. (prototype demo)');
+      });
+
+      document.getElementById('submitListingBtn').addEventListener('click', () => {
+        const noContact = document.getElementById('noContactCheck').checked;
+        alert(noContact
+          ? 'Listing submitted without a contact person. Questa staff can approve it manually. (prototype demo)'
+          : 'Listing submitted. On approval, the contact person receives provider account setup steps. (prototype demo)');
+      });
+    </script>
+</body>
+</html>

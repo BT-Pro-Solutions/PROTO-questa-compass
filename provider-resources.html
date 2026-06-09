@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Provider Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-provider">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login js-login">Log In</a>
+        </div>
+    </header>
+
+    <div data-user-nav data-active-nav="provider-services"></div>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect x="8" y="7" width="24" height="26" rx="3" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M14 15h12M14 21h12M14 27h7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Services</h1>
+        <p class="portal-hero__subtitle">Resources added by or assigned to your provider account.</p>
+    </section>
+
+    <main class="portal-content">
+        <section class="portal-section provider-services-header">
+            <div>
+                <h2 class="portal-section__title">My Resources</h2>
+                <p class="portal-section__desc">Listings stay hidden or marked pending until Questa staff approves them.</p>
+            </div>
+            <div class="provider-services-header__actions">
+                <a href="provider-add-listing.html?source=provider" class="builder-btn builder-btn--primary">Add New Listing</a>
+                <a href="provider-add-listing.html?mode=bulk" class="builder-btn builder-btn--secondary">Bulk Upload</a>
+            </div>
+        </section>
+
+        <section class="portal-section">
+            <div class="provider-resource-list">
+                <article class="provider-resource-card">
+                    <div class="provider-resource-card__main">
+                        <span class="provider-status provider-status--approved">Approved by Questa staff</span>
+                        <h3>Bright Futures Renewable Scholarship</h3>
+                        <p>Renewable award for Allen County learners pursuing certificates, associate degrees, or bachelor&apos;s degrees.</p>
+                        <p class="provider-resource-card__meta">Funding • Open year-round • Contact: Alex Provider</p>
+                    </div>
+                    <a href="provider-resource-detail.html?id=bf-scholarship" class="builder-btn builder-btn--secondary">View / Edit</a>
+                </article>
+
+                <article class="provider-resource-card">
+                    <div class="provider-resource-card__main">
+                        <span class="provider-status provider-status--pending">Pending approval</span>
+                        <h3>Bright Futures Emergency Grant</h3>
+                        <p>Short-term assistance for transportation, books, testing fees, and other student persistence needs.</p>
+                        <p class="provider-resource-card__meta">Funding • Submitted Jun 8 • Awaiting Questa review</p>
+                    </div>
+                    <a href="provider-resource-detail.html?id=bf-emergency" class="builder-btn builder-btn--secondary">View / Edit</a>
+                </article>
+
+                <article class="provider-resource-card">
+                    <div class="provider-resource-card__main">
+                        <span class="provider-status provider-status--review">Claim submitted</span>
+                        <h3>EARN Indiana</h3>
+                        <p>Claim request sent to Questa staff. Editing unlocks after admin approval.</p>
+                        <p class="provider-resource-card__meta">Claim request • Submitted by Alex Provider</p>
+                    </div>
+                    <a href="detail.html?topic=funding&amp;id=1" class="builder-btn builder-btn--secondary">View Public Listing</a>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.5"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Create Provider Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-provider">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="provider-login.html" class="btn-login js-provider-static">Provider Login</a>
+        </div>
+    </header>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="13" r="6" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M9 32c1-6 5-10 11-10s10 4 11 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M31 8v8M27 12h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Create Provider Account</h1>
+        <p class="portal-hero__subtitle">For organizations that want to manage services shown in Questa Compass.</p>
+    </section>
+
+    <main class="portal-content">
+        <section class="portal-section provider-form-card">
+            <div class="provider-onboarding-paths">
+                <article>
+                    <span class="provider-step-badge">Path 1</span>
+                    <h2>Provider creates account</h2>
+                    <p>Partner enters organization and contact details, then starts adding or claiming resources.</p>
+                </article>
+                <article>
+                    <span class="provider-step-badge">Path 2</span>
+                    <h2>Questa sends invitation</h2>
+                    <p>Staff pre-stubs account and resource info, then provider receives a welcome email to review and finalize.</p>
+                </article>
+            </div>
+
+            <form class="provider-form-grid">
+                <label class="builder-field">
+                    <span class="builder-field__label">Organization Name</span>
+                    <input type="text" class="builder-input" value="Bright Futures Community Foundation">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Organization Type</span>
+                    <select class="builder-input">
+                        <option>Community foundation</option>
+                        <option>Scholarship provider</option>
+                        <option>Training provider</option>
+                        <option>Support service provider</option>
+                    </select>
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Primary Contact First Name</span>
+                    <input type="text" class="builder-input" value="Alex">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Primary Contact Last Name</span>
+                    <input type="text" class="builder-input" value="Provider">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Email Address</span>
+                    <input type="email" class="builder-input" value="alex@brightfutures.org">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Phone</span>
+                    <input type="tel" class="builder-input" value="260-555-0198">
+                </label>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Services You Plan to Manage</span>
+                    <textarea class="builder-input provider-textarea">Scholarships, emergency grants, and renewable awards for Northeast Indiana learners.</textarea>
+                </label>
+            </form>
+
+            <div class="provider-form-actions">
+                <button type="button" class="builder-btn builder-btn--primary" id="createProviderBtn">Create Provider Account</button>
+                <a href="provider-login.html" class="detail-actions__back">Already have an account?</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.5"></script>
+    <script>
+      document.getElementById('createProviderBtn').addEventListener('click', () => {
+        CompassAuth.login({ initials: 'AP', firstName: 'Alex', lastName: 'Provider', role: 'provider' });
+        alert('Provider account created. Welcome email/setup steps would be sent here. (prototype demo)');
+        window.location.assign('provider-resources.html');
+      });
+    </script>
+</body>
+</html>

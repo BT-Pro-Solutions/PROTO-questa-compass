@@ -12,6 +12,8 @@
       eligibility: ['Young Adult Learner', 'Adult Learner'],
       match: 'strong',
       status: 'open',
+      providerName: null,
+      providerApprovalStatus: 'unclaimed',
     },
     {
       id: 2,
@@ -25,6 +27,8 @@
       eligibility: ['Adult Learner'],
       match: 'strong',
       status: 'open',
+      providerName: '1st Source Bank',
+      providerApprovalStatus: 'approved',
     },
     {
       id: 3,
@@ -38,6 +42,8 @@
       eligibility: ['High School'],
       match: 'strong',
       status: 'closed',
+      providerName: null,
+      providerApprovalStatus: 'unclaimed',
     },
     {
       id: 4,
@@ -51,6 +57,8 @@
       eligibility: ['High School'],
       match: 'fair',
       status: 'closed',
+      providerName: 'Indiana ACAC',
+      providerApprovalStatus: 'approved',
     },
     {
       id: 5,
@@ -64,6 +72,8 @@
       eligibility: ['High School'],
       match: 'fair',
       status: 'closed',
+      providerName: null,
+      providerApprovalStatus: 'unclaimed',
     },
     {
       id: 6,
@@ -77,6 +87,8 @@
       eligibility: ['Young Adult Learner', 'Adult Learner'],
       match: 'some',
       status: 'closed',
+      providerName: 'Indiana Commission for Higher Education',
+      providerApprovalStatus: 'approved',
     },
     {
       id: 7,
@@ -90,6 +102,8 @@
       eligibility: ['High School', 'Young Adult Learner'],
       match: 'strong',
       status: 'open',
+      providerName: 'Questa Education Foundation',
+      providerApprovalStatus: 'approved',
     },
     {
       id: 8,
@@ -103,6 +117,8 @@
       eligibility: ['High School', 'Young Adult Learner'],
       match: 'strong',
       status: 'open',
+      providerName: 'Indiana Commission for Higher Education',
+      providerApprovalStatus: 'approved',
     },
   ];
 

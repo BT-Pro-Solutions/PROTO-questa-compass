@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass — Edit Provider Resource</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+</head>
+<body class="page-provider">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">
+            <img src="assets/compass-logo.svg" alt="Compass">
+        </a>
+        <div class="site-header__actions">
+            <button class="language-btn" type="button" aria-label="Select language">
+                <img src="assets/language.png" alt="Language / Idioma / ဘာသာစကား">
+            </button>
+            <a href="#" class="btn-login js-login">Log In</a>
+        </div>
+    </header>
+
+    <div data-user-nav data-active-nav="provider-services"></div>
+
+    <section class="portal-hero">
+        <div class="portal-hero__icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <path d="M9 29l1.5-7.5L25 7a4.2 4.2 0 0 1 6 6L16.5 27.5 9 29z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M22 10l8 8" stroke="currentColor" stroke-width="2.5"/>
+            </svg>
+        </div>
+        <h1 class="portal-hero__title">Edit Resource</h1>
+        <p class="portal-hero__subtitle">Manage listing details and see whether the resource is visible in Compass.</p>
+    </section>
+
+    <main class="portal-content">
+        <section class="portal-section provider-form-card">
+            <a href="provider-resources.html" class="detail-actions__back">&larr; Back to Services</a>
+            <div class="provider-detail-head">
+                <div>
+                    <h2 class="portal-section__title">Bright Futures Renewable Scholarship</h2>
+                    <p class="portal-section__desc">Visible status shows whether Questa staff has approved this listing for public results.</p>
+                </div>
+                <span class="provider-status provider-status--approved">Approved by Questa staff</span>
+            </div>
+
+            <form class="provider-form-grid">
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Resource Title</span>
+                    <input type="text" class="builder-input" value="Bright Futures Renewable Scholarship">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Resource Type</span>
+                    <select class="builder-input">
+                        <option>Scholarship</option>
+                        <option>Grant</option>
+                        <option>Training program</option>
+                        <option>Support service</option>
+                    </select>
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Visibility Status</span>
+                    <input type="text" class="builder-input" value="Live in Compass results" readonly>
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Key Dates / Amount</span>
+                    <input type="text" class="builder-input" value="Up to $4,000 • Open year-round">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Contact Person</span>
+                    <input type="text" class="builder-input" value="Alex Provider">
+                </label>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Description</span>
+                    <textarea class="builder-input provider-textarea">Renewable award for Allen County learners pursuing certificates, associate degrees, or bachelor&apos;s degrees.</textarea>
+                </label>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Eligibility</span>
+                    <textarea class="builder-input provider-textarea">Open to adult learners and recent high school graduates who live in Allen County and plan to enroll in an eligible postsecondary program.</textarea>
+                </label>
+            </form>
+
+            <div class="provider-form-actions">
+                <button type="button" class="builder-btn builder-btn--primary" id="saveResourceBtn">Save Changes</button>
+                <button type="button" class="builder-btn builder-btn--secondary" id="submitReviewBtn">Submit Update for Review</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
+        <nav class="site-footer__links" aria-label="Footer links">
+            <a href="#">Share Your Feedback</a>
+            <a href="#">Take a Break</a>
+            <a href="#">Privacy Policy</a>
+        </nav>
+    </footer>
+
+    <script src="auth.js?v=1.0.5"></script>
+    <script>
+      document.getElementById('saveResourceBtn').addEventListener('click', () => {
+        alert('Draft changes saved. (prototype demo)');
+      });
+
+      document.getElementById('submitReviewBtn').addEventListener('click', () => {
+        alert('Update submitted for Questa staff review. (prototype demo)');
+      });
+    </script>
+</body>
+</html>
