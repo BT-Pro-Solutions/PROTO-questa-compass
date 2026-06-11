@@ -36,14 +36,23 @@
   }
 
   .site-logo {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
     line-height: 0;
   }
 
   .site-logo img {
     display: block;
-    height: 71px;
     width: auto;
+  }
+
+  .site-logo__circle {
+    height: 55px;
+  }
+
+  .site-logo__text {
+    height: 36px;
   }
 
   .site-header__actions {
@@ -612,6 +621,10 @@
   @media (max-width: 720px) {
     .site-header {
       padding: 13px 20px;
+    }
+
+    .site-logo__text {
+      display: none;
     }
 
     .language-btn {

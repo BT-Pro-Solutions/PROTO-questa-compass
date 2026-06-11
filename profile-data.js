@@ -1,28 +1,116 @@
 (function (global) {
   const STORAGE_KEY = 'compass-profile';
 
+  const TOPIC_INTEREST_OPTIONS = {
+    'learning-help': [
+      'Academic / Study Skills',
+      'English Language Skills',
+      'High School Completion (HSE / GED)',
+      'Tutoring / Study Tables',
+    ],
+    careers: [
+      'Apprenticeships',
+      'Job Shadowing',
+      'Information about Careers',
+      'Internships / Co-ops / Work-Based Learning',
+      'Self-Assessment for Careers',
+      'Skill Development',
+    ],
+    'education-help': [
+      'Campus Visits',
+      'College Bridge / College Success Program',
+      'College Credit for Prior Experience',
+      'College or Training Application Process',
+      'College or Training Exploration',
+      'Early College Classes / Dual Credit',
+      'Transition Planning (time off and re-entry)',
+      'FAFSA Help',
+      'Financial Literacy',
+    ],
+    funding: [
+      'Scholarships',
+      'Grants',
+      'Work-Study / Earn Programs',
+      'Loan Forgiveness',
+      'Employer Tuition Assistance',
+      'Emergency / Gap Funding',
+    ],
+    'education-training': [
+      'Certificate Programs',
+      'Associate Degree',
+      'Bachelor Degree',
+      'Master Degree',
+      'Doctoral Degree',
+      'Employer-Provided Training',
+      'Journeyperson Card',
+      'Licensure',
+    ],
+    'personal-help': [
+      'Childcare',
+      'Clubs & Athletics',
+      'Documentation / License',
+      'Guidance / Support Services',
+      'Housing',
+      'Legal',
+      'Mentoring',
+      'Social Connections',
+      'Transportation',
+      'Wellness - Mental and Physical Health',
+    ],
+  };
+
+  const TOPIC_INTEREST_LABELS = {
+    'learning-help': 'Learning Help',
+    careers: 'Careers',
+    'education-help': 'Education Readiness',
+    funding: 'Funding',
+    'education-training': 'Education & Training',
+    'personal-help': 'Personal Help',
+  };
+
+  function buildTopicInterestFields() {
+    return Object.entries(TOPIC_INTEREST_OPTIONS).map(([topicKey, options]) => {
+      const label = TOPIC_INTEREST_LABELS[topicKey];
+      return {
+        id: `${topicKey}-interests`,
+        label: `${label} Interests`,
+        tooltip: `Select the ${label.toLowerCase()} resources that match what you\u2019re looking for.`,
+        type: 'multiselect',
+        modalTitle: `Select ${label} Interests`,
+        modalDescription: `Choose the ${label.toLowerCase()} sub-categories that apply to you. You can select more than one.`,
+        placeholder: `Select ${label.toLowerCase()} interests\u2026`,
+        options,
+      };
+    });
+  }
+
   const TOPICS = {
     'learning-help': {
       title: 'Find Learning Help',
       expandedSections: ['about-you'],
-      promotedFieldsBySection: {},
+      promotedFieldsBySection: {
+        'getting-started': ['learning-help-interests'],
+      },
     },
     careers: {
       title: 'Find Careers',
       expandedSections: ['about-you'],
       promotedFieldsBySection: {
-        'identity-groups': ['career-interests'],
+        'getting-started': ['careers-interests'],
       },
     },
     'education-help': {
       title: 'Find Education Help',
       expandedSections: ['about-you', 'education-interests'],
-      promotedFieldsBySection: {},
+      promotedFieldsBySection: {
+        'getting-started': ['education-help-interests'],
+      },
     },
     funding: {
       title: 'Find Funding',
       expandedSections: ['about-you', 'education-interests', 'financial-aid'],
       promotedFieldsBySection: {
+        'getting-started': ['funding-interests'],
         'identity-groups': ['race', 'ethnicity', 'gender', 'designed-for'],
       },
     },
@@ -30,8 +118,8 @@
       title: 'Find Education & Training',
       expandedSections: ['about-you'],
       promotedFieldsBySection: {
+        'getting-started': ['education-training-interests'],
         'education-interests': [
-          'program-types',
           'field-of-study',
           'training-provider',
           'additional-training-provider',
@@ -42,12 +130,17 @@
       title: 'Find Personal Help',
       expandedSections: ['about-you'],
       promotedFieldsBySection: {
-        'identity-groups': ['health-related'],
+        'getting-started': ['personal-help-interests'],
       },
     },
   };
 
   const SECTIONS = {
+    'getting-started': {
+      title: 'What do you need help with?',
+      tooltip: 'Select the specific types of resources you\u2019re looking for within this topic.',
+      fields: buildTopicInterestFields(),
+    },
     'about-you': {
       title: 'About you',
       tooltip: 'Tell us about your background.',
@@ -126,14 +219,14 @@
           modalDescription: 'Choose the program type(s) you are currently pursuing or plan to pursue.',
           placeholder: 'Select program types\u2026',
           options: [
-            'Certificate',
+            'Certificate Programs',
             'Associate Degree',
-            'Bachelor\u2019s Degree',
-            'Master\u2019s Degree',
-            'Doctorate Degree',
-            'Apprenticeship',
+            'Bachelor Degree',
+            'Master Degree',
+            'Doctoral Degree',
+            'Employer-Provided Training',
+            'Journeyperson Card',
             'Licensure',
-            'Workforce Training',
           ],
         },
         {
@@ -331,6 +424,7 @@
 
   global.CompassProfile = {
     TOPICS,
+    TOPIC_INTEREST_OPTIONS,
     SECTIONS,
     QUIZ_TOPIC_MAP,
     MENU_TOPIC_MAP,
