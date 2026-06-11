@@ -6,9 +6,90 @@
   const edgeHighlight = document.querySelector('.cm-edge-highlight');
   const edgeGlow = document.querySelector('.cm-edge-glow');
   const options = document.querySelectorAll('.cm-option');
-  const descriptions = document.querySelectorAll('.cm-description-item');
+  const includesEl = document.querySelector('.cm-includes');
+  const includesItemEl = document.querySelector('.cm-includes__item');
 
   if (!compassMenu || !centerEl || !needle) return;
+
+  const MENU_TOPICS = [
+    'careers',
+    'education-help',
+    'funding',
+    'learning-help',
+    'education-training',
+    'personal-help',
+  ];
+
+  const INCLUDES_VISIBLE_MS = 2400;
+  const INCLUDES_FADE_MS = 250;
+  let includesInterval = null;
+  let includesFadeTimer = null;
+  let includesSubcats = [];
+  let includesSubcatIndex = 0;
+  let activeIncludesIndex = null;
+
+  function stopIncludesCycle() {
+    if (includesInterval) {
+      clearInterval(includesInterval);
+      includesInterval = null;
+    }
+    if (includesFadeTimer) {
+      clearTimeout(includesFadeTimer);
+      includesFadeTimer = null;
+    }
+  }
+
+  function setIncludesItem(label, skipFade) {
+    if (!includesItemEl) return;
+    if (skipFade) {
+      includesItemEl.textContent = label;
+      includesItemEl.classList.remove('is-fading');
+      return;
+    }
+
+    includesItemEl.classList.add('is-fading');
+    includesFadeTimer = setTimeout(() => {
+      includesFadeTimer = null;
+      if (activeIncludesIndex === null) return;
+      includesItemEl.textContent = label;
+      includesItemEl.classList.remove('is-fading');
+    }, INCLUDES_FADE_MS);
+  }
+
+  function showIncludes(index) {
+    if (!includesEl || !includesItemEl) return;
+
+    const topic = MENU_TOPICS[index];
+    includesSubcats = (CompassProfile.TOPIC_INTEREST_OPTIONS || {})[topic] || [];
+    if (!includesSubcats.length) return;
+
+    stopIncludesCycle();
+    activeIncludesIndex = index;
+    includesSubcatIndex = 0;
+    includesEl.hidden = false;
+    includesEl.classList.add('is-active');
+    setIncludesItem(includesSubcats[0], true);
+
+    includesInterval = setInterval(() => {
+      if (activeIncludesIndex !== index) return;
+      includesSubcatIndex = (includesSubcatIndex + 1) % includesSubcats.length;
+      setIncludesItem(includesSubcats[includesSubcatIndex]);
+    }, INCLUDES_VISIBLE_MS);
+  }
+
+  function clearIncludes() {
+    stopIncludesCycle();
+    activeIncludesIndex = null;
+    includesSubcats = [];
+    if (includesEl) {
+      includesEl.classList.remove('is-active');
+      includesEl.hidden = true;
+    }
+    if (includesItemEl) {
+      includesItemEl.textContent = '';
+      includesItemEl.classList.remove('is-fading');
+    }
+  }
 
   const ITEM_ANGLES = [0, 60, 120, 180, 240, 300];
   const LOCKED_OFFSET = -30;
@@ -92,14 +173,12 @@
     compassMenu.classList.add('is-link-hover');
     edgeHighlight.style.transform = `rotate(${ITEM_ANGLES[index] + LOCKED_OFFSET}deg)`;
     edgeGlow.style.transform = `rotate(${ITEM_ANGLES[index]}deg)`;
-    descriptions.forEach((item, i) => {
-      item.classList.toggle('is-active', i === index);
-    });
+    showIncludes(index);
   }
 
   function clearActiveItem() {
     compassMenu.classList.remove('is-link-hover');
-    descriptions.forEach((item) => item.classList.remove('is-active'));
+    clearIncludes();
   }
 
   document.addEventListener('mousemove', (e) => {
@@ -107,15 +186,6 @@
     mouseY = e.clientY;
     needleTarget = getMouseAngle();
   });
-
-  const MENU_TOPICS = [
-    'careers',
-    'education-help',
-    'funding',
-    'learning-help',
-    'education-training',
-    'personal-help',
-  ];
 
   function navigateFromCompassTopic(topic) {
     const isLoggedIn = typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
