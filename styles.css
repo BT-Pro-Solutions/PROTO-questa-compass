@@ -349,16 +349,21 @@
   }
 
   .compass-card__intro {
+    font-size: 1.125rem;
+    color: #fff;
     grid-column: 1;
     grid-row: 1;
-    max-width: 600px;
+    p {
+      margin: 0;
+    }
   }
 
   .compass-card__title {
     font-weight: 500;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     line-height: 1.2;
     color: #fff;
+    margin: 4px 0;
   }
 
   .compass-card__description {

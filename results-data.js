@@ -11,9 +11,9 @@
       eligibility: ['High School', 'Young Adult Learner', 'Adult Learner'],
       topics: ['careers', 'education-training'],
       match: 'strong',
-      providerName: 'WorkOne Northeast',
+      providerName: null,
       logoUrl: null,
-      providerApprovalStatus: 'approved',
+      providerApprovalStatus: 'unclaimed',
       contact: {
         address: '201 E Rudisill Blvd, Suite 102, Fort Wayne, IN 46806',
         phone: '(260) 427-1146',
@@ -77,9 +77,9 @@
       eligibility: ['High School', 'Young Adult Learner', 'Adult Learner'],
       topics: ['education-training', 'careers'],
       match: 'fair',
-      providerName: 'NE Indiana Apprenticeship Hub',
+      providerName: null,
       logoUrl: null,
-      providerApprovalStatus: 'approved',
+      providerApprovalStatus: 'unclaimed',
       contact: {
         address: '1825 W Main St, Fort Wayne, IN 46808',
         phone: '(260) 555-0180',
@@ -99,7 +99,7 @@
       eligibility: ['High School', 'Young Adult Learner'],
       topics: ['careers', 'personal-help'],
       match: 'fair',
-      providerName: 'Boys & Girls Clubs of Fort Wayne',
+      providerName: null,
       logoUrl: null,
       providerApprovalStatus: 'unclaimed',
       contact: {

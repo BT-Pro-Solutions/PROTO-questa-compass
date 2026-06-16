@@ -107,8 +107,6 @@
     && CompassAuth.getUser().role === 'provider';
 
   if (opp.providerApprovalStatus === 'unclaimed') {
-    providerSection.hidden = false;
-    providerText.textContent = 'This listing is not currently connected to a provider account. Providers can request ownership and Questa staff will review before edit access is granted.';
     unclaimedCallout.hidden = false;
   } else if (opp.providerName) {
     providerSection.hidden = false;
