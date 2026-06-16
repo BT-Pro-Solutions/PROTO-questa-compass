@@ -4544,6 +4544,45 @@
     gap: 0 20px;
   }
 
+  .provider-form-section__title {
+    grid-column: 1 / -1;
+    margin: 28px 0 16px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--dark-teal);
+  }
+
+  .provider-form-section__title:first-child {
+    margin-top: 0;
+  }
+
+  .provider-form-section__title--full {
+    grid-column: 1 / -1;
+  }
+
+  .page-provider .builder-multiselect {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    color: #333;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .page-provider .builder-multiselect:hover,
+  .page-provider .builder-multiselect:focus {
+    border-color: #7eb8d4;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(126, 184, 212, 0.25);
+  }
+
   .provider-textarea {
     min-height: 120px;
     resize: vertical;

@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.2">
+    <link rel="stylesheet" href="styles.css?v=1.0.18">
 </head>
 <body class="page-provider">
     <header class="site-header">
@@ -62,34 +62,87 @@
                 <span class="provider-status" id="listingStatus"></span>
             </div>
 
-            <form class="provider-form-grid">
+            <form class="provider-form-grid" id="listingForm">
+                <h3 class="provider-form-section__title provider-form-section__title--full">Resource Information</h3>
                 <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Resource Title</span>
                     <input type="text" class="builder-input" id="fieldTitle">
                 </label>
+                <div class="builder-field">
+                    <div class="builder-field__head">
+                        <span class="builder-field__label">Main Topics</span>
+                    </div>
+                    <div class="builder-multiselect" role="button" tabindex="0" data-field="categories" aria-haspopup="dialog">
+                        <span class="builder-multiselect__inner"><span class="builder-multiselect__placeholder">Click to select…</span></span>
+                    </div>
+                </div>
+                <div class="builder-field">
+                    <div class="builder-field__head">
+                        <span class="builder-field__label">Subcategories</span>
+                    </div>
+                    <div class="builder-multiselect" role="button" tabindex="0" data-field="subcategories" aria-haspopup="dialog">
+                        <span class="builder-multiselect__inner"><span class="builder-multiselect__placeholder">Click to select…</span></span>
+                    </div>
+                </div>
                 <label class="builder-field">
-                    <span class="builder-field__label">Resource Type</span>
-                    <input type="text" class="builder-input" id="fieldResourceType">
+                    <span class="builder-field__label">Program Type</span>
+                    <input type="text" class="builder-input" id="fieldProgramType">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Location</span>
+                    <input type="text" class="builder-input" id="fieldLocation">
+                </label>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Description</span>
+                    <textarea class="builder-input provider-textarea" id="fieldDescription"></textarea>
+                </label>
+                <div class="builder-field builder-field--full">
+                    <div class="builder-field__head">
+                        <span class="builder-field__label">Who It Helps</span>
+                    </div>
+                    <div class="builder-multiselect" role="button" tabindex="0" data-field="eligibility" aria-haspopup="dialog">
+                        <span class="builder-multiselect__inner"><span class="builder-multiselect__placeholder">Click to select…</span></span>
+                    </div>
+                </div>
+
+                <h3 class="provider-form-section__title provider-form-section__title--full">Contact &amp; Hours</h3>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Street Address</span>
+                    <input type="text" class="builder-input" id="fieldAddress">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Phone</span>
+                    <input type="tel" class="builder-input" id="fieldPhone">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Public Email</span>
+                    <input type="email" class="builder-input" id="fieldEmail">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Website</span>
+                    <input type="url" class="builder-input" id="fieldWebsite">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Hours</span>
+                    <input type="text" class="builder-input" id="fieldHours">
+                </label>
+
+                <h3 class="provider-form-section__title provider-form-section__title--full">Provider Contact</h3>
+                <label class="builder-field">
+                    <span class="builder-field__label">Provider Organization</span>
+                    <input type="text" class="builder-input" id="fieldOrganization">
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Visibility Status</span>
                     <input type="text" class="builder-input" id="fieldVisibility" readonly>
                 </label>
                 <label class="builder-field">
-                    <span class="builder-field__label">Key Dates / Amount</span>
-                    <input type="text" class="builder-input" id="fieldKeyDates">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Contact Person</span>
-                    <input type="text" class="builder-input" id="fieldContact">
+                    <span class="builder-field__label">Contact Person Name</span>
+                    <input type="text" class="builder-input" id="fieldContactName">
                 </label>
                 <label class="builder-field builder-field--full">
-                    <span class="builder-field__label">Description</span>
-                    <textarea class="builder-input provider-textarea" id="fieldDescription"></textarea>
-                </label>
-                <label class="builder-field builder-field--full">
-                    <span class="builder-field__label">Eligibility</span>
-                    <textarea class="builder-input provider-textarea" id="fieldEligibility"></textarea>
+                    <span class="builder-field__label">Contact Person Email</span>
+                    <input type="email" class="builder-input" id="fieldContactEmail">
                 </label>
             </form>
 
@@ -99,6 +152,26 @@
             </div>
         </section>
     </main>
+
+    <div class="builder-modal builder-modal--multiselect" id="providerMultiselectModal" hidden>
+        <div class="builder-modal__backdrop js-close-provider-multiselect"></div>
+        <div class="builder-modal__panel builder-modal__panel--multiselect" role="dialog" aria-labelledby="providerMultiselectTitle">
+            <button type="button" class="builder-modal__close js-close-provider-multiselect" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="providerMultiselectTitle"></h2>
+            <p class="builder-modal__text" id="providerMultiselectDesc"></p>
+            <div class="builder-ms-search-area">
+                <label class="builder-ms-search-label" for="providerMultiselectSearch">Search</label>
+                <input type="search" class="builder-ms-search-input" id="providerMultiselectSearch" placeholder="Type to search…" autocomplete="off">
+                <p class="builder-ms-count" id="providerMultiselectCount"></p>
+                <div class="builder-ms-selected" id="providerMultiselectSelected"></div>
+            </div>
+            <div class="builder-ms-list" id="providerMultiselectList" role="listbox" aria-multiselectable="true"></div>
+            <div class="builder-modal__actions builder-modal__actions--end">
+                <button type="button" class="builder-btn builder-btn--cancel" id="providerMultiselectCancelBtn">Cancel</button>
+                <button type="button" class="builder-btn builder-btn--apply" id="providerMultiselectApplyBtn">Apply</button>
+            </div>
+        </div>
+    </div>
 
     <div class="builder-modal" id="deleteListingModal" hidden>
         <div class="builder-modal__backdrop js-close-delete"></div>
@@ -123,8 +196,10 @@
         </nav>
     </footer>
 
+    <script src="profile-data.js?v=1.0.2"></script>
     <script src="auth.js?v=1.0.8"></script>
-    <script src="provider-listings-data.js"></script>
+    <script src="provider-listings-data.js?v=1.0.2"></script>
+    <script src="provider-listing-form.js?v=1.0.1"></script>
     <script>
       (function () {
         const params = new URLSearchParams(window.location.search);
@@ -141,13 +216,9 @@
         document.getElementById('listingTitle').textContent = listing.title;
         document.getElementById('listingStatus').textContent = listing.statusLabel;
         document.getElementById('listingStatus').className = `provider-status ${statusClass}`;
-        document.getElementById('fieldTitle').value = listing.title;
-        document.getElementById('fieldResourceType').value = listing.resourceType;
+
+        CompassProviderListingForm.init(listing);
         document.getElementById('fieldVisibility').value = listing.visibility;
-        document.getElementById('fieldKeyDates').value = listing.keyDates;
-        document.getElementById('fieldContact').value = listing.contact;
-        document.getElementById('fieldDescription').value = listing.description;
-        document.getElementById('fieldEligibility').value = listing.eligibility;
 
         if (listing.status === 'rejected') {
           const banner = document.getElementById('rejectionBanner');
@@ -160,6 +231,7 @@
         }
 
         document.getElementById('saveResourceBtn').addEventListener('click', () => {
+          CompassProviderListingForm.getFormData();
           alert('Changes saved and submitted for Questa review. (prototype demo)');
         });
 

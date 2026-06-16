@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.2">
+    <link rel="stylesheet" href="styles.css?v=1.0.18">
 </head>
 <body class="page-provider">
     <header class="site-header">
@@ -43,45 +43,82 @@
             </div>
 
             <form class="provider-form-grid" id="listingForm">
+                <h3 class="provider-form-section__title provider-form-section__title--full">Resource Information</h3>
                 <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Resource Title</span>
-                    <input type="text" class="builder-input" placeholder="Enter resource title">
+                    <input type="text" class="builder-input" id="fieldTitle" placeholder="Enter resource title">
+                </label>
+                <div class="builder-field">
+                    <div class="builder-field__head">
+                        <span class="builder-field__label">Main Topics</span>
+                    </div>
+                    <div class="builder-multiselect" role="button" tabindex="0" data-field="categories" aria-haspopup="dialog">
+                        <span class="builder-multiselect__inner"><span class="builder-multiselect__placeholder">Click to select…</span></span>
+                    </div>
+                </div>
+                <div class="builder-field">
+                    <div class="builder-field__head">
+                        <span class="builder-field__label">Subcategories</span>
+                    </div>
+                    <div class="builder-multiselect" role="button" tabindex="0" data-field="subcategories" aria-haspopup="dialog">
+                        <span class="builder-multiselect__inner"><span class="builder-multiselect__placeholder">Click to select…</span></span>
+                    </div>
+                </div>
+                <label class="builder-field">
+                    <span class="builder-field__label">Program Type</span>
+                    <input type="text" class="builder-input" id="fieldProgramType" placeholder="e.g. Career Counseling Center">
                 </label>
                 <label class="builder-field">
-                    <span class="builder-field__label">Category</span>
-                    <select class="builder-input">
-                        <option value="" selected disabled>Select a category</option>
-                        <option>Funding</option>
-                        <option>Careers</option>
-                        <option>Education Readiness</option>
-                        <option>Learning Help</option>
-                        <option>Education &amp; Training</option>
-                        <option>Personal Help</option>
-                    </select>
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Provider Organization</span>
-                    <input type="text" class="builder-input" placeholder="Organization name">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Amount / Key Dates</span>
-                    <input type="text" class="builder-input" placeholder="e.g. $2,500 • Opens August 1">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Application URL</span>
-                    <input type="url" class="builder-input" placeholder="https://">
+                    <span class="builder-field__label">Location</span>
+                    <input type="text" class="builder-input" id="fieldLocation" placeholder="e.g. Fort Wayne, IN">
                 </label>
                 <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Description</span>
-                    <textarea class="builder-input provider-textarea" placeholder="Describe the resource, eligibility, and how to apply"></textarea>
+                    <textarea class="builder-input provider-textarea" id="fieldDescription" placeholder="Describe the program, services offered, and who should use it"></textarea>
+                </label>
+                <div class="builder-field builder-field--full">
+                    <div class="builder-field__head">
+                        <span class="builder-field__label">Who It Helps</span>
+                    </div>
+                    <div class="builder-multiselect" role="button" tabindex="0" data-field="eligibility" aria-haspopup="dialog">
+                        <span class="builder-multiselect__inner"><span class="builder-multiselect__placeholder">Click to select…</span></span>
+                    </div>
+                </div>
+
+                <h3 class="provider-form-section__title provider-form-section__title--full">Contact &amp; Hours</h3>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Street Address</span>
+                    <input type="text" class="builder-input" id="fieldAddress" placeholder="Street address, city, state, ZIP">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Phone</span>
+                    <input type="tel" class="builder-input" id="fieldPhone" placeholder="(260) 555-0100">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Public Email</span>
+                    <input type="email" class="builder-input" id="fieldEmail" placeholder="info@organization.org">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Website</span>
+                    <input type="url" class="builder-input" id="fieldWebsite" placeholder="https://">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Hours</span>
+                    <input type="text" class="builder-input" id="fieldHours" placeholder="e.g. Mon–Fri, 8:00 am–5:00 pm">
+                </label>
+
+                <h3 class="provider-form-section__title provider-form-section__title--full">Provider Contact</h3>
+                <label class="builder-field">
+                    <span class="builder-field__label">Provider Organization</span>
+                    <input type="text" class="builder-input" id="fieldOrganization" placeholder="Organization name">
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Contact Person Name</span>
-                    <input type="text" class="builder-input" placeholder="First and last name">
+                    <input type="text" class="builder-input" id="fieldContactName" placeholder="First and last name">
                 </label>
-                <label class="builder-field">
+                <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Contact Person Email</span>
-                    <input type="email" class="builder-input" placeholder="you@example.com">
+                    <input type="email" class="builder-input" id="fieldContactEmail" placeholder="you@example.com">
                 </label>
             </form>
 
@@ -91,6 +128,26 @@
             </div>
         </section>
     </main>
+
+    <div class="builder-modal builder-modal--multiselect" id="providerMultiselectModal" hidden>
+        <div class="builder-modal__backdrop js-close-provider-multiselect"></div>
+        <div class="builder-modal__panel builder-modal__panel--multiselect" role="dialog" aria-labelledby="providerMultiselectTitle">
+            <button type="button" class="builder-modal__close js-close-provider-multiselect" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="providerMultiselectTitle"></h2>
+            <p class="builder-modal__text" id="providerMultiselectDesc"></p>
+            <div class="builder-ms-search-area">
+                <label class="builder-ms-search-label" for="providerMultiselectSearch">Search</label>
+                <input type="search" class="builder-ms-search-input" id="providerMultiselectSearch" placeholder="Type to search…" autocomplete="off">
+                <p class="builder-ms-count" id="providerMultiselectCount"></p>
+                <div class="builder-ms-selected" id="providerMultiselectSelected"></div>
+            </div>
+            <div class="builder-ms-list" id="providerMultiselectList" role="listbox" aria-multiselectable="true"></div>
+            <div class="builder-modal__actions builder-modal__actions--end">
+                <button type="button" class="builder-btn builder-btn--cancel" id="providerMultiselectCancelBtn">Cancel</button>
+                <button type="button" class="builder-btn builder-btn--apply" id="providerMultiselectApplyBtn">Apply</button>
+            </div>
+        </div>
+    </div>
 
     <div class="builder-modal" id="submitSuccessModal" hidden>
         <div class="builder-modal__backdrop"></div>
@@ -111,8 +168,11 @@
         </nav>
     </footer>
 
+    <script src="profile-data.js?v=1.0.2"></script>
     <script src="auth.js?v=1.0.8"></script>
+    <script src="provider-listing-form.js?v=1.0.1"></script>
     <script>
+      CompassProviderListingForm.init();
       document.getElementById('submitListingBtn').addEventListener('click', () => {
         document.getElementById('submitSuccessModal').hidden = false;
       });
