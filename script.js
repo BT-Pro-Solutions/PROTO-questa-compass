@@ -156,20 +156,88 @@
     needleTarget = getMouseAngle();
   });
 
-  function navigateFromCompassTopic(topic) {
-    if (topic === 'funding') {
-      window.location.href = CompassProfile.FUNDING_EXTERNAL_URL;
-      return;
+  let isExitAnimating = false;
+
+  const EXIT_FADE_MS = 600;
+  const EXIT_CENTER_MS = 1000;
+  const EXIT_SLIDE_MS = 600;
+
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function getTopicDestination(topic) {
+    if (topic === 'funding') return CompassProfile.FUNDING_EXTERNAL_URL;
+    const isLoggedIn = typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
+    if (isLoggedIn || document.body.classList.contains('page-compass')) {
+      return `results.html?topic=${encodeURIComponent(topic)}`;
     }
+    return `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+  }
+
+  function prepareTopicProfile(topic) {
+    if (topic === 'funding') return;
     const isLoggedIn = typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
     if (isLoggedIn || document.body.classList.contains('page-compass')) {
       CompassProfile.setTopic(topic);
-      window.location.href = `results.html?topic=${encodeURIComponent(topic)}`;
       return;
     }
     CompassProfile.clearProfile();
     CompassProfile.setTopic(topic);
-    window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+  }
+
+  async function playTopicExitAnimation(optionEl, url) {
+    const compassCard = document.querySelector('.compass-card');
+    const textEl = optionEl.querySelector('.cm-option-text');
+    const whiteOverlay = document.getElementById('compassExitWhite');
+
+    if (!compassCard || !textEl || !whiteOverlay) {
+      window.location.href = url;
+      return;
+    }
+
+    const rect = textEl.getBoundingClientRect();
+    const flyout = document.createElement('div');
+    flyout.className = 'compass-topic-flyout';
+    flyout.innerHTML = textEl.innerHTML;
+    flyout.style.left = `${rect.left + rect.width / 2}px`;
+    flyout.style.top = `${rect.top + rect.height / 2}px`;
+    document.body.appendChild(flyout);
+
+    document.body.classList.add('compass-exiting');
+    compassCard.classList.add('is-topic-exit');
+    clearTopicBar();
+
+    await wait(EXIT_FADE_MS);
+
+    flyout.style.left = '50vw';
+    flyout.style.top = '50vh';
+    flyout.classList.add('is-centered');
+    await wait(EXIT_CENTER_MS);
+
+    whiteOverlay.hidden = false;
+    whiteOverlay.setAttribute('aria-hidden', 'false');
+    whiteOverlay.classList.add('is-visible');
+    flyout.style.left = '-20vw';
+    flyout.classList.add('is-exit-left');
+
+    await wait(EXIT_SLIDE_MS);
+    window.location.href = url;
+  }
+
+  async function navigateFromCompassTopic(topic, optionEl) {
+    if (isExitAnimating) return;
+    isExitAnimating = true;
+
+    const url = getTopicDestination(topic);
+    prepareTopicProfile(topic);
+
+    if (optionEl) {
+      await playTopicExitAnimation(optionEl, url);
+      return;
+    }
+
+    window.location.href = url;
   }
 
   options.forEach((option, index) => {
@@ -182,7 +250,7 @@
     option.addEventListener('click', (e) => {
       e.preventDefault();
       const topic = MENU_TOPICS[index];
-      if (topic) navigateFromCompassTopic(topic);
+      if (topic) navigateFromCompassTopic(topic, option);
     });
   });
 
@@ -237,32 +305,26 @@
     {
       topic: 'learning-help',
       text: 'Do you need help building the academic skills or confidence needed to succeed in college, training, or other education after high school?',
-      yesLabel: 'YES — Find Learning Help',
     },
     {
       topic: 'careers',
       text: 'Are you looking for help discovering a career path that fits your skills, interests, or experience?',
-      yesLabel: 'YES — Find Careers',
     },
     {
       topic: 'education-help',
       text: 'Are you looking for guidance on applying to or enrolling in a college, university, or higher education program?',
-      yesLabel: 'YES — Find Education Help',
     },
     {
       topic: 'funding',
       text: 'Do you need help finding scholarships, grants, financial aid, or other funding for your education?',
-      yesLabel: 'YES — Find Funding',
     },
     {
       topic: 'education-training',
       text: 'Are you interested in vocational training, apprenticeships, or professional certification programs?',
-      yesLabel: 'YES — Find Education & Training',
     },
     {
       topic: 'personal-help',
       text: 'Are you looking for resources to support your personal development, mental wellness, or everyday life skills?',
-      yesLabel: 'YES — Find Personal Help',
     },
   ];
 
@@ -299,7 +361,6 @@
   const quizYes     = document.getElementById('quizYes');
   const backBtns    = document.querySelectorAll('.js-quiz-close');
   const openTriggers= document.querySelectorAll('.js-quiz-open');
-  const ctaDesktop  = document.querySelector('.compass-card__cta--desktop');
   const backBtn     = document.querySelector('.quiz-back-btn');
 
   if (!card) return;
@@ -311,11 +372,21 @@
     const q = QUESTIONS[index];
     quizNum.textContent      = `(${index + 1} of ${QUESTIONS.length})`;
     quizQuestion.textContent = q.text;
-    quizYes.textContent      = q.yesLabel;
 
     quizContent.hidden = false;
     quizFinal.hidden   = true;
     quizFinal.classList.remove('quiz-final--has-topics');
+  }
+
+  function goBackQuestion() {
+    if (currentIndex <= 0) {
+      closeQuiz();
+      return;
+    }
+    currentIndex -= 1;
+    const topic = QUESTIONS[currentIndex].topic;
+    selectedTopics = selectedTopics.filter((t) => t !== topic);
+    showQuestion(currentIndex);
   }
 
   function showQuizComplete() {
@@ -325,8 +396,13 @@
     const titleEl = quizFinal.querySelector('.quiz-final__title');
     const descEl = quizFinal.querySelector('.quiz-final__desc');
     const topicsEl = quizFinal.querySelector('.quiz-final__topics');
+    const fundFinderEl = document.getElementById('quizFundFinder');
+    const fundFinderLink = document.getElementById('quizFundFinderLink');
     const createBtn = quizFinal.querySelector('.js-quiz-create-profile');
     const universalBtn = quizFinal.querySelector('.js-quiz-universal-profile');
+    const hasFunding = selectedTopics.includes('funding');
+
+    if (fundFinderLink) fundFinderLink.href = FUNDING_EXTERNAL_URL;
 
     if (selectedTopics.length) {
       quizFinal.classList.add('quiz-final--has-topics');
@@ -343,6 +419,7 @@
           })
           .join('');
       }
+      if (fundFinderEl) fundFinderEl.hidden = !hasFunding;
       if (createBtn) {
         createBtn.hidden = false;
         createBtn.textContent = 'Build My Profile';
@@ -355,6 +432,7 @@
         descEl.textContent = 'We\u2019ve explored all topics, but you can still create a profile to use for future searches.';
       }
       if (topicsEl) topicsEl.hidden = true;
+      if (fundFinderEl) fundFinderEl.hidden = true;
       if (createBtn) createBtn.hidden = true;
       if (universalBtn) universalBtn.hidden = false;
     }
@@ -370,16 +448,14 @@
     document.getElementById('compassTopicBar')?.classList.remove('is-visible');
     document.getElementById('compassTopicBar')?.setAttribute('aria-hidden', 'true');
 
-    if (ctaDesktop) ctaDesktop.hidden = true;
-    if (backBtn)    backBtn.hidden    = false;
+    if (backBtn) backBtn.hidden = false;
   }
 
   function closeQuiz() {
     card.classList.remove('quiz-active');
     quizView.setAttribute('aria-hidden', 'true');
 
-    if (ctaDesktop) ctaDesktop.hidden = false;
-    if (backBtn)    backBtn.hidden    = true;
+    if (backBtn) backBtn.hidden = true;
   }
 
   function advanceQuestion() {
@@ -412,13 +488,13 @@
     el.addEventListener('click', advanceQuestion);
   });
 
+  document.querySelectorAll('.js-quiz-back').forEach((el) => {
+    el.addEventListener('click', goBackQuestion);
+  });
+
   if (quizYes) {
     quizYes.addEventListener('click', () => {
       const { topic } = QUESTIONS[currentIndex];
-      if (topic === 'funding') {
-        window.location.href = FUNDING_EXTERNAL_URL;
-        return;
-      }
       if (!selectedTopics.includes(topic)) {
         selectedTopics.push(topic);
       }

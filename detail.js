@@ -1,36 +1,102 @@
 (function () {
-  const { TOPICS, getProfile } = CompassProfile;
-  const { getTopicResultsConfig, getOpportunity } = CompassResults;
+  const { TOPICS, TOPIC_INTEREST_LABELS, getProfile } = CompassProfile;
+  const { getOpportunity } = CompassResults;
 
   const params = new URLSearchParams(window.location.search);
-  const topicKey = params.get('topic') || getProfile().topic || 'funding';
-  const topic = TOPICS[topicKey] || TOPICS.funding;
-  const config = getTopicResultsConfig(topicKey);
+  const topicKey = params.get('topic') || getProfile().topic || 'careers';
   const oppId = params.get('id') || '1';
   const returnUrl = params.get('returnUrl') || `results.html?topic=${encodeURIComponent(topicKey)}`;
   const opp = getOpportunity(oppId);
+  const LOGO_PLACEHOLDER = 'assets/logo-circle.svg';
 
-  function matchLabel(match) {
-    if (match === 'strong') return 'Strong Match';
-    if (match === 'fair') return 'Fair Match';
-    return 'Some Match';
-  }
-
-  const detailLabels = {
-    funding: 'Funding Opportunity Details',
-    careers: 'Career Resource Details',
-    'education-help': 'Education Resource Details',
-    'learning-help': 'Learning Resource Details',
-    'education-training': 'Training Program Details',
-    'personal-help': 'Personal Support Details',
+  const CONTACT_ICONS = {
+    address: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/></svg>',
+    phone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 4h3l1.5 5-2 1.5a13 13 0 0 0 5 5L15.5 13 20.5 14.5V18a2 2 0 0 1-2 2A16 16 0 0 1 4 6.5 2 2 0 0 1 6.5 4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
+    email: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    website: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" stroke="currentColor" stroke-width="2"/></svg>',
+    hours: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   };
 
+  function topicLabel(key) {
+    return TOPIC_INTEREST_LABELS[key] || TOPICS[key]?.title.replace(/^Find\s+/i, '') || key;
+  }
+
+  function renderHeroLogo() {
+    const heroIcon = document.getElementById('detailHeroIcon');
+    const heroLogo = document.getElementById('detailHeroLogo');
+    if (!heroIcon || !heroLogo) return;
+
+    const hasLogo = !!opp.logoUrl;
+    heroLogo.src = opp.logoUrl || LOGO_PLACEHOLDER;
+    heroLogo.alt = opp.providerName ? `${opp.providerName} logo` : 'Resource provider';
+    heroIcon.classList.toggle('detail-hero__icon--placeholder', !hasLogo);
+  }
+
+  function renderTopicPills() {
+    const root = document.getElementById('detailTopicPills');
+    if (!root || !opp.topics?.length) return;
+
+    root.innerHTML = `
+      <ul class="detail-topic-pills" aria-label="Resource topics">
+        ${opp.topics
+          .filter((key) => key !== 'funding' && TOPICS[key])
+          .map((key) => `<li class="detail-topic-pill">${topicLabel(key)}</li>`)
+          .join('')}
+      </ul>`;
+  }
+
+  function renderContactSection() {
+    const root = document.getElementById('detailContact');
+    const contact = opp.contact || {};
+    if (!root) return;
+
+    const items = [
+      { key: 'address', label: 'Address', value: contact.address },
+      { key: 'phone', label: 'Phone', value: contact.phone, href: contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null },
+      { key: 'email', label: 'Email', value: contact.email, href: contact.email ? `mailto:${contact.email}` : null },
+      { key: 'website', label: 'Website', value: contact.website?.replace(/^https?:\/\//, ''), href: contact.website },
+      { key: 'hours', label: 'Hours', value: contact.hours },
+    ].filter((item) => item.value);
+
+    root.innerHTML = items
+      .map((item) => {
+        const valueHtml = item.href
+          ? `<a href="${item.href}" class="detail-contact__link"${item.key === 'website' ? ' target="_blank" rel="noopener noreferrer"' : ''}>${item.value}</a>`
+          : `<span>${item.value}</span>`;
+        return `
+          <li class="detail-contact__item">
+            <span class="detail-contact__icon">${CONTACT_ICONS[item.key]}</span>
+            <div class="detail-contact__body">
+              <span class="detail-contact__label">${item.label}</span>
+              ${valueHtml}
+            </div>
+          </li>`;
+      })
+      .join('');
+  }
+
   document.title = `Compass — ${opp.title}`;
+  renderHeroLogo();
+  renderTopicPills();
   document.getElementById('detailTitle').textContent = opp.title;
-  document.getElementById('detailSubtitle').textContent = detailLabels[topicKey] || 'Resource Details';
-  document.getElementById('detailAmount').textContent = opp.amount;
-  document.getElementById('detailType').textContent = opp.type;
   document.getElementById('detailDescription').textContent = opp.description;
+  document.getElementById('detailProgramType').textContent = opp.programType || '—';
+  document.getElementById('detailLocation').textContent = opp.location || '—';
+
+  document.getElementById('detailEligibility').innerHTML = (opp.eligibility || [])
+    .map((level) => `<span class="detail-eligibility__tag">${level}</span>`)
+    .join('');
+
+  renderContactSection();
+
+  const websiteBtn = document.getElementById('detailWebsiteBtn');
+  if (websiteBtn) {
+    if (opp.contact?.website) {
+      websiteBtn.href = opp.contact.website;
+    } else {
+      websiteBtn.hidden = true;
+    }
+  }
 
   const providerSection = document.getElementById('providerOwnershipSection');
   const providerText = document.getElementById('providerOwnershipText');
@@ -42,31 +108,11 @@
 
   if (opp.providerApprovalStatus === 'unclaimed') {
     providerSection.hidden = false;
-    providerText.textContent = 'This resource is not currently connected to a provider account. Providers can request ownership and Questa staff will review before edit access is granted.';
+    providerText.textContent = 'This listing is not currently connected to a provider account. Providers can request ownership and Questa staff will review before edit access is granted.';
     unclaimedCallout.hidden = false;
   } else if (opp.providerName) {
     providerSection.hidden = false;
-    providerText.textContent = `Managed by ${opp.providerName}. Visibility status: approved by Questa staff.`;
-  }
-
-  const statusEl = document.getElementById('detailStatus');
-  if (opp.status === 'open') {
-    statusEl.textContent = 'Open';
-    statusEl.className = 'detail-card__status detail-card__status--open';
-  } else {
-    statusEl.textContent = 'Closed';
-    statusEl.className = 'detail-card__status detail-card__status--closed';
-  }
-
-  document.getElementById('detailEligibility').innerHTML = opp.eligibility
-    .map((level) => `<span class="detail-eligibility__tag">${level}</span>`)
-    .join('');
-
-  const matchEl = document.getElementById('detailMatch');
-  if (config.showMatchStrength) {
-    matchEl.hidden = false;
-    matchEl.textContent = matchLabel(opp.match);
-    matchEl.className = `detail-match detail-match--${opp.match}`;
+    providerText.textContent = `Managed by ${opp.providerName}. Listing approved by Questa staff.`;
   }
 
   document.getElementById('backLinkBottom').href = returnUrl;

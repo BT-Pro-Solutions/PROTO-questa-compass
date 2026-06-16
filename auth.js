@@ -150,6 +150,16 @@
     return `<nav class="user-nav" aria-label="Account navigation"><div class="user-nav__inner">${tabs}</div></nav>`;
   }
 
+  function renderSearchButton() {
+    return `
+      <button type="button" class="header-search-btn js-open-search" aria-label="Search">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+          <circle cx="9.5" cy="9.5" r="6.5" stroke="currentColor" stroke-width="2"/>
+          <path d="M14.5 14.5L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>`;
+  }
+
   function renderLoggedInActions(user) {
     const dashboardHref = user.role === 'provider'
       ? 'provider-resources.html'
@@ -163,12 +173,7 @@
         : 'My Dashboard';
 
     return `
-      <button type="button" class="header-search-btn js-open-search" aria-label="Search">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-          <circle cx="9.5" cy="9.5" r="6.5" stroke="currentColor" stroke-width="2"/>
-          <path d="M14.5 14.5L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+      ${renderSearchButton()}
       <div class="user-menu">
         <button type="button" class="user-avatar" id="userAvatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
           <span class="user-avatar__initials">${user.initials}</span>
@@ -181,7 +186,7 @@
   }
 
   function renderLoggedOutActions() {
-    return '<a href="#" class="btn-login js-login">Log In</a>';
+    return `${renderSearchButton()}<a href="#" class="btn-login js-login">Log In</a>`;
   }
 
   function renderHelpPromptCard() {
@@ -240,6 +245,11 @@
     if (!loggedIn && staticProviderLink) {
       document.body.classList.toggle('is-logged-in', false);
       applyLoggedInPageLayout();
+      if (!actions.querySelector('.header-search-btn')) {
+        const searchWrap = document.createElement('div');
+        searchWrap.innerHTML = renderSearchButton();
+        actions.insertBefore(searchWrap.firstChild, staticProviderLink);
+      }
       return;
     }
 
@@ -278,7 +288,6 @@
     const backLink = document.querySelector('.builder-back');
     const intro = document.querySelector('.builder-intro');
     const breadcrumbs = document.querySelector('.site-breadcrumbs');
-    const searchBanner = document.querySelector('.results-search-banner');
 
     if (isLoggedInProfile) {
       if (backLink) backLink.hidden = true;
@@ -290,10 +299,8 @@
 
     if (isLoggedInSearch) {
       breadcrumbs?.setAttribute('hidden', '');
-      searchBanner?.setAttribute('hidden', '');
     } else if (page === 'results.html') {
       breadcrumbs?.removeAttribute('hidden');
-      searchBanner?.removeAttribute('hidden');
     }
   }
 
@@ -368,11 +375,28 @@
     }, true);
   }
 
-  function getDefaultSearchTopic() {
+  function getDefaultSearchTopics() {
     if (typeof CompassProfile !== 'undefined') {
-      return CompassProfile.getProfile().topic || 'funding';
+      const topics = CompassProfile.getTopics().filter((key) => key !== 'funding' && CompassProfile.TOPICS[key]);
+      if (topics.length) return topics;
     }
-    return 'funding';
+    return ['careers'];
+  }
+
+  function submitHeaderSearch() {
+    const input = document.getElementById('headerSearchInput');
+    const keyword = input?.value.trim() || '';
+    const params = new URLSearchParams(window.location.search);
+    let topics = params.get('topics')?.split(',').filter(Boolean) || [];
+    if (!topics.length && params.get('topic') && params.get('topic') !== 'funding') {
+      topics = [params.get('topic')];
+    }
+    topics = topics.filter((key) => key !== 'funding');
+    if (!topics.length) topics = getDefaultSearchTopics();
+
+    let url = `results.html?topics=${topics.map(encodeURIComponent).join(',')}`;
+    if (keyword) url += `&q=${encodeURIComponent(keyword)}`;
+    window.location.assign(url);
   }
 
   function renderSearchModal() {
@@ -407,24 +431,15 @@
     const modal = document.getElementById('headerSearchModal');
     const input = document.getElementById('headerSearchInput');
     if (!modal || !input) return;
+    const params = new URLSearchParams(window.location.search);
+    input.value = params.get('q') || '';
     modal.hidden = false;
-    input.value = '';
     input.focus();
   }
 
   function closeSearchModal() {
     const modal = document.getElementById('headerSearchModal');
     if (modal) modal.hidden = true;
-  }
-
-  function submitHeaderSearch() {
-    const input = document.getElementById('headerSearchInput');
-    const keyword = input?.value.trim() || '';
-    const topic = getDefaultSearchTopic();
-    const url = keyword
-      ? `results.html?topic=${encodeURIComponent(topic)}&q=${encodeURIComponent(keyword)}`
-      : `results.html?topic=${encodeURIComponent(topic)}`;
-    window.location.assign(url);
   }
 
   function bindSearchModal() {

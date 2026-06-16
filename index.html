@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.8">
+    <link rel="stylesheet" href="styles.css?v=1.0.14">
 </head>
 <body>
     <header class="site-header">
@@ -48,7 +48,6 @@
                     <strong class="compass-topic-bar__name"></strong><span class="compass-topic-bar__sep" aria-hidden="true"> – </span><span class="compass-topic-bar__desc"></span>
                 </p>
                 <div class="compass-topic-bar__includes">
-                    <p class="compass-topic-bar__includes-label">Includes:</p>
                     <ul class="compass-topic-bar__pills"></ul>
                 </div>
             </div>
@@ -137,7 +136,8 @@
                     <p class="quiz-counter"><span class="quiz-counter__num" id="quizNum"></span></p>
                     <p class="quiz-question" id="quizQuestion"></p>
                     <div class="quiz-actions">
-                        <button class="quiz-btn quiz-btn--yes" id="quizYes" type="button"></button>
+                        <button class="quiz-btn quiz-btn--back js-quiz-back" type="button">Back</button>
+                        <button class="quiz-btn quiz-btn--yes" id="quizYes" type="button">Yes</button>
                         <button class="quiz-btn quiz-btn--no js-quiz-no" type="button">No</button>
                     </div>
                 </div>
@@ -147,6 +147,13 @@
                     <p class="quiz-counter quiz-final__title">All Done!</p>
                     <p class="quiz-question quiz-final__desc">We&apos;ve explored all topics, but you can still create a profile to use for future searches.</p>
                     <ul class="quiz-final__topics" hidden></ul>
+                    <div class="quiz-final__fund-finder" id="quizFundFinder" hidden>
+                        <p class="quiz-final__fund-finder-note">Fund Finder is a separate site for scholarships, grants, and other financial aid.</p>
+                        <a href="https://compass.questafoundation.org/fund-finder" class="quiz-final__fund-finder-link" id="quizFundFinderLink" target="_blank" rel="noopener noreferrer">
+                            Go to Fund Finder
+                            <svg class="quiz-final__fund-finder-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 3h6v6M10 14 21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                    </div>
                     <div class="quiz-actions quiz-actions--single">
                         <button class="quiz-btn quiz-btn--yes js-quiz-create-profile" type="button" hidden>Build My Profile</button>
                         <button class="quiz-btn quiz-btn--yes js-quiz-universal-profile" type="button">Create Profile</button>
@@ -191,9 +198,11 @@
         </div>
     </div>
 
+    <div class="compass-exit-white" id="compassExitWhite" hidden aria-hidden="true"></div>
+
     <script src="profile-data.js?v=1.0.2"></script>
-    <script src="auth.js?v=1.0.4"></script>
-    <script src="script.js?v=1.0.10"></script>
+    <script src="auth.js?v=1.0.8"></script>
+    <script src="script.js?v=1.0.15"></script>
     <script src="asteroids-easter-egg.js?v=1.0.1"></script>
     <script>
       (function () {

@@ -1,20 +1,35 @@
 (function () {
-  const { TOPICS, TOPIC_INTEREST_LABELS, MENU_TOPIC_MAP, saveProfile, setTopic } = CompassProfile;
-  const { PLACEHOLDER_OPPORTUNITIES, getTopicResultsConfig } = CompassResults;
+  const { TOPICS, TOPIC_INTEREST_LABELS, MENU_TOPIC_MAP, saveProfile, setTopics } = CompassProfile;
+  const { PLACEHOLDER_OPPORTUNITIES, getResultsConfig } = CompassResults;
+
+  const RESULTS_TOPIC_KEYS = MENU_TOPIC_MAP.filter((key) => key !== 'funding');
+  const LOGO_PLACEHOLDER = 'assets/logo-circle.svg';
 
   const params = new URLSearchParams(window.location.search);
-  const topicParam = params.get('topic');
-  const hasTopic = topicParam && TOPICS[topicParam];
-  const topicKey = hasTopic ? topicParam : null;
-  const topic = topicKey ? TOPICS[topicKey] : null;
-  const config = topicKey ? getTopicResultsConfig(topicKey) : null;
   const searchQuery = params.get('q') || '';
+
+  function resolveSelectedTopicKeys() {
+    const topicsParam = params.get('topics');
+    if (topicsParam) {
+      return topicsParam.split(',').filter((key) => key !== 'funding' && TOPICS[key]);
+    }
+    const topicParam = params.get('topic');
+    if (topicParam && topicParam !== 'funding' && TOPICS[topicParam]) {
+      return [topicParam];
+    }
+    return [];
+  }
+
+  const selectedTopicKeys = resolveSelectedTopicKeys();
+  const hasTopics = selectedTopicKeys.length > 0;
+  const config = hasTopics ? getResultsConfig(selectedTopicKeys) : null;
 
   const PER_PAGE = 8;
   const MATCH_LABELS = ['Some', 'Fair', 'Strong'];
   const MATCH_THUMB_COLORS = ['#e53935', '#ffb300', '#4caf50'];
 
   const filtersRoot = document.getElementById('filtersRoot');
+  const topicFilterRoot = document.getElementById('topicFilterRoot');
   const resultsList = document.getElementById('resultsList');
   const resultsHeading = document.getElementById('resultsHeading');
   const resultsRange = document.getElementById('resultsRange');
@@ -23,6 +38,10 @@
   const sortSelect = document.getElementById('sortSelect');
   const filterCount = document.getElementById('filterCount');
   const resultsPagination = document.getElementById('resultsPagination');
+
+  function topicLabel(key) {
+    return TOPIC_INTEREST_LABELS[key] || TOPICS[key]?.title.replace(/^Find\s+/i, '') || key;
+  }
 
   function matchLabel(match) {
     if (match === 'strong') return 'Strong Match';
@@ -137,8 +156,7 @@
     updateFilterCount();
   }
 
-  function updateFilterCount() {
-    if (!topicKey) return;
+  function getActiveFilterCount() {
     let count = 0;
     filtersRoot.querySelectorAll('select').forEach((sel) => {
       const val = sel.value;
@@ -149,9 +167,13 @@
     });
     const slider = document.getElementById('matchStrengthSlider');
     if (slider && Number(slider.value) > 0) count += 1;
-    const keyword = document.getElementById('keywordSearch').value.trim();
-    if (keyword) count += 1;
-    filterCount.textContent = `(${count})`;
+    if (searchQuery) count += 1;
+    return count;
+  }
+
+  function updateFilterCount() {
+    if (!hasTopics) return;
+    filterCount.textContent = `(${getActiveFilterCount()})`;
   }
 
   function clearFilters() {
@@ -162,28 +184,87 @@
       cb.checked = false;
     });
     setMatchStrengthUI(0);
-    document.getElementById('keywordSearch').value = '';
     updateFilterCount();
   }
 
-  function detailUrl(id) {
-    return `detail.html?topic=${encodeURIComponent(topicKey)}&id=${id}&returnUrl=${encodeURIComponent(`results.html?topic=${topicKey}`)}`;
+  function buildResultsUrl(topicKeys) {
+    let url = 'results.html';
+    const parts = [];
+    if (topicKeys.length) {
+      parts.push(`topics=${topicKeys.map(encodeURIComponent).join(',')}`);
+    }
+    if (searchQuery) {
+      parts.push(`q=${encodeURIComponent(searchQuery)}`);
+    }
+    if (parts.length) url += `?${parts.join('&')}`;
+    return url;
+  }
+
+  function navigateToTopics(topicKeys) {
+    const nextKeys = topicKeys.filter((key) => key !== 'funding' && TOPICS[key]);
+    if (nextKeys.length) setTopics(nextKeys);
+    window.location.href = buildResultsUrl(nextKeys);
+  }
+
+  function renderTopicFilter() {
+    const checkboxes = RESULTS_TOPIC_KEYS.map((key) => {
+      const checked = selectedTopicKeys.includes(key) ? ' checked' : '';
+      return `
+        <label class="results-filter-check results-filter-check--topic">
+          <input type="checkbox" class="results-filter-check__input" data-topic-check value="${key}"${checked}>
+          <span class="results-filter-check__box" aria-hidden="true"></span>
+          <span class="results-filter-check__text">${topicLabel(key)}</span>
+        </label>`;
+    }).join('');
+
+    topicFilterRoot.innerHTML = `
+      <div class="results-filter-group results-filter-group--topic">
+        <div class="results-filter-label-row">
+          <span class="results-filter-label">MAIN TOPICS</span>
+        </div>
+        <div class="results-topic-checks">${checkboxes}</div>
+      </div>`;
+
+    topicFilterRoot.querySelectorAll('[data-topic-check]').forEach((input) => {
+      input.addEventListener('change', () => {
+        const nextKeys = [...topicFilterRoot.querySelectorAll('[data-topic-check]:checked')].map(
+          (el) => el.value
+        );
+        navigateToTopics(nextKeys);
+      });
+    });
+  }
+
+  function filteredOpportunities() {
+    return PLACEHOLDER_OPPORTUNITIES.filter((opp) =>
+      (opp.topics || []).some((topic) => selectedTopicKeys.includes(topic))
+    );
+  }
+
+  function detailUrl(opp) {
+    const topic =
+      (opp.topics || []).find((key) => selectedTopicKeys.includes(key)) || selectedTopicKeys[0];
+    const returnUrl = buildResultsUrl(selectedTopicKeys);
+    return `detail.html?topic=${encodeURIComponent(topic)}&id=${opp.id}&returnUrl=${encodeURIComponent(returnUrl)}`;
   }
 
   function renderProviderLogo(opp) {
-    const name = opp.providerName || opp.title;
-    const initials = name
-      .split(/[\s—–-]+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join('')
-      .toUpperCase();
+    const hasLogo = !!opp.logoUrl;
+    const src = opp.logoUrl || LOGO_PLACEHOLDER;
     const alt = opp.providerName ? `${opp.providerName} logo` : 'Resource provider';
     return `
-      <div class="results-item__logo" role="img" aria-label="${alt}">
-        <span class="results-item__logo-mark">${initials || '?'}</span>
+      <div class="results-item__logo${hasLogo ? '' : ' results-item__logo--placeholder'}">
+        <img class="results-item__logo-img" src="${src}" alt="${alt.replace(/"/g, '&quot;')}">
       </div>`;
+  }
+
+  function renderTopicPills(topicKeys) {
+    const visibleKeys = topicKeys.filter((key) => key !== 'funding' && TOPICS[key]);
+    if (!visibleKeys.length) return '';
+    return `
+      <ul class="results-item__topics" aria-label="Resource topics">
+        ${visibleKeys.map((key) => `<li class="results-item__topic-pill">${topicLabel(key)}</li>`).join('')}
+      </ul>`;
   }
 
   function renderResultCard(opp) {
@@ -196,26 +277,43 @@
         ${CompassFavorites.favoriteButtonHtml(opp.id)}
         ${renderProviderLogo(opp)}
         <div class="results-item__body">
+          ${renderTopicPills(opp.topics || [])}
           <h3 class="results-item__title">${opp.title}</h3>
-          <p class="results-item__meta"><strong>Key dates &amp; amount</strong> ${opp.keyDates}</p>
+          <p class="results-item__meta"><strong>${opp.location || 'Indiana'}</strong> · ${opp.programType || 'Program'}</p>
           <p class="results-item__desc">${opp.desc}</p>
-          <a href="${detailUrl(opp.id)}" class="builder-btn builder-btn--secondary results-item__btn">View Full Details</a>
+          <a href="${detailUrl(opp)}" class="builder-btn builder-btn--secondary results-item__btn">View Full Details</a>
         </div>
         ${matchHtml ? `<div class="results-item__aside">${matchHtml}</div>` : ''}
       </article>`;
   }
 
+  function resultsHeadingText(count) {
+    if (selectedTopicKeys.length === 1) {
+      return `${config.resultLabel} Found (${count})`;
+    }
+    return `Resources Found (${count})`;
+  }
+
   function renderResults() {
     if (!config) return;
-    const items = PLACEHOLDER_OPPORTUNITIES;
-    const total = config.totalCount;
+    const items = filteredOpportunities();
+    const total = items.length || config.totalCount;
     const shown = Math.min(items.length, PER_PAGE);
 
-    resultsHeading.textContent = `${config.resultLabel} Found (${total})`;
-    resultsRange.textContent = `Showing 1 - ${shown} of ${total} Results`;
+    resultsHeading.textContent = resultsHeadingText(total);
+    resultsRange.textContent = items.length
+      ? `Showing 1 - ${shown} of ${total} Results`
+      : 'No results match the selected topics.';
 
-    resultsList.innerHTML = items.slice(0, PER_PAGE).map(renderResultCard).join('');
+    resultsList.innerHTML = items.length
+      ? items.slice(0, PER_PAGE).map(renderResultCard).join('')
+      : '<p class="results-empty">Try selecting different main topics or adjusting your filters.</p>';
     CompassFavorites.bindFavoriteButtons(resultsList);
+
+    if (!items.length) {
+      resultsPagination.innerHTML = '';
+      return;
+    }
 
     resultsPagination.innerHTML = `
       <button type="button" class="results-pagination__btn" disabled aria-label="Previous page">&laquo;</button>
@@ -223,7 +321,7 @@
       <button type="button" class="results-pagination__btn">2</button>
       <button type="button" class="results-pagination__btn">3</button>
       <span class="results-pagination__ellipsis">…</span>
-      <button type="button" class="results-pagination__btn">${Math.ceil(total / PER_PAGE)}</button>
+      <button type="button" class="results-pagination__btn">${Math.max(1, Math.ceil(total / PER_PAGE))}</button>
       <button type="button" class="results-pagination__btn" aria-label="Next page">&raquo;</button>`;
   }
 
@@ -237,37 +335,11 @@
       .join('');
   }
 
-  function renderTopicFilter() {
-    const topicFilterRoot = document.getElementById('topicFilterRoot');
-    const placeholderSelected = topicKey ? '' : ' selected';
-    const options = MENU_TOPIC_MAP.map((key) => {
-      const label = TOPIC_INTEREST_LABELS[key] || TOPICS[key]?.title.replace(/^Find\s+/i, '') || key;
-      const selected = key === topicKey ? ' selected' : '';
-      return `<option value="${key}"${selected}>${label}</option>`;
-    }).join('');
-
-    topicFilterRoot.innerHTML = `
-      <div class="results-filter-group results-filter-group--topic">
-        <div class="results-filter-label-row">
-          <span class="results-filter-label">MAIN TOPIC</span>
-        </div>
-        <select class="results-filter-select" id="topicSelect" aria-label="Main topic">
-          <option value="" disabled${placeholderSelected}>Select a topic…</option>
-          ${options}
-        </select>
-      </div>`;
-
-    document.getElementById('topicSelect').addEventListener('change', (e) => {
-      navigateToTopic(e.target.value);
-    });
-  }
-
-  function navigateToTopic(newTopicKey) {
-    if (!newTopicKey || newTopicKey === topicKey) return;
-    setTopic(newTopicKey);
-    let url = `results.html?topic=${encodeURIComponent(newTopicKey)}`;
-    if (searchQuery) url += `&q=${encodeURIComponent(searchQuery)}`;
-    window.location.href = url;
+  function profileBuilderUrl() {
+    if (selectedTopicKeys.length === 1) {
+      return `profile-builder.html?topic=${encodeURIComponent(selectedTopicKeys[0])}&from=results`;
+    }
+    return `profile-builder.html?topics=${selectedTopicKeys.map(encodeURIComponent).join(',')}&from=results`;
   }
 
   function applyNoTopicState() {
@@ -279,21 +351,15 @@
   }
 
   document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
-  const keywordSearch = document.getElementById('keywordSearch');
-  if (searchQuery) {
-    keywordSearch.value = searchQuery;
-  }
-  keywordSearch.addEventListener('input', updateFilterCount);
-  document.getElementById('searchGoBtn').addEventListener('click', updateFilterCount);
   document.getElementById('changeFiltersBtn').addEventListener('click', () => {
     document.getElementById('filtersPanel').scrollIntoView({ behavior: 'smooth' });
   });
 
-  if (topicKey) {
-    const profileBuilderUrl = `profile-builder.html?topic=${encodeURIComponent(topicKey)}&from=results`;
+  if (hasTopics) {
+    const builderUrl = profileBuilderUrl();
 
-    document.getElementById('breadcrumbProfileLink').href = profileBuilderUrl;
-    document.getElementById('continueProfileLink').href = `${profileBuilderUrl}&expand=all`;
+    document.getElementById('breadcrumbProfileLink').href = builderUrl;
+    document.getElementById('continueProfileLink').href = `${builderUrl}&expand=all`;
 
     if (typeof CompassAuth !== 'undefined'
       && CompassAuth.isLoggedIn()
@@ -301,7 +367,8 @@
       document.getElementById('continueProfileLink').hidden = true;
     }
 
-    document.title = `Compass — ${topic.title} Results`;
+    const titleTopics = selectedTopicKeys.map(topicLabel).join(', ');
+    document.title = `Compass — ${titleTopics} Results`;
   } else {
     applyNoTopicState();
   }
@@ -327,5 +394,5 @@
   renderFilters();
   renderSortOptions();
   renderResults();
-  if (searchQuery && topicKey) updateFilterCount();
+  if (searchQuery && hasTopics) updateFilterCount();
 })();

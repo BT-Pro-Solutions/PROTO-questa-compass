@@ -3,6 +3,7 @@
     TOPICS,
     TOPIC_INTEREST_LABELS,
     SECTIONS,
+    FUNDING_EXTERNAL_URL,
     getProfile,
     saveProfile,
     clearProfile,
@@ -18,6 +19,8 @@
   };
 
   const INFO_ICON = `<svg class="builder-expand-banner__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="currentColor" d="M12 0a11.97 11.97 0 0 1 8.484 3.514A11.97 11.97 0 0 1 24 11.999l-.004.295a11.97 11.97 0 0 1-3.51 8.19A11.97 11.97 0 0 1 12 24a11.97 11.97 0 0 1-8.485-3.516A11.97 11.97 0 0 1 0 11.999a11.97 11.97 0 0 1 3.516-8.485A11.97 11.97 0 0 1 11.999 0zm0 1.846A10.12 10.12 0 0 0 4.82 4.82v.002a10.12 10.12 0 0 0-2.974 7.178v.002a10.12 10.12 0 0 0 2.629 6.817l.344.361.002.002a10.12 10.12 0 0 0 7.178 2.973h.002a10.12 10.12 0 0 0 7.178-2.973l.002-.002a10.12 10.12 0 0 0 2.973-7.178v-.002a10.12 10.12 0 0 0-2.973-7.178l-.002-.002a10.12 10.12 0 0 0-7.178-2.973z"/><path fill="currentColor" fill-rule="evenodd" d="M12 4.8a1.385 1.385 0 1 1 0 2.77 1.385 1.385 0 0 1 0-2.77" clip-rule="evenodd"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.277 17.539V9.785h-1.108m-.83 7.753h3.876"/></svg>`;
+
+  const EXTERNAL_LINK_ICON = `<svg class="builder-fund-finder-link__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 3h6v6M10 14 21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
   function expandCollapseCaret(expanded) {
     const d = expanded ? 'M2 7L6 3L10 7' : 'M2 3L6 7L10 3';
@@ -51,7 +54,7 @@
   const topicKey = activeTopicKeys[0] || null;
   const topic = topicKey ? TOPICS[topicKey] : null;
   const isNoTopicMode = !isUniversalProfile && activeTopicKeys.length === 0;
-  const isSingleTopicMode = !isUniversalProfile && !isNoTopicMode && activeTopicKeys.length === 1;
+  const isTopicFocusedMode = !isUniversalProfile && !isNoTopicMode;
   const isAccordionMode = isUniversalProfile;
   const expandAllSections = params.get('expand') === 'all' && !isAccordionMode && !isNoTopicMode;
   const topicName = activeTopicKeys.length === 1
@@ -154,7 +157,7 @@
     if (topicTitle) topicTitle.textContent = 'BUILD YOUR COMPASS PROFILE';
   }
 
-  function applySingleTopicMode() {
+  function applyTopicFocusedMode() {
     document.body.classList.add('builder-single-topic');
     applyFullProfileHeader();
   }
@@ -193,13 +196,10 @@
   if (isUniversalProfile) {
     applyUniversalProfileMode();
     profileForm.setAttribute('novalidate', '');
-  } else if (isSingleTopicMode) {
-    applySingleTopicMode();
+  } else if (isTopicFocusedMode) {
+    applyTopicFocusedMode();
   } else if (isNoTopicMode) {
     applyNoTopicMode();
-  } else {
-    if (topicDesc) topicDesc.textContent = topic?.description || '';
-    if (infoNoteTopicName) infoNoteTopicName.textContent = topicName;
   }
 
   function persistField(id, value) {
@@ -225,6 +225,15 @@
           `<span class="builder-multiselect__pill"><span class="builder-multiselect__pill-text">${val}</span><button type="button" class="builder-multiselect__pill-remove" data-remove="${val.replace(/"/g, '&quot;')}" aria-label="Remove ${val.replace(/"/g, '&quot;')}">${PILL_REMOVE_ICON}</button></span>`
       )
       .join('');
+  }
+
+  function renderYouChoseBadge() {
+    return '<span class="builder-you-chose">You Chose:</span>';
+  }
+
+  function shouldShowYouChoseBadge(field) {
+    if (!activeTopicKeys.length || isUniversalProfile || isNoTopicMode) return false;
+    return activeTopicKeys.some((key) => field.id === `${key}-interests`);
   }
 
   function renderField(field) {
@@ -269,9 +278,11 @@
 
     const labelFor = field.type !== 'multiselect' ? ` for="${field.id}"` : '';
     const labelTag = field.type !== 'multiselect' ? 'label' : 'span';
+    const youChoseBadge = shouldShowYouChoseBadge(field) ? renderYouChoseBadge() : '';
 
     return `
       <div class="builder-field${fullWidthClass}" data-field-wrap="${field.id}">
+        ${youChoseBadge}
         <div class="builder-field__head">
           <${labelTag} class="builder-field__label"${labelFor}>${field.label}${requiredMark}${optionalMark}</${labelTag}>
           ${field.tooltip ? renderTooltip(field.tooltip) : ''}
@@ -337,18 +348,34 @@
 
   function renderStandaloneSection(sectionId, section, fields, titleOverride) {
     const fieldsHtml = fields.map(renderField).join('');
-    if (!fieldsHtml) return '';
+    const showFundFinder = titleOverride === 'Additional Help Topics';
+    if (!fieldsHtml && !showFundFinder) return '';
+
+    const fundFinderCell = showFundFinder ? renderFundFinderField() : '';
 
     return `
       <section class="builder-section is-open" data-section="${sectionId}">
         ${renderSectionHeader(section, titleOverride)}
-        <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>
+        <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}${fundFinderCell}</div></div>
       </section>`;
   }
 
   function getExtraSectionTitle(sectionId) {
     if (sectionId === 'getting-started') return 'Additional Help Topics';
     return null;
+  }
+
+  function renderFundFinderField() {
+    return `
+      <div class="builder-field builder-field--fund-finder">
+        <div class="builder-field__head" aria-hidden="true">
+          <span class="builder-field__label builder-field__label--spacer">&nbsp;</span>
+        </div>
+        <a href="${FUNDING_EXTERNAL_URL}" class="builder-fund-finder-link" target="_blank" rel="noopener noreferrer">
+          Fund Finder
+          ${EXTERNAL_LINK_ICON}
+        </a>
+      </div>`;
   }
 
   function partitionSections() {
@@ -384,7 +411,7 @@
       </div>`;
   }
 
-  function renderSingleTopicLayout() {
+  function renderTopicFocusedLayout() {
     const { relatedSections, extraSections } = partitionSections();
     const hasExtra = extraSections.length > 0;
     const showBanner = hasExtra && !otherAreasExpanded;
@@ -480,7 +507,7 @@
   }
 
   function renderOtherAreasToggle() {
-    if (isSingleTopicMode || isNoTopicMode) return;
+    if (isTopicFocusedMode || isNoTopicMode) return;
 
     const toggleRoot = document.getElementById('otherAreasToggle');
     if (!toggleRoot || isUniversalProfile || isAccordionMode) return;
@@ -660,8 +687,8 @@
     profile = getProfile();
     ensureAccordionSectionValid();
 
-    if (isSingleTopicMode) {
-      renderSingleTopicLayout();
+    if (isTopicFocusedMode) {
+      renderTopicFocusedLayout();
       bindFieldEvents();
       bindMultiselectEvents();
       updateInfoNoteVisibility();
@@ -682,11 +709,15 @@
   }
 
   function goToResults() {
-    if (!topicKey) {
+    const keys = activeTopicKeys.filter((key) => key !== 'funding');
+    if (!keys.length) {
       window.location.href = 'results.html';
       return;
     }
-    window.location.href = `results.html?topic=${encodeURIComponent(topicKey)}`;
+    const query = keys.length === 1
+      ? `topic=${encodeURIComponent(keys[0])}`
+      : `topics=${keys.map(encodeURIComponent).join(',')}`;
+    window.location.href = `results.html?${query}`;
   }
 
   function openCreateAccount() {
