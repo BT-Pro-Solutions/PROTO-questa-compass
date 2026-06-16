@@ -48,6 +48,7 @@
             <div class="results-layout results-layout--filters">
                 <aside class="results-filters" id="filtersPanel">
                     <h2 class="results-filters__heading">Filters</h2>
+                    <div id="topicFilterRoot"></div>
                     <div id="filtersRoot"></div>
                     <button type="button" class="results-clear-btn" id="clearFiltersBtn">Clear All</button>
 
@@ -58,7 +59,13 @@
                     </div>
                 </aside>
 
-                <div class="results-main">
+                    <div class="results-main">
+                    <div class="results-prompt" id="resultsPrompt" hidden>
+                        <h2 class="results-prompt__title">Select a topic to get started</h2>
+                        <p class="results-prompt__text">Choose a main topic from the filters on the left to browse resources and refine your results.</p>
+                    </div>
+
+                    <div class="results-main__content" id="resultsMainContent">
                     <header class="results-main__header">
                         <h1 class="results-main__title" id="resultsHeading">Results</h1>
                         <div class="results-main__toolbar">
@@ -77,6 +84,7 @@
                     <nav class="results-pagination" id="resultsPagination" aria-label="Results pages"></nav>
 
                     <a href="#" class="results-continue-link" id="continueProfileLink">Continue building your profile for even better results &rarr;</a>
+                    </div>
                 </div>
             </div>
         </div>

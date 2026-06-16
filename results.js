@@ -1,11 +1,13 @@
 (function () {
-  const { TOPICS, getProfile, saveProfile } = CompassProfile;
+  const { TOPICS, TOPIC_INTEREST_LABELS, MENU_TOPIC_MAP, saveProfile, setTopic } = CompassProfile;
   const { PLACEHOLDER_OPPORTUNITIES, getTopicResultsConfig } = CompassResults;
 
   const params = new URLSearchParams(window.location.search);
-  const topicKey = params.get('topic') || getProfile().topic || 'funding';
-  const topic = TOPICS[topicKey] || TOPICS.funding;
-  const config = getTopicResultsConfig(topicKey);
+  const topicParam = params.get('topic');
+  const hasTopic = topicParam && TOPICS[topicParam];
+  const topicKey = hasTopic ? topicParam : null;
+  const topic = topicKey ? TOPICS[topicKey] : null;
+  const config = topicKey ? getTopicResultsConfig(topicKey) : null;
   const searchQuery = params.get('q') || '';
 
   const PER_PAGE = 8;
@@ -16,6 +18,8 @@
   const resultsList = document.getElementById('resultsList');
   const resultsHeading = document.getElementById('resultsHeading');
   const resultsRange = document.getElementById('resultsRange');
+  const resultsPrompt = document.getElementById('resultsPrompt');
+  const resultsMainContent = document.getElementById('resultsMainContent');
   const sortSelect = document.getElementById('sortSelect');
   const filterCount = document.getElementById('filterCount');
   const resultsPagination = document.getElementById('resultsPagination');
@@ -124,6 +128,7 @@
   }
 
   function renderFilters() {
+    if (!config) return;
     filtersRoot.innerHTML = config.filters.map(renderFilter).join('');
     bindMatchStrength();
     filtersRoot.querySelectorAll('select, input[type="checkbox"]').forEach((el) => {
@@ -133,6 +138,7 @@
   }
 
   function updateFilterCount() {
+    if (!topicKey) return;
     let count = 0;
     filtersRoot.querySelectorAll('select').forEach((sel) => {
       const val = sel.value;
@@ -183,6 +189,7 @@
   }
 
   function renderResults() {
+    if (!config) return;
     const items = PLACEHOLDER_OPPORTUNITIES;
     const total = config.totalCount;
     const shown = Math.min(items.length, PER_PAGE);
@@ -204,12 +211,54 @@
   }
 
   function renderSortOptions() {
+    if (!config) return;
     sortSelect.innerHTML = config.sortOptions
       .map((opt, i) => {
         const selected = i === 0 ? ' selected' : '';
         return `<option${selected}>${opt}</option>`;
       })
       .join('');
+  }
+
+  function renderTopicFilter() {
+    const topicFilterRoot = document.getElementById('topicFilterRoot');
+    const placeholderSelected = topicKey ? '' : ' selected';
+    const options = MENU_TOPIC_MAP.map((key) => {
+      const label = TOPIC_INTEREST_LABELS[key] || TOPICS[key]?.title.replace(/^Find\s+/i, '') || key;
+      const selected = key === topicKey ? ' selected' : '';
+      return `<option value="${key}"${selected}>${label}</option>`;
+    }).join('');
+
+    topicFilterRoot.innerHTML = `
+      <div class="results-filter-group results-filter-group--topic">
+        <div class="results-filter-label-row">
+          <span class="results-filter-label">MAIN TOPIC</span>
+        </div>
+        <select class="results-filter-select" id="topicSelect" aria-label="Main topic">
+          <option value="" disabled${placeholderSelected}>Select a topic…</option>
+          ${options}
+        </select>
+      </div>`;
+
+    document.getElementById('topicSelect').addEventListener('change', (e) => {
+      navigateToTopic(e.target.value);
+    });
+  }
+
+  function navigateToTopic(newTopicKey) {
+    if (!newTopicKey || newTopicKey === topicKey) return;
+    setTopic(newTopicKey);
+    let url = `results.html?topic=${encodeURIComponent(newTopicKey)}`;
+    if (searchQuery) url += `&q=${encodeURIComponent(searchQuery)}`;
+    window.location.href = url;
+  }
+
+  function applyNoTopicState() {
+    document.body.classList.add('results-no-topic');
+    resultsPrompt.hidden = false;
+    resultsMainContent.hidden = true;
+    document.getElementById('breadcrumbProfileLink').href = 'index.html';
+    document.title = 'Compass — Browse Results';
   }
 
   document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
@@ -223,18 +272,22 @@
     document.getElementById('filtersPanel').scrollIntoView({ behavior: 'smooth' });
   });
 
-  const profileBuilderUrl = `profile-builder.html?topic=${encodeURIComponent(topicKey)}&from=results`;
+  if (topicKey) {
+    const profileBuilderUrl = `profile-builder.html?topic=${encodeURIComponent(topicKey)}&from=results`;
 
-  document.getElementById('breadcrumbProfileLink').href = profileBuilderUrl;
-  document.getElementById('continueProfileLink').href = `${profileBuilderUrl}&expand=all`;
+    document.getElementById('breadcrumbProfileLink').href = profileBuilderUrl;
+    document.getElementById('continueProfileLink').href = `${profileBuilderUrl}&expand=all`;
 
-  if (typeof CompassAuth !== 'undefined'
-    && CompassAuth.isLoggedIn()
-    && CompassAuth.getUser().role === 'provider') {
-    document.getElementById('continueProfileLink').hidden = true;
+    if (typeof CompassAuth !== 'undefined'
+      && CompassAuth.isLoggedIn()
+      && CompassAuth.getUser().role === 'provider') {
+      document.getElementById('continueProfileLink').hidden = true;
+    }
+
+    document.title = `Compass — ${topic.title} Results`;
+  } else {
+    applyNoTopicState();
   }
-
-  document.title = `Compass — ${topic.title} Results`;
 
   const createAccountModal = document.getElementById('createAccountModal');
   document.querySelectorAll('.js-create-account').forEach((btn) => {
@@ -253,8 +306,9 @@
     alert('Account created! (prototype demo)');
   });
 
+  renderTopicFilter();
   renderFilters();
   renderSortOptions();
   renderResults();
-  if (searchQuery) updateFilterCount();
+  if (searchQuery && topicKey) updateFilterCount();
 })();

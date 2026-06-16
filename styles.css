@@ -719,6 +719,17 @@
       align-items: center;
       justify-content: center;
       align-self: center;
+      margin: 0;
+      z-index: 2;
+      position: relative;
+    }
+
+    .compass-card__cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-self: center;
       margin: 24px auto 28px;
       z-index: 2;
       position: relative;
@@ -818,7 +829,14 @@
   ============================================================ */
 
   .compass-card__header-actions {
-    display: contents;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .compass-card__cta-row {
+    display: none;
   }
 
   .quiz-back-btn {
@@ -975,7 +993,7 @@
   ============================================================ */
 
   .compass-card.quiz-active .compass-menu,
-  .compass-card.quiz-active .compass-card__cta--mobile,
+  .compass-card.quiz-active .compass-card__cta-row,
   .compass-card.quiz-active .quincy-callout {
     display: none !important;
   }
@@ -2077,6 +2095,12 @@
     border-bottom: 1px solid #e8ecef;
   }
 
+  .results-filter-group--topic {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e8ecef;
+  }
+
   .results-filter-group--check + .results-filter-group--check {
     margin-top: -4px;
   }
@@ -2854,6 +2878,42 @@
     text-decoration: underline;
   }
 
+  .results-prompt {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px 28px;
+    text-align: center;
+  }
+
+  .results-prompt__title {
+    margin: 0 0 10px;
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 800;
+    color: var(--dark-teal);
+  }
+
+  .results-prompt__text {
+    margin: 0;
+    max-width: 480px;
+    margin-inline: auto;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--gray-text);
+  }
+
+  .page-results.results-no-topic .results-search-banner,
+  .page-results.results-no-topic #filtersRoot,
+  .page-results.results-no-topic #clearFiltersBtn,
+  .page-results.results-no-topic .results-filters-login {
+    display: none;
+  }
+
+  .page-results.results-no-topic .results-filter-group--topic {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
   .results-profile-card,
   .results-account-card {
     background: #fff;
@@ -3036,7 +3096,7 @@
   }
 
   .compass-card.asteroids-active .compass-card__powered,
-  .compass-card.asteroids-active .compass-card__cta--mobile,
+  .compass-card.asteroids-active .compass-card__cta-row,
   .compass-card.asteroids-active .quincy-callout,
   .compass-card.asteroids-active .quiz-view,
   .compass-card.asteroids-active .cm-options,

@@ -431,6 +431,7 @@
   global.CompassProfile = {
     TOPICS,
     TOPIC_INTEREST_OPTIONS,
+    TOPIC_INTEREST_LABELS,
     SECTIONS,
     QUIZ_TOPIC_MAP,
     MENU_TOPIC_MAP,
