@@ -1377,8 +1377,7 @@
     width: 100%;
     color: var(--dark-teal);
     font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 14px;  
     cursor: pointer;
     text-align: left;
   }
@@ -1392,9 +1391,15 @@
   }
 
   .builder-see-more__prefix {
-    display: inline-block;
-    min-width: 1ch;
-    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    min-width: 12px;
+    vertical-align: -1px;
+  }
+
+  .builder-caret {
+    display: block;
+    flex-shrink: 0;
   }
 
   .builder-see-more__hint {
@@ -1454,12 +1459,16 @@
   }
 
   .builder-section__toggle-prefix {
+    display: inline-flex;
+    align-items: center;
     flex-shrink: 0;
-    width: 1ch;
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1.2;
+    width: 14px;
     color: var(--dark-teal);
+  }
+
+  .builder-section__toggle-prefix .builder-caret {
+    width: 14px;
+    height: 12px;
   }
 
   .builder-section--accordion .builder-section__title {

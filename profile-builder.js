@@ -30,9 +30,13 @@
     return label + hintHtml;
   }
 
+  function expandCollapseCaret(expanded) {
+    const d = expanded ? 'M2 7L6 3L10 7' : 'M2 3L6 7L10 3';
+    return `<svg class="builder-caret" width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+
   function formatSeeMoreButton(contentHtml, expanded) {
-    const prefix = expanded ? '-' : '+';
-    return `<span class="builder-see-more__prefix" aria-hidden="true">${prefix}</span> ${contentHtml}`;
+    return `<span class="builder-see-more__prefix" aria-hidden="true">${expandCollapseCaret(expanded)}</span> ${contentHtml}`;
   }
 
   function getFieldValue(profile, fieldId) {
@@ -268,7 +272,7 @@
         <div class="builder-section__header">
           <div class="builder-section__toggle-row">
             <button type="button" class="builder-section__toggle" data-accordion-toggle="${sectionId}" aria-expanded="${isOpen}" aria-controls="section-fields-${sectionId}">
-              <span class="builder-section__toggle-prefix" aria-hidden="true">${isOpen ? '−' : '+'}</span>
+              <span class="builder-section__toggle-prefix" aria-hidden="true">${expandCollapseCaret(isOpen)}</span>
               <span class="builder-section__title">${section.title}</span>
             </button>
             ${section.tooltip ? renderTooltip(section.tooltip) : ''}

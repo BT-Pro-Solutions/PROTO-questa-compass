@@ -137,7 +137,7 @@
 
   const SECTIONS = {
     'getting-started': {
-      title: 'What do you need help with?',
+      title: 'Pick specific interests',
       tooltip: 'Select the specific types of resources you\u2019re looking for within this topic.',
       fields: buildTopicInterestFields(),
     },
