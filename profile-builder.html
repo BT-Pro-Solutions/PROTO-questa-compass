@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.1">
+    <link rel="stylesheet" href="styles.css?v=1.0.4">
 </head>
 <body class="page-profile-builder">
     <header class="site-header">
@@ -40,29 +40,24 @@
         <div class="builder-page">
             <a href="index.html" class="builder-back">&larr; Back to Home</a>
 
+            <header class="builder-intro">
+                <p class="builder-intro__eyebrow">Build your profile for</p>
+                <h1 class="builder-intro__title" id="topicTitle">COMPASS</h1>
+                <p class="builder-intro__desc" id="topicDesc"></p>
+            </header>
+
             <div class="builder-layout">
                 <div class="builder-main">
-                    <header class="builder-intro">
-                        <p class="builder-intro__eyebrow">Build your profile for</p>
-                        <h1 class="builder-intro__title" id="topicTitle"></h1>
-                        <p class="builder-intro__desc" id="topicDesc"></p>
-                        <div class="builder-info-note">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"><path fill="currentColor" d="M12 0a11.97 11.97 0 0 1 8.484 3.514A11.97 11.97 0 0 1 24 11.999l-.004.295a11.97 11.97 0 0 1-3.51 8.19A11.97 11.97 0 0 1 12 24a11.97 11.97 0 0 1-8.485-3.516A11.97 11.97 0 0 1 0 11.999a11.97 11.97 0 0 1 3.516-8.485A11.97 11.97 0 0 1 11.999 0zm0 1.846A10.12 10.12 0 0 0 4.82 4.82v.002a10.12 10.12 0 0 0-2.974 7.178v.002a10.12 10.12 0 0 0 2.629 6.817l.344.361.002.002a10.12 10.12 0 0 0 7.178 2.973h.002a10.12 10.12 0 0 0 7.178-2.973l.002-.002a10.12 10.12 0 0 0 2.973-7.178v-.002a10.12 10.12 0 0 0-2.973-7.178l-.002-.002a10.12 10.12 0 0 0-7.178-2.973z"/><path fill="currentColor" fill-rule="evenodd" d="M12 4.8a1.385 1.385 0 1 1 0 2.77 1.385 1.385 0 0 1 0-2.77" clip-rule="evenodd"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.277 17.539V9.785h-1.108m-.83 7.753h3.876"/></svg>
-                            <p> Only profile fields that apply to <span class="builder-info-note__topic-name" id="infoNoteTopicName"></span> are being shown. <br>You may expand more fields if you wish.</p>
-                        </div>
-                    </header>
+                    
 
                     <form class="builder-form" id="profileForm">
                         <div id="sectionsRoot"></div>
+                        <div id="otherAreasToggle" hidden></div>
                     </form>
                 </div>
 
                 <aside class="builder-sidebar">
-                    <div class="builder-help-card" data-auth-prompt>
-                        <h2 class="builder-help-card__title">Need Assistance?</h2>
-                        <p class="builder-help-card__text">Have a question or need guidance? Connect with a Questa staff member who can help.</p>
-                        <a href="https://www.questafoundation.org/contact" class="builder-help-card__btn" target="_blank" rel="noopener noreferrer">Get Help</a>
-                    </div>
+                    <div data-auth-prompt></div>
                 </aside>
             </div>
 
@@ -129,8 +124,8 @@
         </nav>
     </footer>
 
-    <script src="profile-data.js?v=1.0.1"></script>
+    <script src="profile-data.js?v=1.0.2"></script>
     <script src="auth.js?v=1.0.5"></script>
-    <script src="profile-builder.js?v=1.0.1"></script>
+    <script src="profile-builder.js?v=1.0.4"></script>
 </body>
 </html>

@@ -1,42 +1,27 @@
 (function () {
-  const { TOPICS, SECTIONS, getProfile, saveProfile, clearProfile, setTopic, fieldVisible, fieldPromotedForTopic, sectionExpanded } = CompassProfile;
+  const {
+    TOPICS,
+    TOPIC_INTEREST_LABELS,
+    SECTIONS,
+    getProfile,
+    saveProfile,
+    clearProfile,
+    setTopic,
+    setTopics,
+    fieldVisible,
+    fieldRelatedToTopics,
+  } = CompassProfile;
 
-  const SECTION_COPY = {
-    partialHint: '',
-    partialSeeMore: 'Show {count} more',
-    partialSeeMoreHint: '(unrelated to {topic})',
-    collapsedSeeMore: 'Show all {count}',
-    collapsedSeeMoreHint: '(unrelated to {topic})',
-    showOnlyRelated: 'Show only related fields',
+  const OTHER_AREAS_COPY = {
+    expand: 'Need help with other areas?',
+    collapse: 'Show only related fields',
   };
 
-  function formatSectionCopy(template, count, topicName) {
-    const fields = count === 1 ? 'field' : 'fields';
-    return template
-      .replace(/\{count\}/g, String(count))
-      .replace(/\{fields\}/g, fields)
-      .replace(/\{topic\}/g, topicName);
-  }
-
-  function buildSeeMoreHtml(isPartial, count, topicName) {
-    const label = formatSectionCopy(
-      isPartial ? SECTION_COPY.partialSeeMore : SECTION_COPY.collapsedSeeMore,
-      count,
-      topicName
-    );
-    const hintTemplate = isPartial ? SECTION_COPY.partialSeeMoreHint : SECTION_COPY.collapsedSeeMoreHint;
-    const hint = hintTemplate ? formatSectionCopy(hintTemplate, count, topicName) : '';
-    const hintHtml = hint ? ` <span class="builder-see-more__hint">${hint}</span>` : '';
-    return label + hintHtml;
-  }
+  const INFO_ICON = `<svg class="builder-expand-banner__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="currentColor" d="M12 0a11.97 11.97 0 0 1 8.484 3.514A11.97 11.97 0 0 1 24 11.999l-.004.295a11.97 11.97 0 0 1-3.51 8.19A11.97 11.97 0 0 1 12 24a11.97 11.97 0 0 1-8.485-3.516A11.97 11.97 0 0 1 0 11.999a11.97 11.97 0 0 1 3.516-8.485A11.97 11.97 0 0 1 11.999 0zm0 1.846A10.12 10.12 0 0 0 4.82 4.82v.002a10.12 10.12 0 0 0-2.974 7.178v.002a10.12 10.12 0 0 0 2.629 6.817l.344.361.002.002a10.12 10.12 0 0 0 7.178 2.973h.002a10.12 10.12 0 0 0 7.178-2.973l.002-.002a10.12 10.12 0 0 0 2.973-7.178v-.002a10.12 10.12 0 0 0-2.973-7.178l-.002-.002a10.12 10.12 0 0 0-7.178-2.973z"/><path fill="currentColor" fill-rule="evenodd" d="M12 4.8a1.385 1.385 0 1 1 0 2.77 1.385 1.385 0 0 1 0-2.77" clip-rule="evenodd"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.277 17.539V9.785h-1.108m-.83 7.753h3.876"/></svg>`;
 
   function expandCollapseCaret(expanded) {
     const d = expanded ? 'M2 7L6 3L10 7' : 'M2 3L6 7L10 3';
     return `<svg class="builder-caret" width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  }
-
-  function formatSeeMoreButton(contentHtml, expanded) {
-    return `<span class="builder-see-more__prefix" aria-hidden="true">${expandCollapseCaret(expanded)}</span> ${contentHtml}`;
   }
 
   function getFieldValue(profile, fieldId) {
@@ -46,19 +31,42 @@
 
   const params = new URLSearchParams(window.location.search);
   const isUniversalProfile = params.get('mode') === 'universal';
-  const topicKey = isUniversalProfile ? null : params.get('topic') || getProfile().topic || 'funding';
-  const topic = topicKey ? TOPICS[topicKey] || TOPICS.funding : null;
-  const isAccordionMode = isUniversalProfile;
-  const expandAllSections = params.get('expand') === 'all' && !isAccordionMode;
+  const topicsParam = params.get('topics');
+  const topicParam = params.get('topic');
   const fromResults = params.get('from') === 'results';
   const fromProfile = params.get('from') === 'profile';
-  const topicName = topic ? topic.title.replace(/^Find\s+/i, '') : '';
+
+  function resolveActiveTopicKeys() {
+    if (isUniversalProfile) return [];
+    if (topicsParam) return topicsParam.split(',').filter((key) => TOPICS[key]);
+    if (topicParam && TOPICS[topicParam]) return [topicParam];
+    if (fromResults || fromProfile) {
+      const stored = getProfile().topic;
+      if (stored && TOPICS[stored]) return [stored];
+    }
+    return [];
+  }
+
+  const activeTopicKeys = resolveActiveTopicKeys();
+  const topicKey = activeTopicKeys[0] || null;
+  const topic = topicKey ? TOPICS[topicKey] : null;
+  const isNoTopicMode = !isUniversalProfile && activeTopicKeys.length === 0;
+  const isSingleTopicMode = !isUniversalProfile && !isNoTopicMode && activeTopicKeys.length === 1;
+  const isAccordionMode = isUniversalProfile;
+  const expandAllSections = params.get('expand') === 'all' && !isAccordionMode && !isNoTopicMode;
+  const topicName = activeTopicKeys.length === 1
+    ? (TOPIC_INTEREST_LABELS[activeTopicKeys[0]] || topic?.title.replace(/^Find\s+/i, '') || '')
+    : activeTopicKeys.map((key) => TOPIC_INTEREST_LABELS[key] || key).join(', ');
 
   if (!fromResults && !fromProfile) {
     clearProfile();
-    if (topicKey) setTopic(topicKey);
-  } else if (topicKey) {
-    setTopic(topicKey);
+    if (activeTopicKeys.length) {
+      if (activeTopicKeys.length === 1) setTopic(activeTopicKeys[0]);
+      else setTopics(activeTopicKeys);
+    }
+  } else if (activeTopicKeys.length) {
+    if (activeTopicKeys.length === 1) setTopic(activeTopicKeys[0]);
+    else setTopics(activeTopicKeys);
   }
 
   const sectionsRoot = document.getElementById('sectionsRoot');
@@ -76,8 +84,8 @@
   const multiselectList = document.getElementById('multiselectList');
 
   let profile = getProfile();
-  let allSectionsExpanded = expandAllSections;
-  const manuallyExpandedSections = new Set(expandAllSections ? Object.keys(SECTIONS) : []);
+  let otherAreasExpanded = expandAllSections || isNoTopicMode;
+  let shouldAnimateExpand = false;
   let accordionOpenSection = null;
 
   function getFirstVisibleSectionId() {
@@ -105,15 +113,22 @@
   function updateInfoNoteVisibility() {
     if (isUniversalProfile) return;
     const infoNote = document.querySelector('.builder-info-note');
-    if (infoNote) infoNote.hidden = manuallyExpandedSections.size > 0;
+    if (infoNote) infoNote.hidden = otherAreasExpanded;
   }
 
-  function clearNonPromotedFields(sectionId, section) {
+  function isFieldRelated(sectionId, field) {
+    if (isUniversalProfile || !activeTopicKeys.length) return true;
+    return fieldRelatedToTopics(activeTopicKeys, sectionId, field.id);
+  }
+
+  function clearNonRelatedFields() {
     const updates = {};
-    section.fields.forEach((field) => {
-      if (!fieldVisible(field, profile)) return;
-      if (fieldPromotedForTopic(topicKey, sectionId, field.id)) return;
-      updates[field.id] = field.type === 'multiselect' ? [] : '';
+    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
+      section.fields.forEach((field) => {
+        if (!fieldVisible(field, profile)) return;
+        if (isFieldRelated(sectionId, field)) return;
+        updates[field.id] = field.type === 'multiselect' ? [] : '';
+      });
     });
     if (Object.keys(updates).length) {
       saveProfile(updates);
@@ -121,13 +136,32 @@
     }
   }
 
-  function collapseSectionToRelated(sectionId) {
-    const section = SECTIONS[sectionId];
-    if (!section) return;
-    clearNonPromotedFields(sectionId, section);
-    manuallyExpandedSections.delete(sectionId);
+  function collapseOtherAreas() {
+    clearNonRelatedFields();
+    otherAreasExpanded = false;
     updateInfoNoteVisibility();
     renderSections();
+  }
+
+  function applyFullProfileHeader() {
+    const eyebrow = document.querySelector('.builder-intro__eyebrow');
+    const introDesc = document.querySelector('.builder-intro__desc');
+    const infoNote = document.querySelector('.builder-info-note');
+
+    if (eyebrow) eyebrow.hidden = true;
+    if (introDesc) introDesc.hidden = true;
+    if (infoNote) infoNote.hidden = true;
+    if (topicTitle) topicTitle.textContent = 'BUILD YOUR COMPASS PROFILE';
+  }
+
+  function applySingleTopicMode() {
+    document.body.classList.add('builder-single-topic');
+    applyFullProfileHeader();
+  }
+
+  function applyNoTopicMode() {
+    document.body.classList.add('builder-no-topic');
+    applyFullProfileHeader();
   }
 
   function applyUniversalProfileMode() {
@@ -159,21 +193,13 @@
   if (isUniversalProfile) {
     applyUniversalProfileMode();
     profileForm.setAttribute('novalidate', '');
+  } else if (isSingleTopicMode) {
+    applySingleTopicMode();
+  } else if (isNoTopicMode) {
+    applyNoTopicMode();
   } else {
-    topicTitle.textContent = topic.title.replace(/^Find\s+/i, '').toUpperCase();
-    if (topicDesc) topicDesc.textContent = topic.description || '';
+    if (topicDesc) topicDesc.textContent = topic?.description || '';
     if (infoNoteTopicName) infoNoteTopicName.textContent = topicName;
-  }
-
-  function isSectionFullyOpen(sectionId) {
-    if (isAccordionMode) return accordionOpenSection === sectionId;
-    if (allSectionsExpanded) return true;
-    return sectionExpanded(topicKey, sectionId) || manuallyExpandedSections.has(sectionId);
-  }
-
-  function getPromotedFields(sectionId, visibleFields) {
-    if (isSectionFullyOpen(sectionId)) return [];
-    return visibleFields.filter((f) => fieldPromotedForTopic(topicKey, sectionId, f.id));
   }
 
   function persistField(id, value) {
@@ -284,6 +310,142 @@
       </section>`;
   }
 
+  function renderSectionHeader(section, titleOverride) {
+    const title = titleOverride || section.title;
+    return `
+      <div class="builder-section__header">
+        <div class="builder-section__title-row">
+          <h2 class="builder-section__title">${title}</h2>
+          ${section.tooltip ? renderTooltip(section.tooltip) : ''}
+        </div>
+      </div>`;
+  }
+
+  function renderSectionFields(fields) {
+    const fieldsHtml = fields.map(renderField).join('');
+    if (!fieldsHtml) return '';
+    return `<div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>`;
+  }
+
+  function renderTopicCardSection(sectionId, section, fields, titleOverride) {
+    return `
+      <section class="builder-topic-card__section" data-section="${sectionId}">
+        ${renderSectionHeader(section, titleOverride)}
+        ${renderSectionFields(fields)}
+      </section>`;
+  }
+
+  function renderStandaloneSection(sectionId, section, fields, titleOverride) {
+    const fieldsHtml = fields.map(renderField).join('');
+    if (!fieldsHtml) return '';
+
+    return `
+      <section class="builder-section is-open" data-section="${sectionId}">
+        ${renderSectionHeader(section, titleOverride)}
+        <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>
+      </section>`;
+  }
+
+  function getExtraSectionTitle(sectionId) {
+    if (sectionId === 'getting-started') return 'Additional Help Topics';
+    return null;
+  }
+
+  function partitionSections() {
+    const relatedSections = [];
+    const extraSections = [];
+
+    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
+      const visibleFields = section.fields.filter((f) => fieldVisible(f, profile));
+      if (!visibleFields.length) return;
+
+      const relatedFields = visibleFields.filter((field) => isFieldRelated(sectionId, field));
+      const extraFields = visibleFields.filter((field) => !isFieldRelated(sectionId, field));
+
+      if (relatedFields.length) {
+        relatedSections.push({ sectionId, section, fields: relatedFields });
+      }
+      if (extraFields.length) {
+        extraSections.push({ sectionId, section, fields: extraFields });
+      }
+    });
+
+    return { relatedSections, extraSections };
+  }
+
+  function renderExpandBanner() {
+    return `
+      <div class="builder-expand-banner" id="expandBanner">
+        <p class="builder-expand-banner__text">
+          ${INFO_ICON}
+          <span>Need help with other areas besides <strong>${topicName}</strong>?</span>
+        </p>
+        <button type="button" class="builder-expand-banner__btn" id="expandFullProfileBtn">Show Full Profile</button>
+      </div>`;
+  }
+
+  function renderSingleTopicLayout() {
+    const { relatedSections, extraSections } = partitionSections();
+    const hasExtra = extraSections.length > 0;
+    const showBanner = hasExtra && !otherAreasExpanded;
+
+    const topicCardHtml = relatedSections
+      .map(({ sectionId, section, fields }) => renderTopicCardSection(sectionId, section, fields))
+      .join('');
+
+    const extraSectionsHtml = extraSections
+      .map(({ sectionId, section, fields }) =>
+        renderStandaloneSection(sectionId, section, fields, getExtraSectionTitle(sectionId)))
+      .join('');
+
+    const panelOpenClass = otherAreasExpanded && !shouldAnimateExpand ? ' is-open' : '';
+    const panelHidden = !otherAreasExpanded;
+
+    let html = '';
+    if (topicCardHtml) {
+      html += `<div class="builder-topic-card">${topicCardHtml}</div>`;
+    }
+    if (showBanner) {
+      html += renderExpandBanner();
+    }
+    if (hasExtra) {
+      html += `
+        <div class="builder-extra-panel${panelOpenClass}" id="extraSectionsPanel"${panelHidden ? ' hidden' : ''} aria-hidden="${panelHidden}">
+          <div class="builder-extra-panel__inner">
+            ${extraSectionsHtml}
+          </div>
+        </div>`;
+    }
+
+    sectionsRoot.innerHTML = html;
+
+    const expandBtn = document.getElementById('expandFullProfileBtn');
+    if (expandBtn) {
+      expandBtn.addEventListener('click', expandFullProfile);
+    }
+
+    if (shouldAnimateExpand) {
+      const panel = document.getElementById('extraSectionsPanel');
+      const banner = document.getElementById('expandBanner');
+      if (banner) banner.remove();
+      if (panel) {
+        panel.hidden = false;
+        panel.setAttribute('aria-hidden', 'false');
+        requestAnimationFrame(() => {
+          panel.classList.add('is-open');
+          shouldAnimateExpand = false;
+        });
+      }
+    }
+  }
+
+  function expandFullProfile() {
+    otherAreasExpanded = true;
+    shouldAnimateExpand = true;
+    updateInfoNoteVisibility();
+    renderSections();
+  }
+
   function renderSection(sectionId, section) {
     const visibleFields = section.fields.filter((f) => fieldVisible(f, profile));
     if (!visibleFields.length) return '';
@@ -292,43 +454,61 @@
       return renderAccordionSection(sectionId, section, visibleFields);
     }
 
-    const fullyOpen = isSectionFullyOpen(sectionId);
-    const promotedFields = getPromotedFields(sectionId, visibleFields);
-    const isPartial = !fullyOpen && promotedFields.length > 0;
-    const isCollapsed = !fullyOpen && !isPartial;
-
-    let fieldsToShow = [];
-    if (fullyOpen) {
-      fieldsToShow = visibleFields;
-    } else if (isPartial) {
-      fieldsToShow = promotedFields;
-    }
+    const relatedFields = visibleFields.filter((field) => isFieldRelated(sectionId, field));
+    const fieldsToShow = otherAreasExpanded ? visibleFields : relatedFields;
+    if (!fieldsToShow.length) return '';
 
     const fieldsHtml = fieldsToShow.map(renderField).join('');
-    const hiddenCount = fullyOpen ? 0 : visibleFields.length - fieldsToShow.length;
-    const manuallyExpanded = manuallyExpandedSections.has(sectionId);
-    const showSeeMore = hiddenCount > 0 || manuallyExpanded;
-    const seeMoreExpanded = manuallyExpanded;
-
-    const stateClass = fullyOpen ? 'is-open' : isPartial ? 'is-partial' : 'is-collapsed';
-    const seeMoreContent = seeMoreExpanded
-      ? SECTION_COPY.showOnlyRelated
-      : buildSeeMoreHtml(isPartial, hiddenCount, topicName);
-    const seeMoreHtml = formatSeeMoreButton(seeMoreContent, seeMoreExpanded);
-    const hintText = isPartial ? SECTION_COPY.partialHint : isCollapsed ? '' : '';
+    const stateClass = otherAreasExpanded ? 'is-open' : relatedFields.length === visibleFields.length ? 'is-open' : 'is-partial';
 
     return `
       <section class="builder-section ${stateClass}" data-section="${sectionId}">
-        <div class="builder-section__header">
-          <div class="builder-section__title-row">
-            <h2 class="builder-section__title">${section.title}</h2>
-            ${section.tooltip ? renderTooltip(section.tooltip) : ''}
-          </div>
-        </div>
-        ${hintText ? `<p class="builder-section__hint">${hintText}</p>` : ''}
-        ${fieldsHtml ? `<div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>` : ''}
-        ${showSeeMore ? `<div class="builder-section__footer"><button type="button" class="builder-see-more${seeMoreExpanded ? ' is-expanded' : ''}" data-section="${sectionId}" aria-expanded="${seeMoreExpanded}">${seeMoreHtml}</button></div>` : ''}
+        ${renderSectionHeader(section)}
+        <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>
       </section>`;
+  }
+
+  function countHiddenFields() {
+    let count = 0;
+    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
+      section.fields.forEach((field) => {
+        if (!fieldVisible(field, profile)) return;
+        if (!isFieldRelated(sectionId, field)) count += 1;
+      });
+    });
+    return count;
+  }
+
+  function renderOtherAreasToggle() {
+    if (isSingleTopicMode || isNoTopicMode) return;
+
+    const toggleRoot = document.getElementById('otherAreasToggle');
+    if (!toggleRoot || isUniversalProfile || isAccordionMode) return;
+
+    const hiddenCount = countHiddenFields();
+    if (!hiddenCount && !otherAreasExpanded) {
+      toggleRoot.hidden = true;
+      toggleRoot.innerHTML = '';
+      return;
+    }
+
+    toggleRoot.hidden = false;
+    const label = otherAreasExpanded ? OTHER_AREAS_COPY.collapse : OTHER_AREAS_COPY.expand;
+    toggleRoot.innerHTML = `
+      <button type="button" class="builder-other-areas-toggle${otherAreasExpanded ? ' is-expanded' : ''}" id="otherAreasBtn" aria-expanded="${otherAreasExpanded}">
+        <span class="builder-other-areas-toggle__prefix" aria-hidden="true">${expandCollapseCaret(otherAreasExpanded)}</span>
+        ${label}
+      </button>`;
+
+    document.getElementById('otherAreasBtn').addEventListener('click', () => {
+      if (otherAreasExpanded) {
+        collapseOtherAreas();
+      } else {
+        otherAreasExpanded = true;
+        updateInfoNoteVisibility();
+        renderSections();
+      }
+    });
   }
 
   function renderMultiselectSelectedTags() {
@@ -465,13 +645,7 @@
     });
   }
 
-  function renderSections() {
-    profile = getProfile();
-    ensureAccordionSectionValid();
-    sectionsRoot.innerHTML = Object.entries(SECTIONS)
-      .map(([id, section]) => renderSection(id, section))
-      .join('');
-
+  function bindFieldEvents() {
     sectionsRoot.querySelectorAll('.builder-select, .builder-input').forEach((el) => {
       el.addEventListener('change', (e) => {
         persistField(e.target.dataset.field, e.target.value);
@@ -480,28 +654,38 @@
         persistField(e.target.dataset.field, e.target.value);
       });
     });
+  }
 
+  function renderSections() {
+    profile = getProfile();
+    ensureAccordionSectionValid();
+
+    if (isSingleTopicMode) {
+      renderSingleTopicLayout();
+      bindFieldEvents();
+      bindMultiselectEvents();
+      updateInfoNoteVisibility();
+      return;
+    }
+
+    sectionsRoot.innerHTML = Object.entries(SECTIONS)
+      .map(([id, section]) => renderSection(id, section))
+      .join('');
+
+    bindFieldEvents();
     bindMultiselectEvents();
 
     if (isAccordionMode) bindAccordionToggles();
 
-    sectionsRoot.querySelectorAll('.builder-see-more').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const sectionId = btn.dataset.section;
-        if (manuallyExpandedSections.has(sectionId)) {
-          collapseSectionToRelated(sectionId);
-        } else {
-          manuallyExpandedSections.add(sectionId);
-          updateInfoNoteVisibility();
-          renderSections();
-        }
-      });
-    });
-
+    renderOtherAreasToggle();
     updateInfoNoteVisibility();
   }
 
   function goToResults() {
+    if (!topicKey) {
+      window.location.href = 'results.html';
+      return;
+    }
     window.location.href = `results.html?topic=${encodeURIComponent(topicKey)}`;
   }
 

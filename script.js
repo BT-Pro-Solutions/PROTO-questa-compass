@@ -6,8 +6,11 @@
   const edgeHighlight = document.querySelector('.cm-edge-highlight');
   const edgeGlow = document.querySelector('.cm-edge-glow');
   const options = document.querySelectorAll('.cm-option');
-  const includesEl = document.querySelector('.cm-includes');
-  const includesItemEl = document.querySelector('.cm-includes__item');
+  const topicBar = document.getElementById('compassTopicBar');
+  const topicBarName = document.querySelector('.compass-topic-bar__name');
+  const topicBarDesc = document.querySelector('.compass-topic-bar__desc');
+  const topicBarPills = document.querySelector('.compass-topic-bar__pills');
+  const topicBarIncludes = document.querySelector('.compass-topic-bar__includes');
 
   if (!compassMenu || !centerEl || !needle) return;
 
@@ -20,75 +23,41 @@
     'personal-help',
   ];
 
-  const INCLUDES_VISIBLE_MS = 2400;
-  const INCLUDES_FADE_MS = 250;
-  let includesInterval = null;
-  let includesFadeTimer = null;
-  let includesSubcats = [];
-  let includesSubcatIndex = 0;
-  let activeIncludesIndex = null;
+  function showTopicBar(index) {
+    if (!topicBar || !topicBarName || !topicBarDesc) return;
 
-  function stopIncludesCycle() {
-    if (includesInterval) {
-      clearInterval(includesInterval);
-      includesInterval = null;
+    const topicKey = MENU_TOPICS[index];
+    const { TOPIC_INTEREST_LABELS, TOPICS, TOPIC_INTEREST_OPTIONS } = CompassProfile;
+    const label = TOPIC_INTEREST_LABELS[topicKey];
+    const description = TOPICS[topicKey]?.description;
+    const subcats = TOPIC_INTEREST_OPTIONS[topicKey] || [];
+    if (!label || !description) return;
+
+    topicBarName.textContent = label;
+    topicBarDesc.textContent = description;
+
+    if (topicBarPills && topicBarIncludes) {
+      if (subcats.length) {
+        topicBarIncludes.hidden = false;
+        topicBarPills.innerHTML = subcats
+          .map((item) => `<li class="compass-topic-bar__pill">${item}</li>`)
+          .join('');
+      } else {
+        topicBarIncludes.hidden = true;
+        topicBarPills.innerHTML = '';
+      }
     }
-    if (includesFadeTimer) {
-      clearTimeout(includesFadeTimer);
-      includesFadeTimer = null;
-    }
+
+    topicBar.setAttribute('aria-hidden', 'false');
+    topicBar.classList.add('is-visible');
   }
 
-  function setIncludesItem(label, skipFade) {
-    if (!includesItemEl) return;
-    if (skipFade) {
-      includesItemEl.textContent = label;
-      includesItemEl.classList.remove('is-fading');
-      return;
-    }
-
-    includesItemEl.classList.add('is-fading');
-    includesFadeTimer = setTimeout(() => {
-      includesFadeTimer = null;
-      if (activeIncludesIndex === null) return;
-      includesItemEl.textContent = label;
-      includesItemEl.classList.remove('is-fading');
-    }, INCLUDES_FADE_MS);
-  }
-
-  function showIncludes(index) {
-    if (!includesEl || !includesItemEl) return;
-
-    const topic = MENU_TOPICS[index];
-    includesSubcats = (CompassProfile.TOPIC_INTEREST_OPTIONS || {})[topic] || [];
-    if (!includesSubcats.length) return;
-
-    stopIncludesCycle();
-    activeIncludesIndex = index;
-    includesSubcatIndex = 0;
-    includesEl.hidden = false;
-    includesEl.classList.add('is-active');
-    setIncludesItem(includesSubcats[0], true);
-
-    includesInterval = setInterval(() => {
-      if (activeIncludesIndex !== index) return;
-      includesSubcatIndex = (includesSubcatIndex + 1) % includesSubcats.length;
-      setIncludesItem(includesSubcats[includesSubcatIndex]);
-    }, INCLUDES_VISIBLE_MS);
-  }
-
-  function clearIncludes() {
-    stopIncludesCycle();
-    activeIncludesIndex = null;
-    includesSubcats = [];
-    if (includesEl) {
-      includesEl.classList.remove('is-active');
-      includesEl.hidden = true;
-    }
-    if (includesItemEl) {
-      includesItemEl.textContent = '';
-      includesItemEl.classList.remove('is-fading');
-    }
+  function clearTopicBar() {
+    if (!topicBar) return;
+    topicBar.classList.remove('is-visible');
+    topicBar.setAttribute('aria-hidden', 'true');
+    if (topicBarPills) topicBarPills.innerHTML = '';
+    if (topicBarIncludes) topicBarIncludes.hidden = true;
   }
 
   const ITEM_ANGLES = [0, 60, 120, 180, 240, 300];
@@ -173,12 +142,12 @@
     compassMenu.classList.add('is-link-hover');
     edgeHighlight.style.transform = `rotate(${ITEM_ANGLES[index] + LOCKED_OFFSET}deg)`;
     edgeGlow.style.transform = `rotate(${ITEM_ANGLES[index]}deg)`;
-    showIncludes(index);
+    showTopicBar(index);
   }
 
   function clearActiveItem() {
     compassMenu.classList.remove('is-link-hover');
-    clearIncludes();
+    clearTopicBar();
   }
 
   document.addEventListener('mousemove', (e) => {
@@ -188,6 +157,10 @@
   });
 
   function navigateFromCompassTopic(topic) {
+    if (topic === 'funding') {
+      window.location.href = CompassProfile.FUNDING_EXTERNAL_URL;
+      return;
+    }
     const isLoggedIn = typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
     if (isLoggedIn || document.body.classList.contains('page-compass')) {
       CompassProfile.setTopic(topic);
@@ -302,10 +275,19 @@
     'personal-help',
   ];
 
-  function navigateToTopicProfile(topic) {
+  const FUNDING_EXTERNAL_URL = CompassProfile.FUNDING_EXTERNAL_URL;
+
+  function navigateToTopicsProfile(topics) {
     CompassProfile.clearProfile();
-    CompassProfile.setTopic(topic);
-    window.location.href = `profile-builder.html?topic=${encodeURIComponent(topic)}`;
+    CompassProfile.setTopics(topics);
+    const query = topics.length === 1
+      ? `topic=${encodeURIComponent(topics[0])}`
+      : `topics=${topics.map(encodeURIComponent).join(',')}`;
+    window.location.href = `profile-builder.html?${query}`;
+  }
+
+  function navigateToTopicProfile(topic) {
+    navigateToTopicsProfile([topic]);
   }
 
   const card        = document.querySelector('.compass-card');
@@ -323,6 +305,7 @@
   if (!card) return;
 
   let currentIndex = 0;
+  let selectedTopics = [];
 
   function showQuestion(index) {
     const q = QUESTIONS[index];
@@ -332,14 +315,60 @@
 
     quizContent.hidden = false;
     quizFinal.hidden   = true;
+    quizFinal.classList.remove('quiz-final--has-topics');
+  }
+
+  function showQuizComplete() {
+    quizContent.hidden = true;
+    quizFinal.hidden = false;
+
+    const titleEl = quizFinal.querySelector('.quiz-final__title');
+    const descEl = quizFinal.querySelector('.quiz-final__desc');
+    const topicsEl = quizFinal.querySelector('.quiz-final__topics');
+    const createBtn = quizFinal.querySelector('.js-quiz-create-profile');
+    const universalBtn = quizFinal.querySelector('.js-quiz-universal-profile');
+
+    if (selectedTopics.length) {
+      quizFinal.classList.add('quiz-final--has-topics');
+      if (titleEl) titleEl.textContent = 'Great — we found a few areas to focus on!';
+      if (descEl) {
+        descEl.textContent = 'Based on your answers, we\u2019ll tailor your profile for the topics below.';
+      }
+      if (topicsEl) {
+        topicsEl.hidden = false;
+        topicsEl.innerHTML = selectedTopics
+          .map((key) => {
+            const label = CompassProfile.TOPIC_INTEREST_LABELS[key] || key;
+            return `<li>${label}</li>`;
+          })
+          .join('');
+      }
+      if (createBtn) {
+        createBtn.hidden = false;
+        createBtn.textContent = 'Build My Profile';
+      }
+      if (universalBtn) universalBtn.hidden = true;
+    } else {
+      quizFinal.classList.remove('quiz-final--has-topics');
+      if (titleEl) titleEl.textContent = 'All Done!';
+      if (descEl) {
+        descEl.textContent = 'We\u2019ve explored all topics, but you can still create a profile to use for future searches.';
+      }
+      if (topicsEl) topicsEl.hidden = true;
+      if (createBtn) createBtn.hidden = true;
+      if (universalBtn) universalBtn.hidden = false;
+    }
   }
 
   function openQuiz() {
     currentIndex = 0;
+    selectedTopics = [];
     showQuestion(0);
 
     card.classList.add('quiz-active');
     quizView.setAttribute('aria-hidden', 'false');
+    document.getElementById('compassTopicBar')?.classList.remove('is-visible');
+    document.getElementById('compassTopicBar')?.setAttribute('aria-hidden', 'true');
 
     if (ctaDesktop) ctaDesktop.hidden = true;
     if (backBtn)    backBtn.hidden    = false;
@@ -356,8 +385,7 @@
   function advanceQuestion() {
     currentIndex += 1;
     if (currentIndex >= QUESTIONS.length) {
-      quizContent.hidden = true;
-      quizFinal.hidden   = false;
+      showQuizComplete();
     } else {
       showQuestion(currentIndex);
     }
@@ -386,11 +414,31 @@
 
   if (quizYes) {
     quizYes.addEventListener('click', () => {
-      navigateToTopicProfile(QUESTIONS[currentIndex].topic);
+      const { topic } = QUESTIONS[currentIndex];
+      if (topic === 'funding') {
+        window.location.href = FUNDING_EXTERNAL_URL;
+        return;
+      }
+      if (!selectedTopics.includes(topic)) {
+        selectedTopics.push(topic);
+      }
+      advanceQuestion();
     });
   }
 
   document.querySelectorAll('.js-quiz-create-profile').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (selectedTopics.length) {
+        navigateToTopicsProfile(selectedTopics);
+        return;
+      }
+      CompassProfile.clearProfile();
+      window.location.href = 'profile-builder.html?mode=universal&expand=all';
+    });
+  });
+
+  document.querySelectorAll('.js-quiz-universal-profile').forEach((el) => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       CompassProfile.clearProfile();

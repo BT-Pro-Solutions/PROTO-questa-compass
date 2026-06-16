@@ -170,6 +170,22 @@
     return `detail.html?topic=${encodeURIComponent(topicKey)}&id=${id}&returnUrl=${encodeURIComponent(`results.html?topic=${topicKey}`)}`;
   }
 
+  function renderProviderLogo(opp) {
+    const name = opp.providerName || opp.title;
+    const initials = name
+      .split(/[\s—–-]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join('')
+      .toUpperCase();
+    const alt = opp.providerName ? `${opp.providerName} logo` : 'Resource provider';
+    return `
+      <div class="results-item__logo" role="img" aria-label="${alt}">
+        <span class="results-item__logo-mark">${initials || '?'}</span>
+      </div>`;
+  }
+
   function renderResultCard(opp) {
     const matchHtml = config.showMatchStrength
       ? `<span class="results-item__match results-item__match--${opp.match}">${matchLabel(opp.match)}</span>`
@@ -178,6 +194,7 @@
     return `
       <article class="results-item">
         ${CompassFavorites.favoriteButtonHtml(opp.id)}
+        ${renderProviderLogo(opp)}
         <div class="results-item__body">
           <h3 class="results-item__title">${opp.title}</h3>
           <p class="results-item__meta"><strong>Key dates &amp; amount</strong> ${opp.keyDates}</p>

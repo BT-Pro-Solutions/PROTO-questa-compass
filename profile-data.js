@@ -1,5 +1,6 @@
 (function (global) {
   const STORAGE_KEY = 'compass-profile';
+  const FUNDING_EXTERNAL_URL = 'https://compass.questafoundation.org/fund-finder';
 
   const TOPIC_INTEREST_OPTIONS = {
     'learning-help': [
@@ -143,7 +144,7 @@
 
   const SECTIONS = {
     'getting-started': {
-      title: 'Pick specific interests',
+      title: 'What do you need help with?',
       tooltip: 'Select the specific types of resources you\u2019re looking for within this topic.',
       fields: buildTopicInterestFields(),
     },
@@ -213,7 +214,7 @@
       ],
     },
     'education-interests': {
-      title: 'Your Education Interests',
+      title: 'Your Education Preferences',
       tooltip: 'Let us know what learning options are on your radar. You can skip anything that doesn\u2019t fit your goals.',
       fields: [
         {
@@ -388,11 +389,35 @@
   }
 
   function setTopic(topic) {
-    saveProfile({ topic });
+    saveProfile({ topic, topics: [topic] });
+  }
+
+  function setTopics(topics) {
+    const list = Array.isArray(topics) ? topics.filter(Boolean) : [];
+    saveProfile({ topics: list, topic: list[0] || 'funding' });
+  }
+
+  function getTopics() {
+    const profile = getProfile();
+    if (Array.isArray(profile.topics) && profile.topics.length) return profile.topics;
+    if (profile.topic) return [profile.topic];
+    return ['funding'];
   }
 
   function getTopic() {
-    return getProfile().topic || 'funding';
+    return getTopics()[0] || 'funding';
+  }
+
+  function fieldRelatedToTopic(topicKey, sectionId, fieldId) {
+    const topic = TOPICS[topicKey];
+    if (!topic) return false;
+    if (topic.expandedSections.includes(sectionId)) return true;
+    const promoted = topic.promotedFieldsBySection[sectionId];
+    return Array.isArray(promoted) && promoted.includes(fieldId);
+  }
+
+  function fieldRelatedToTopics(topicKeys, sectionId, fieldId) {
+    return topicKeys.some((key) => fieldRelatedToTopic(key, sectionId, fieldId));
   }
 
   function fieldVisible(field, profile) {
@@ -435,14 +460,19 @@
     SECTIONS,
     QUIZ_TOPIC_MAP,
     MENU_TOPIC_MAP,
+    FUNDING_EXTERNAL_URL,
     getProfile,
     saveProfile,
     clearProfile,
     startTopic,
     setTopic,
+    setTopics,
     getTopic,
+    getTopics,
     fieldVisible,
     fieldPromotedForTopic,
+    fieldRelatedToTopic,
+    fieldRelatedToTopics,
     getPromotedFieldIds,
     identityFieldPromoted,
     sectionExpanded,
