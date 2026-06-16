@@ -63,6 +63,7 @@
 
   const sectionsRoot = document.getElementById('sectionsRoot');
   const topicTitle = document.getElementById('topicTitle');
+  const topicDesc = document.getElementById('topicDesc');
   const infoNoteTopicName = document.getElementById('infoNoteTopicName');
   const createAccountModal = document.getElementById('createAccountModal');
   const profileForm = document.getElementById('profileForm');
@@ -160,6 +161,7 @@
     profileForm.setAttribute('novalidate', '');
   } else {
     topicTitle.textContent = topic.title.replace(/^Find\s+/i, '').toUpperCase();
+    if (topicDesc) topicDesc.textContent = topic.description || '';
     if (infoNoteTopicName) infoNoteTopicName.textContent = topicName;
   }
 

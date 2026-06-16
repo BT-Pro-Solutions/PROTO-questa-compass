@@ -87,6 +87,7 @@
   const TOPICS = {
     'learning-help': {
       title: 'Find Learning Help',
+      description: 'Get help to develop the academic skills to succeed in further education.',
       expandedSections: ['about-you'],
       promotedFieldsBySection: {
         'getting-started': ['learning-help-interests'],
@@ -94,13 +95,15 @@
     },
     careers: {
       title: 'Find Careers',
+      description: 'Get help to explore potential careers and related education, develop professional skills, and get career experience.',
       expandedSections: ['about-you'],
       promotedFieldsBySection: {
         'getting-started': ['careers-interests'],
       },
     },
     'education-help': {
-      title: 'Find Education Help',
+      title: 'Find Education Readiness',
+      description: 'Get help to explore college and training options, prepare for success in further education, plan for education expenses, complete the FAFSA, and/or leverage college credit opportunities.',
       expandedSections: ['about-you', 'education-interests'],
       promotedFieldsBySection: {
         'getting-started': ['education-help-interests'],
@@ -108,6 +111,7 @@
     },
     funding: {
       title: 'Find Funding',
+      description: 'Get help to find scholarships and other financial aid.',
       expandedSections: ['about-you', 'education-interests', 'financial-aid'],
       promotedFieldsBySection: {
         'getting-started': ['funding-interests'],
@@ -116,6 +120,7 @@
     },
     'education-training': {
       title: 'Find Education & Training',
+      description: 'Get help to identify colleges and training programs for your goals.',
       expandedSections: ['about-you'],
       promotedFieldsBySection: {
         'getting-started': ['education-training-interests'],
@@ -128,6 +133,7 @@
     },
     'personal-help': {
       title: 'Find Personal Help',
+      description: 'Get help with personal needs (such as childcare, transportation, wellness, or social connections) to succeed in further education.',
       expandedSections: ['about-you'],
       promotedFieldsBySection: {
         'getting-started': ['personal-help-interests'],
