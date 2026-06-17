@@ -411,6 +411,10 @@
     display: none;
   }
 
+  .compass-card__cta-row {
+    display: none;
+  }
+
   .compass-card__powered {
     grid-column: 2;
     grid-row: 3;
@@ -762,6 +766,7 @@
 
     .main-content {
       padding: 0;
+      justify-content: flex-start;
     }
 
     .compass-card {
@@ -771,6 +776,10 @@
       background: var(--dark-teal);
       background-image: url(assets/blur.png);
       background-size: cover;
+      max-height: none;
+      overflow: visible;
+      flex-grow: 0;
+      width: 100%;
     }
 
     .compass-card__header {
@@ -827,7 +836,7 @@
       right: auto;
       align-self: center;
       margin: 0 auto;
-      padding-bottom: 32px;
+      padding-bottom: 48px;
       z-index: 2;
       order: 4;
     }
@@ -965,10 +974,6 @@
     flex-wrap: wrap;
     gap: 12px;
     align-items: center;
-  }
-
-  .compass-card__cta-row {
-    display: none;
   }
 
   .quiz-back-btn {
@@ -2620,6 +2625,25 @@
     gap: 10px;
   }
 
+  .results-fund-finder-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark-teal);
+    text-decoration: none;
+  }
+
+  .results-fund-finder-link:hover {
+    text-decoration: underline;
+  }
+
+  .results-fund-finder-link__icon {
+    flex-shrink: 0;
+  }
+
   .results-filter-check--topic {
     align-items: flex-start;
   }
@@ -2847,6 +2871,21 @@
 
   .results-filters-login {
     margin-top: 50px;
+  }
+
+  .results-demo-notice {
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: #fff8e6;
+    border: 1px solid #f0d78c;
+  }
+
+  .results-demo-notice__text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #5c4a1a;
   }
 
   .results-main__header {
@@ -3820,6 +3859,14 @@
   @media (max-width: 480px) {
     .cm-options {
       grid-template-columns: 1fr;
+    }
+
+    .compass-card__powered {
+      padding-bottom: 56px;
+    }
+
+    .compass-card__cta-row {
+      margin-bottom: 20px;
     }
   }
 

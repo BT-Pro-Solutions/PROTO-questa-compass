@@ -31,6 +31,17 @@
                 <div class="compass-card__intro">
                     <h1 class="compass-card__title">Please select a topic to begin.</h1>
                 </div>
+
+                <div class="compass-card__header-actions">
+                    <a href="results.html" class="compass-card__cta compass-card__cta--desktop">Browse All</a>
+                    <a href="#" class="compass-card__cta compass-card__cta--desktop js-quiz-open">Not sure where to start?</a>
+                    <button class="quiz-back-btn js-quiz-close" hidden type="button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Back To Main
+                    </button>
+                </div>
             </div>
 
             <div class="compass-topic-bar" id="compassTopicBar" aria-hidden="true" aria-live="polite">
@@ -82,6 +93,46 @@
                         <a href="#" class="cm-option">
                             <div class="cm-option-text"><span>Find</span> Personal <br>Help</div>
                         </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="compass-card__cta-row">
+                <a href="results.html" class="compass-card__cta compass-card__cta--mobile">Browse All</a>
+                <a href="#" class="compass-card__cta compass-card__cta--mobile js-quiz-open">Not sure where to start?</a>
+            </div>
+
+            <div class="quiz-view" id="quizView" aria-hidden="true">
+                <video src="assets/blur-loop-compressed.mp4" autoplay muted loop playsinline class="cm-blur-motion quiz-view__video"></video>
+                <div class="overlay-color"></div>
+                <div class="overlay-grain"></div>
+
+                <div class="quiz-content" id="quizContent">
+                    <img src="assets/Quincy-Circle.png" alt="Quincy" class="quiz-quincy">
+                    <p class="quiz-counter"><span class="quiz-counter__num" id="quizNum"></span></p>
+                    <p class="quiz-question" id="quizQuestion"></p>
+                    <div class="quiz-actions">
+                        <button class="quiz-btn quiz-btn--back js-quiz-back" type="button">Back</button>
+                        <button class="quiz-btn quiz-btn--yes" id="quizYes" type="button">Yes</button>
+                        <button class="quiz-btn quiz-btn--no js-quiz-no" type="button">No</button>
+                    </div>
+                </div>
+
+                <div class="quiz-final" id="quizFinal" hidden>
+                    <img src="assets/Quincy-Circle.png" alt="Quincy" class="quiz-quincy">
+                    <p class="quiz-counter quiz-final__title">All Done!</p>
+                    <p class="quiz-question quiz-final__desc">We&apos;ve explored all topics, but you can still create a profile to use for future searches.</p>
+                    <ul class="quiz-final__topics" hidden></ul>
+                    <div class="quiz-final__fund-finder" id="quizFundFinder" hidden>
+                        <p class="quiz-final__fund-finder-note">Fund Finder is a separate site for scholarships, grants, and other financial aid.</p>
+                        <a href="https://compass.questafoundation.org/fund-finder" class="quiz-final__fund-finder-link" id="quizFundFinderLink" target="_blank" rel="noopener noreferrer">
+                            Go to Fund Finder
+                            <svg class="quiz-final__fund-finder-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 3h6v6M10 14 21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                    </div>
+                    <div class="quiz-actions quiz-actions--single">
+                        <button class="quiz-btn quiz-btn--yes js-quiz-create-profile" type="button" hidden>Build My Profile</button>
+                        <button class="quiz-btn quiz-btn--yes js-quiz-universal-profile" type="button">Create Profile</button>
                     </div>
                 </div>
             </div>

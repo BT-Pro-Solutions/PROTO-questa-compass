@@ -1,5 +1,6 @@
 (function () {
-  const { TOPICS, TOPIC_INTEREST_LABELS, MENU_TOPIC_MAP, saveProfile, setTopics } = CompassProfile;
+  const { TOPICS, TOPIC_INTEREST_LABELS, MENU_TOPIC_MAP, FUNDING_EXTERNAL_URL, saveProfile, setTopics } =
+    CompassProfile;
   const { PLACEHOLDER_OPPORTUNITIES, getResultsConfig } = CompassResults;
 
   const RESULTS_TOPIC_KEYS = MENU_TOPIC_MAP.filter((key) => key !== 'funding');
@@ -206,6 +207,8 @@
     window.location.href = buildResultsUrl(nextKeys);
   }
 
+  const EXTERNAL_LINK_ICON = `<svg class="results-fund-finder-link__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 3h6v6M10 14 21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
   function renderTopicFilter() {
     const checkboxes = RESULTS_TOPIC_KEYS.map((key) => {
       const checked = selectedTopicKeys.includes(key) ? ' checked' : '';
@@ -223,6 +226,10 @@
           <span class="results-filter-label">MAIN TOPICS</span>
         </div>
         <div class="results-topic-checks">${checkboxes}</div>
+        <a href="${FUNDING_EXTERNAL_URL}" class="results-fund-finder-link" target="_blank" rel="noopener noreferrer">
+          Fund Finder
+          ${EXTERNAL_LINK_ICON}
+        </a>
       </div>`;
 
     topicFilterRoot.querySelectorAll('[data-topic-check]').forEach((input) => {

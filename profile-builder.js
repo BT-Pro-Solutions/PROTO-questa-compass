@@ -217,7 +217,11 @@
     return Boolean(value && String(value).trim());
   }
 
-  function sectionHasFilledFields(fields) {
+  function sectionIsComplete(fields) {
+    const requiredFields = fields.filter((field) => field.required);
+    if (requiredFields.length) {
+      return requiredFields.every(isFieldFilled);
+    }
     return fields.some(isFieldFilled);
   }
 
@@ -232,7 +236,7 @@
   }
 
   function renderSectionStatus(fields) {
-    const filled = sectionHasFilledFields(fields);
+    const filled = sectionIsComplete(fields);
     const tip = filled ? "You've entered data here." : 'Unfilled';
     const ariaLabel = filled ? 'Section has data entered' : 'Section unfilled';
     const stateClass = filled ? 'builder-section-status--filled' : 'builder-section-status--empty';
