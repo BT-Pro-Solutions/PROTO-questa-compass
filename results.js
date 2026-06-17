@@ -351,8 +351,36 @@
   }
 
   document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
-  document.getElementById('changeFiltersBtn').addEventListener('click', () => {
-    document.getElementById('filtersPanel').scrollIntoView({ behavior: 'smooth' });
+
+  const filtersPanel = document.getElementById('filtersPanel');
+  const filtersBackdrop = document.getElementById('filtersBackdrop');
+  const closeFiltersBtn = document.getElementById('closeFiltersBtn');
+  const mobileFiltersMq = window.matchMedia('(max-width: 860px)');
+
+  function openFiltersDrawer() {
+    if (!mobileFiltersMq.matches) {
+      filtersPanel.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    document.body.classList.add('results-filters-open');
+    filtersBackdrop.hidden = false;
+    closeFiltersBtn?.focus();
+  }
+
+  function closeFiltersDrawer() {
+    document.body.classList.remove('results-filters-open');
+    filtersBackdrop.hidden = true;
+  }
+
+  document.getElementById('changeFiltersBtn').addEventListener('click', openFiltersDrawer);
+  closeFiltersBtn?.addEventListener('click', closeFiltersDrawer);
+  filtersBackdrop?.addEventListener('click', closeFiltersDrawer);
+  document.getElementById('promptFiltersBtn')?.addEventListener('click', openFiltersDrawer);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('results-filters-open')) {
+      closeFiltersDrawer();
+    }
   });
 
   if (hasTopics) {

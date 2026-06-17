@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.17">
+    <link rel="stylesheet" href="styles.css?v=1.0.18">
 </head>
 <body class="page-results">
     <header class="site-header">
@@ -36,8 +36,14 @@
             </nav>
 
             <div class="results-layout results-layout--filters">
-                <aside class="results-filters" id="filtersPanel">
-                    <h2 class="results-filters__heading">Filters</h2>
+                <div class="results-filters-backdrop" id="filtersBackdrop" hidden></div>
+                <aside class="results-filters" id="filtersPanel" aria-label="Filter results">
+                    <div class="results-filters__top">
+                        <h2 class="results-filters__heading">Filters</h2>
+                        <button type="button" class="results-filters__close" id="closeFiltersBtn" aria-label="Close filters">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     <div id="topicFilterRoot"></div>
                     <div id="filtersRoot"></div>
                     <button type="button" class="results-clear-btn" id="clearFiltersBtn">Clear All</button>
@@ -53,7 +59,8 @@
                     <div class="results-main">
                     <div class="results-prompt" id="resultsPrompt" hidden>
                         <h2 class="results-prompt__title">Select a topic to get started</h2>
-                        <p class="results-prompt__text">Choose one or more main topics from the filters on the left to browse resources and refine your results.</p>
+                        <p class="results-prompt__text">Choose one or more main topics to browse resources and refine your results.</p>
+                        <button type="button" class="builder-btn builder-btn--secondary results-prompt__btn" id="promptFiltersBtn">Choose Topics</button>
                     </div>
 
                     <div class="results-main__content" id="resultsMainContent">
@@ -119,6 +126,6 @@
     <script src="auth.js?v=1.0.8"></script>
     <script src="results-data.js?v=1.0.4"></script>
     <script src="favorites.js"></script>
-    <script src="results.js?v=1.0.3"></script>
+    <script src="results.js?v=1.0.4"></script>
 </body>
 </html>
