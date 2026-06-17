@@ -227,8 +227,11 @@
     return section.fields.filter((f) => fieldVisible(f, profile));
   }
 
-  function renderSectionStatus(sectionId) {
-    const fields = getSectionStatusFields(sectionId);
+  function statusFieldsAttr(fields) {
+    return fields.map((f) => f.id).join(',');
+  }
+
+  function renderSectionStatus(fields) {
     const filled = sectionHasFilledFields(fields);
     const tip = filled ? "You've entered data here." : 'Unfilled';
     const ariaLabel = filled ? 'Section has data entered' : 'Section unfilled';
@@ -240,10 +243,20 @@
     return `<span class="builder-section-status ${stateClass}" tabindex="0" role="status" aria-label="${ariaLabel}" data-tip="${tip}">${checkIcon}</span>`;
   }
 
+  function resolveStatusFields(sectionEl) {
+    const sectionId = sectionEl.dataset.section;
+    const fieldIds = (sectionEl.dataset.statusFields || '').split(',').filter(Boolean);
+    if (fieldIds.length) {
+      const section = SECTIONS[sectionId];
+      if (!section) return [];
+      return section.fields.filter((f) => fieldIds.includes(f.id));
+    }
+    return getSectionStatusFields(sectionId);
+  }
+
   function updateSectionStatuses() {
     sectionsRoot.querySelectorAll('[data-section]').forEach((el) => {
-      const sectionId = el.dataset.section;
-      const html = renderSectionStatus(sectionId);
+      const html = renderSectionStatus(resolveStatusFields(el));
       const existing = el.querySelector('.builder-section-status');
       if (existing) {
         existing.outerHTML = html;
@@ -353,27 +366,28 @@
     const stateClass = isOpen ? 'is-open' : 'is-collapsed';
 
     return `
-      <section class="builder-section builder-section--accordion ${stateClass}" data-section="${sectionId}">
+      <section class="builder-section builder-section--accordion ${stateClass}" data-section="${sectionId}" data-status-fields="${statusFieldsAttr(visibleFields)}">
         <div class="builder-section__header">
           <div class="builder-section__toggle-row">
             <button type="button" class="builder-section__toggle" data-accordion-toggle="${sectionId}" aria-expanded="${isOpen}" aria-controls="section-fields-${sectionId}">
               <span class="builder-section__toggle-prefix" aria-hidden="true">${expandCollapseCaret(isOpen)}</span>
               <span class="builder-section__title">${section.title}</span>
             </button>
-            ${renderSectionStatus(sectionId)}
+            ${renderSectionStatus(visibleFields)}
           </div>
         </div>
         ${fieldsHtml ? `<div class="builder-section__fields" id="section-fields-${sectionId}"><div class="builder-grid">${fieldsHtml}</div></div>` : ''}
       </section>`;
   }
 
-  function renderSectionHeader(sectionId, section, titleOverride) {
+  function renderSectionHeader(sectionId, section, titleOverride, statusFields) {
     const title = titleOverride || section.title;
+    const fields = statusFields || getSectionStatusFields(sectionId);
     return `
       <div class="builder-section__header">
         <div class="builder-section__title-row">
           <h2 class="builder-section__title">${title}</h2>
-          ${renderSectionStatus(sectionId)}
+          ${renderSectionStatus(fields)}
         </div>
       </div>`;
   }
@@ -386,8 +400,8 @@
 
   function renderTopicCardSection(sectionId, section, fields, titleOverride) {
     return `
-      <section class="builder-topic-card__section" data-section="${sectionId}">
-        ${renderSectionHeader(sectionId, section, titleOverride)}
+      <section class="builder-topic-card__section" data-section="${sectionId}" data-status-fields="${statusFieldsAttr(fields)}">
+        ${renderSectionHeader(sectionId, section, titleOverride, fields)}
         ${renderSectionFields(fields)}
       </section>`;
   }
@@ -400,8 +414,8 @@
     const fundFinderCell = showFundFinder ? renderFundFinderField() : '';
 
     return `
-      <section class="builder-section is-open" data-section="${sectionId}">
-        ${renderSectionHeader(sectionId, section, titleOverride)}
+      <section class="builder-section is-open" data-section="${sectionId}" data-status-fields="${statusFieldsAttr(fields)}">
+        ${renderSectionHeader(sectionId, section, titleOverride, fields)}
         <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}${fundFinderCell}</div></div>
       </section>`;
   }
@@ -535,8 +549,8 @@
     const stateClass = otherAreasExpanded ? 'is-open' : relatedFields.length === visibleFields.length ? 'is-open' : 'is-partial';
 
     return `
-      <section class="builder-section ${stateClass}" data-section="${sectionId}">
-        ${renderSectionHeader(sectionId, section)}
+      <section class="builder-section ${stateClass}" data-section="${sectionId}" data-status-fields="${statusFieldsAttr(fieldsToShow)}">
+        ${renderSectionHeader(sectionId, section, null, fieldsToShow)}
         <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>
       </section>`;
   }
