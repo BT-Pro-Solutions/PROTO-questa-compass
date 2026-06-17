@@ -1476,8 +1476,68 @@
   .builder-section__title-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 12px;
     position: relative;
+  }
+
+  .builder-section__title-row .builder-section__title {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .builder-section-status {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: help;
+  }
+
+  .builder-section-status--empty {
+    border: 2px solid #c5ccd0;
+    background: transparent;
+  }
+
+  .builder-section-status--filled {
+    border: none;
+    background: var(--green);
+    color: #fff;
+  }
+
+  .builder-section-status__check {
+    display: block;
+  }
+
+  .builder-section-status[data-tip]:hover::after,
+  .builder-section-status[data-tip]:focus-visible::after {
+    content: attr(data-tip);
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    max-width: 220px;
+    min-width: 120px;
+    padding: 8px 12px;
+    background: #1f404d;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
+    border-radius: 6px 6px 6px 0;
+    z-index: 20;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .builder-section-status[data-tip]:focus-visible {
+    outline: 2px solid var(--dark-teal);
+    outline-offset: 2px;
   }
 
   .builder-section__title {
@@ -1889,7 +1949,7 @@
     color: var(--dark-teal);
   }
 
-  .builder-section__toggle-row .builder-tooltip {
+  .builder-section__toggle-row .builder-section-status {
     flex-shrink: 0;
   }
 

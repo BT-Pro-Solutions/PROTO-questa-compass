@@ -145,12 +145,10 @@
   const SECTIONS = {
     'getting-started': {
       title: 'What do you need help with?',
-      tooltip: 'Select the specific types of resources you\u2019re looking for within this topic.',
       fields: buildTopicInterestFields(),
     },
     'about-you': {
       title: 'About you',
-      tooltip: 'Tell us about your background.',
       fields: [
         {
           id: 'student-level',
@@ -215,7 +213,6 @@
     },
     'education-interests': {
       title: 'Your Education Preferences',
-      tooltip: 'Let us know what learning options are on your radar. You can skip anything that doesn\u2019t fit your goals.',
       fields: [
         {
           id: 'program-types',
@@ -324,7 +321,6 @@
     },
     'identity-groups': {
       title: 'Identity Groups',
-      tooltip: 'Optional details that help match you with resources designed for specific communities.',
       fields: [
         { id: 'race', label: 'Race', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['American Indian or Alaska Native', 'Asian', 'Black or African American', 'White', 'Prefer not to say'] },
         { id: 'ethnicity', label: 'Ethnicity', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['Hispanic or Latino', 'Not Hispanic or Latino', 'Prefer not to say'] },
@@ -337,7 +333,6 @@
     },
     'financial-aid': {
       title: 'Your Financial Aid Preferences',
-      tooltip: 'Fine-tune what funding opportunities appear in your results.',
       fields: [
         { id: 'gpa-requirement', label: 'GPA Requirement', tooltip: 'Filter by whether an opportunity has a GPA minimum.', type: 'select', placeholder: 'Select', options: ['Show all', 'No GPA requirement only', 'Has GPA requirement'] },
         { id: 'financial-need', label: 'Financial Need Requirement', tooltip: 'Filter by need-based vs merit-based opportunities.', type: 'select', placeholder: 'Select', options: ['Show all', 'Need-based only', 'Merit-based only'] },

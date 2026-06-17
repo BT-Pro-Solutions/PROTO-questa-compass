@@ -205,7 +205,53 @@
   function persistField(id, value) {
     profile[id] = value;
     saveProfile({ [id]: value });
+    updateSectionStatuses();
     if (id === 'student-level') renderSections();
+  }
+
+  function isFieldFilled(field) {
+    const value = profile[field.id];
+    if (field.type === 'multiselect') {
+      return Array.isArray(value) ? value.length > 0 : Boolean(value);
+    }
+    return Boolean(value && String(value).trim());
+  }
+
+  function sectionHasFilledFields(fields) {
+    return fields.some(isFieldFilled);
+  }
+
+  function getSectionStatusFields(sectionId) {
+    const section = SECTIONS[sectionId];
+    if (!section) return [];
+    return section.fields.filter((f) => fieldVisible(f, profile));
+  }
+
+  function renderSectionStatus(sectionId) {
+    const fields = getSectionStatusFields(sectionId);
+    const filled = sectionHasFilledFields(fields);
+    const tip = filled ? "You've entered data here." : 'Unfilled';
+    const ariaLabel = filled ? 'Section has data entered' : 'Section unfilled';
+    const stateClass = filled ? 'builder-section-status--filled' : 'builder-section-status--empty';
+    const checkIcon = filled
+      ? '<svg class="builder-section-status__check" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
+      : '';
+
+    return `<span class="builder-section-status ${stateClass}" tabindex="0" role="status" aria-label="${ariaLabel}" data-tip="${tip}">${checkIcon}</span>`;
+  }
+
+  function updateSectionStatuses() {
+    sectionsRoot.querySelectorAll('[data-section]').forEach((el) => {
+      const sectionId = el.dataset.section;
+      const html = renderSectionStatus(sectionId);
+      const existing = el.querySelector('.builder-section-status');
+      if (existing) {
+        existing.outerHTML = html;
+      } else {
+        const row = el.querySelector('.builder-section__title-row, .builder-section__toggle-row');
+        if (row) row.insertAdjacentHTML('beforeend', html);
+      }
+    });
   }
 
   function renderTooltip(text) {
@@ -314,20 +360,20 @@
               <span class="builder-section__toggle-prefix" aria-hidden="true">${expandCollapseCaret(isOpen)}</span>
               <span class="builder-section__title">${section.title}</span>
             </button>
-            ${section.tooltip ? renderTooltip(section.tooltip) : ''}
+            ${renderSectionStatus(sectionId)}
           </div>
         </div>
         ${fieldsHtml ? `<div class="builder-section__fields" id="section-fields-${sectionId}"><div class="builder-grid">${fieldsHtml}</div></div>` : ''}
       </section>`;
   }
 
-  function renderSectionHeader(section, titleOverride) {
+  function renderSectionHeader(sectionId, section, titleOverride) {
     const title = titleOverride || section.title;
     return `
       <div class="builder-section__header">
         <div class="builder-section__title-row">
           <h2 class="builder-section__title">${title}</h2>
-          ${section.tooltip ? renderTooltip(section.tooltip) : ''}
+          ${renderSectionStatus(sectionId)}
         </div>
       </div>`;
   }
@@ -341,7 +387,7 @@
   function renderTopicCardSection(sectionId, section, fields, titleOverride) {
     return `
       <section class="builder-topic-card__section" data-section="${sectionId}">
-        ${renderSectionHeader(section, titleOverride)}
+        ${renderSectionHeader(sectionId, section, titleOverride)}
         ${renderSectionFields(fields)}
       </section>`;
   }
@@ -355,7 +401,7 @@
 
     return `
       <section class="builder-section is-open" data-section="${sectionId}">
-        ${renderSectionHeader(section, titleOverride)}
+        ${renderSectionHeader(sectionId, section, titleOverride)}
         <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}${fundFinderCell}</div></div>
       </section>`;
   }
@@ -490,7 +536,7 @@
 
     return `
       <section class="builder-section ${stateClass}" data-section="${sectionId}">
-        ${renderSectionHeader(section)}
+        ${renderSectionHeader(sectionId, section)}
         <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>
       </section>`;
   }
