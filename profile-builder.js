@@ -2,6 +2,7 @@
   const {
     TOPICS,
     TOPIC_INTEREST_LABELS,
+    topicPillIconHtml,
     SECTIONS,
     FUNDING_EXTERNAL_URL,
     getProfile,
@@ -493,7 +494,7 @@
         const locked = selected && soleSelection;
         const stateClass = `${selected ? ' is-selected' : ''}${locked ? ' is-locked' : ''}`;
         const titleAttr = locked ? ' title="Select another topic before removing this one"' : '';
-        return `<button type="button" class="builder-topic-pill${stateClass}" data-topic-pill="${key}" aria-pressed="${selected}"${titleAttr}>${label}</button>`;
+        return `<button type="button" class="builder-topic-pill${stateClass}" data-topic-pill="${key}" aria-pressed="${selected}"${titleAttr}>${topicPillIconHtml(key)}${label}</button>`;
       })
       .join('');
 

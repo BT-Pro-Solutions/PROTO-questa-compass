@@ -9,8 +9,10 @@
   const topicBar = document.getElementById('compassTopicBar');
   const topicBarName = document.querySelector('.compass-topic-bar__name');
   const topicBarDesc = document.querySelector('.compass-topic-bar__desc');
+  const topicBarIcon = document.querySelector('.compass-topic-bar__icon');
   const topicBarPills = document.querySelector('.compass-topic-bar__pills');
   const topicBarIncludes = document.querySelector('.compass-topic-bar__includes');
+  const ringIcons = document.querySelectorAll('.cm-ring-icon');
 
   if (!compassMenu || !centerEl || !needle) return;
 
@@ -36,6 +38,10 @@
     topicBarName.textContent = label;
     topicBarDesc.textContent = description;
 
+    if (topicBarIcon) {
+      topicBarIcon.innerHTML = CompassProfile.topicPillIconHtml(topicKey);
+    }
+
     if (topicBarPills && topicBarIncludes) {
       if (subcats.length) {
         topicBarIncludes.hidden = false;
@@ -56,6 +62,7 @@
     if (!topicBar) return;
     topicBar.classList.remove('is-visible');
     topicBar.setAttribute('aria-hidden', 'true');
+    if (topicBarIcon) topicBarIcon.innerHTML = '';
     if (topicBarPills) topicBarPills.innerHTML = '';
     if (topicBarIncludes) topicBarIncludes.hidden = true;
   }
@@ -142,11 +149,15 @@
     compassMenu.classList.add('is-link-hover');
     edgeHighlight.style.transform = `rotate(${ITEM_ANGLES[index] + LOCKED_OFFSET}deg)`;
     edgeGlow.style.transform = `rotate(${ITEM_ANGLES[index]}deg)`;
+    ringIcons.forEach((icon, i) => {
+      icon.classList.toggle('is-active', i === index);
+    });
     showTopicBar(index);
   }
 
   function clearActiveItem() {
     compassMenu.classList.remove('is-link-hover');
+    ringIcons.forEach((icon) => icon.classList.remove('is-active'));
     clearTopicBar();
   }
 

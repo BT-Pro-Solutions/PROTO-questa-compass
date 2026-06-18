@@ -1,5 +1,5 @@
 (function () {
-  const { TOPICS, TOPIC_INTEREST_LABELS, MENU_TOPIC_MAP, FUNDING_EXTERNAL_URL, saveProfile, setTopics } =
+  const { TOPICS, TOPIC_INTEREST_LABELS, topicIconHtml, MENU_TOPIC_MAP, FUNDING_EXTERNAL_URL, saveProfile, setTopics } =
     CompassProfile;
   const { PLACEHOLDER_OPPORTUNITIES, getResultsConfig } = CompassResults;
 
@@ -270,7 +270,7 @@
     if (!visibleKeys.length) return '';
     return `
       <ul class="results-item__topics" aria-label="Resource topics">
-        ${visibleKeys.map((key) => `<li class="results-item__topic-pill">${topicLabel(key)}</li>`).join('')}
+        ${visibleKeys.map((key) => `<li class="results-item__topic-pill">${topicIconHtml(key)}${topicLabel(key)}</li>`).join('')}
       </ul>`;
   }
 
