@@ -198,7 +198,7 @@
 
   const SECTIONS = {
     'getting-started': {
-      title: 'Add detailed interests',
+      title: 'Choose any specific areas you have interest in',
       fields: buildTopicInterestFields(),
     },
     'about-you': {

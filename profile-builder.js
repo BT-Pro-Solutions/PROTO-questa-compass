@@ -49,6 +49,9 @@
   const topicParam = params.get('topic');
   const fromResults = params.get('from') === 'results';
   const fromProfile = params.get('from') === 'profile';
+  const loggedIn =
+    typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
+  const isLoggedInProfile = loggedIn && isUniversalProfile;
 
   function resolveActiveTopicKeys() {
     if (isUniversalProfile) return [];
@@ -66,11 +69,12 @@
   const topic = topicKey ? TOPICS[topicKey] : null;
   const isNoTopicMode = !isUniversalProfile && activeTopicKeys.length === 0;
   const isTopicFocusedMode = !isUniversalProfile && !isNoTopicMode;
-  const isPillPickerMode = isTopicFocusedMode || isNoTopicMode;
-  const isAccordionMode = isUniversalProfile;
-  const expandAllSections = params.get('expand') === 'all' && !isAccordionMode;
+  const isPillPickerMode = isTopicFocusedMode || isNoTopicMode || isLoggedInProfile;
+  const isAccordionMode = isUniversalProfile && !loggedIn;
+  const expandAllSections =
+    params.get('expand') === 'all' && !isAccordionMode && !isLoggedInProfile;
 
-  if (!fromResults && !fromProfile) {
+  if (!fromResults && !fromProfile && !isLoggedInProfile) {
     clearProfile();
     if (activeTopicKeys.length) {
       if (activeTopicKeys.length === 1) setTopic(activeTopicKeys[0]);
@@ -101,15 +105,48 @@
   let otherAreasExpanded = false;
   let accordionOpenSection = null;
 
+  function topicHasFilledData(topicKey) {
+    for (const [sectionId, section] of Object.entries(SECTIONS)) {
+      for (const field of section.fields) {
+        if (!fieldVisible(field, profile)) continue;
+        if (!fieldRelatedToTopic(topicKey, sectionId, field.id)) continue;
+        const value = profile[field.id];
+        if (field.type === 'multiselect') {
+          if (Array.isArray(value) ? value.length > 0 : Boolean(value)) return true;
+        } else if (value && String(value).trim()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function resolveLoggedInProfileTopics() {
+    const withData = TOPIC_PILL_ORDER.filter((key) => TOPICS[key] && topicHasFilledData(key));
+    if (withData.length) return withData;
+
+    const stored = getProfile();
+    const allTopicKeys = TOPIC_PILL_ORDER.filter((key) => TOPICS[key]);
+    if (Array.isArray(stored.topics) && stored.topics.length) {
+      const valid = stored.topics.filter((key) => TOPICS[key]);
+      if (valid.length && valid.length < allTopicKeys.length) return valid;
+    }
+    if (stored.topic && TOPICS[stored.topic]) return [stored.topic];
+    return [DEFAULT_TOPIC_KEY];
+  }
+
   function resolveSelectedTopicKeys() {
     if (!isPillPickerMode) return [];
     if (expandAllSections) return TOPIC_PILL_ORDER.filter((key) => TOPICS[key]);
     if (activeTopicKeys.length) return [...activeTopicKeys];
+    if (isLoggedInProfile) return resolveLoggedInProfileTopics();
     if (fromResults || fromProfile) {
-      const stored = getProfile();
-      if (Array.isArray(stored.topics) && stored.topics.length) {
-        return stored.topics.filter((key) => TOPICS[key]);
+      const storedTopics = getProfile().topics;
+      if (Array.isArray(storedTopics) && storedTopics.length) {
+        return storedTopics.filter((key) => TOPICS[key]);
       }
+      const storedTopic = getProfile().topic;
+      if (storedTopic && TOPICS[storedTopic]) return [storedTopic];
     }
     return [DEFAULT_TOPIC_KEY];
   }
@@ -158,7 +195,7 @@
   }
 
   function isFieldRelated(sectionId, field) {
-    if (isUniversalProfile) return true;
+    if (isAccordionMode) return true;
     if (isPillPickerMode) {
       if (sectionId === 'about-you') return true;
       if (sectionId === 'getting-started') {
@@ -242,7 +279,7 @@
     if (eyebrow) eyebrow.hidden = true;
     if (introDesc) introDesc.hidden = true;
     if (infoNote) infoNote.hidden = true;
-    if (topicTitle) topicTitle.textContent = 'BUILD YOUR COMPASS PROFILE';
+    if (topicTitle) topicTitle.textContent = 'Tell us a bit more about yourself to receive better results.';
   }
 
   function applyPillPickerMode() {
@@ -265,13 +302,8 @@
     const eyebrow = document.querySelector('.builder-intro__eyebrow');
     const introDesc = document.querySelector('.builder-intro__desc');
     const infoNote = document.querySelector('.builder-info-note');
-    const intro = document.querySelector('.builder-intro');
     const jumpBtn = document.getElementById('jumpToResultsBtn');
     const saveBtn = document.getElementById('continueProfileBtn');
-    const loggedIn =
-      typeof CompassAuth !== 'undefined' && CompassAuth.isLoggedIn();
-
-    if (loggedIn && intro) intro.hidden = true;
 
     if (eyebrow) eyebrow.hidden = true;
     if (introDesc) {
@@ -285,7 +317,22 @@
     topicTitle.textContent = 'YOUR PROFILE';
   }
 
-  if (isUniversalProfile) {
+  function applyLoggedInProfileMode() {
+    document.body.classList.add('builder-pill-picker', 'builder-single-topic');
+
+    const intro = document.querySelector('.builder-intro');
+    const jumpBtn = document.getElementById('jumpToResultsBtn');
+    const saveBtn = document.getElementById('continueProfileBtn');
+
+    if (intro) intro.hidden = true;
+    if (jumpBtn) jumpBtn.textContent = 'Save';
+    if (saveBtn) saveBtn.textContent = 'Save & See Results';
+  }
+
+  if (isLoggedInProfile) {
+    applyLoggedInProfileMode();
+    profileForm.setAttribute('novalidate', '');
+  } else if (isUniversalProfile) {
     applyUniversalProfileMode();
     profileForm.setAttribute('novalidate', '');
   } else if (isTopicFocusedMode) {
@@ -501,8 +548,8 @@
     return `
       <div class="builder-topic-picker">
         <p class="builder-topic-picker__heading">
-          <strong>Select all topics of interest</strong>
-          <span class="builder-topic-picker__sub">We&rsquo;ll update the profile to ask only what&rsquo;s needed for your topics.</span>
+          <strong>What topic(s) would you like to explore?</strong>
+          <span class="builder-topic-picker__sub">We&rsquo;ll only ask you about the topics you select.</span>
         </p>
         <div class="builder-topic-picker__scroll">
           <button type="button" class="builder-topic-picker__arrow builder-topic-picker__arrow--prev is-dimmed" aria-label="Scroll topics left" disabled>
@@ -933,6 +980,11 @@
   });
 
   document.getElementById('jumpToResultsBtn').addEventListener('click', () => {
+    if (isLoggedInProfile) {
+      saveProfile(getProfile());
+      alert('Profile saved! (prototype demo)');
+      return;
+    }
     if (isUniversalProfile) {
       window.location.href = 'index.html';
       return;
@@ -948,6 +1000,12 @@
 
   profileForm.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    if (isLoggedInProfile) {
+      saveProfile(getProfile());
+      goToResults();
+      return;
+    }
 
     if (isUniversalProfile) {
       saveProfile(profile);

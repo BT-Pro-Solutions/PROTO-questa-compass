@@ -335,11 +335,6 @@
   });
 
   function animateNeedle() {
-    if (document.body.classList.contains('asteroids-active')) {
-      requestAnimationFrame(animateNeedle);
-      return;
-    }
-
     const spring = 0.1;
     const damping = 0.78;
     const wobbleStrength = 0.55;
