@@ -376,8 +376,8 @@
 
   function renderSectionStatus(fields) {
     const filled = sectionIsComplete(fields);
-    const tip = filled ? "You've entered data here." : 'Unfilled';
-    const ariaLabel = filled ? 'Section has data entered' : 'Section unfilled';
+    const tip = filled ? "Nice work! You've entered info here." : 'This section is incomplete';
+    const ariaLabel = filled ? 'Section has data entered' : 'This section is incomplete';
     const stateClass = filled ? 'builder-section-status--filled' : 'builder-section-status--empty';
     const checkIcon = filled
       ? '<svg class="builder-section-status__check" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
