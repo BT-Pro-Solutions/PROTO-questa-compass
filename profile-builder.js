@@ -10,15 +10,25 @@
     setTopic,
     setTopics,
     fieldVisible,
+    fieldRelatedToTopic,
     fieldRelatedToTopics,
   } = CompassProfile;
+
+  const TOPIC_PILL_ORDER = [
+    'personal-help',
+    'funding',
+    'learning-help',
+    'education-training',
+    'education-help',
+    'careers',
+  ];
+  const MIN_SELECTED_TOPICS = 1;
+  const DEFAULT_TOPIC_KEY = TOPIC_PILL_ORDER[0];
 
   const OTHER_AREAS_COPY = {
     expand: 'Need help with other areas?',
     collapse: 'Show only related fields',
   };
-
-  const INFO_ICON = `<svg class="builder-expand-banner__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="currentColor" d="M12 0a11.97 11.97 0 0 1 8.484 3.514A11.97 11.97 0 0 1 24 11.999l-.004.295a11.97 11.97 0 0 1-3.51 8.19A11.97 11.97 0 0 1 12 24a11.97 11.97 0 0 1-8.485-3.516A11.97 11.97 0 0 1 0 11.999a11.97 11.97 0 0 1 3.516-8.485A11.97 11.97 0 0 1 11.999 0zm0 1.846A10.12 10.12 0 0 0 4.82 4.82v.002a10.12 10.12 0 0 0-2.974 7.178v.002a10.12 10.12 0 0 0 2.629 6.817l.344.361.002.002a10.12 10.12 0 0 0 7.178 2.973h.002a10.12 10.12 0 0 0 7.178-2.973l.002-.002a10.12 10.12 0 0 0 2.973-7.178v-.002a10.12 10.12 0 0 0-2.973-7.178l-.002-.002a10.12 10.12 0 0 0-7.178-2.973z"/><path fill="currentColor" fill-rule="evenodd" d="M12 4.8a1.385 1.385 0 1 1 0 2.77 1.385 1.385 0 0 1 0-2.77" clip-rule="evenodd"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.277 17.539V9.785h-1.108m-.83 7.753h3.876"/></svg>`;
 
   const EXTERNAL_LINK_ICON = `<svg class="builder-fund-finder-link__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 3h6v6M10 14 21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
@@ -55,11 +65,9 @@
   const topic = topicKey ? TOPICS[topicKey] : null;
   const isNoTopicMode = !isUniversalProfile && activeTopicKeys.length === 0;
   const isTopicFocusedMode = !isUniversalProfile && !isNoTopicMode;
+  const isPillPickerMode = isTopicFocusedMode || isNoTopicMode;
   const isAccordionMode = isUniversalProfile;
-  const expandAllSections = params.get('expand') === 'all' && !isAccordionMode && !isNoTopicMode;
-  const topicName = activeTopicKeys.length === 1
-    ? (TOPIC_INTEREST_LABELS[activeTopicKeys[0]] || topic?.title.replace(/^Find\s+/i, '') || '')
-    : activeTopicKeys.map((key) => TOPIC_INTEREST_LABELS[key] || key).join(', ');
+  const expandAllSections = params.get('expand') === 'all' && !isAccordionMode;
 
   if (!fromResults && !fromProfile) {
     clearProfile();
@@ -73,10 +81,12 @@
   }
 
   const sectionsRoot = document.getElementById('sectionsRoot');
+  const topicPillsRoot = document.getElementById('topicPillsRoot');
   const topicTitle = document.getElementById('topicTitle');
   const topicDesc = document.getElementById('topicDesc');
   const infoNoteTopicName = document.getElementById('infoNoteTopicName');
   const createAccountModal = document.getElementById('createAccountModal');
+  const skipConfirmModal = document.getElementById('skipConfirmModal');
   const profileForm = document.getElementById('profileForm');
   const multiselectModal = document.getElementById('multiselectModal');
   const multiselectTitle = document.getElementById('multiselectTitle');
@@ -87,9 +97,36 @@
   const multiselectList = document.getElementById('multiselectList');
 
   let profile = getProfile();
-  let otherAreasExpanded = expandAllSections || isNoTopicMode;
-  let shouldAnimateExpand = false;
+  let otherAreasExpanded = false;
   let accordionOpenSection = null;
+
+  function resolveSelectedTopicKeys() {
+    if (!isPillPickerMode) return [];
+    if (expandAllSections) return TOPIC_PILL_ORDER.filter((key) => TOPICS[key]);
+    if (activeTopicKeys.length) return [...activeTopicKeys];
+    if (fromResults || fromProfile) {
+      const stored = getProfile();
+      if (Array.isArray(stored.topics) && stored.topics.length) {
+        return stored.topics.filter((key) => TOPICS[key]);
+      }
+    }
+    return [DEFAULT_TOPIC_KEY];
+  }
+
+  let selectedTopicKeys = resolveSelectedTopicKeys();
+
+  function persistSelectedTopics() {
+    if (selectedTopicKeys.length === 1) {
+      setTopic(selectedTopicKeys[0]);
+    } else {
+      setTopics(selectedTopicKeys);
+    }
+    profile = getProfile();
+  }
+
+  if (isPillPickerMode && selectedTopicKeys.length) {
+    persistSelectedTopics();
+  }
 
   function getFirstVisibleSectionId() {
     for (const [id, section] of Object.entries(SECTIONS)) {
@@ -120,8 +157,58 @@
   }
 
   function isFieldRelated(sectionId, field) {
-    if (isUniversalProfile || !activeTopicKeys.length) return true;
+    if (isUniversalProfile) return true;
+    if (isPillPickerMode) {
+      if (sectionId === 'about-you') return true;
+      if (sectionId === 'getting-started') {
+        const topicKey = field.id.replace(/-interests$/, '');
+        return selectedTopicKeys.includes(topicKey);
+      }
+      if (!selectedTopicKeys.length) return false;
+      return fieldRelatedToTopics(selectedTopicKeys, sectionId, field.id);
+    }
+    if (!activeTopicKeys.length) return true;
     return fieldRelatedToTopics(activeTopicKeys, sectionId, field.id);
+  }
+
+  function clearFieldsForDeselectedTopic(topicKey) {
+    const updates = {};
+    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
+      section.fields.forEach((field) => {
+        if (!fieldVisible(field, profile)) return;
+        if (!fieldRelatedToTopic(topicKey, sectionId, field.id)) return;
+        if (fieldRelatedToTopics(selectedTopicKeys, sectionId, field.id)) return;
+        updates[field.id] = field.type === 'multiselect' ? [] : '';
+      });
+    });
+    if (Object.keys(updates).length) {
+      saveProfile(updates);
+      profile = { ...profile, ...updates };
+    }
+  }
+
+  function indicateMinimumTopicRequired() {
+    const picker = topicPillsRoot?.querySelector('.builder-topic-picker');
+    if (!picker) return;
+    picker.classList.remove('is-required-hint');
+    void picker.offsetWidth;
+    picker.classList.add('is-required-hint');
+  }
+
+  function toggleTopicPill(topicKey) {
+    const index = selectedTopicKeys.indexOf(topicKey);
+    if (index >= 0) {
+      if (selectedTopicKeys.length <= MIN_SELECTED_TOPICS) {
+        indicateMinimumTopicRequired();
+        return;
+      }
+      selectedTopicKeys.splice(index, 1);
+      clearFieldsForDeselectedTopic(topicKey);
+    } else {
+      selectedTopicKeys.push(topicKey);
+    }
+    persistSelectedTopics();
+    renderSections();
   }
 
   function clearNonRelatedFields() {
@@ -157,14 +244,18 @@
     if (topicTitle) topicTitle.textContent = 'BUILD YOUR COMPASS PROFILE';
   }
 
-  function applyTopicFocusedMode() {
-    document.body.classList.add('builder-single-topic');
+  function applyPillPickerMode() {
+    document.body.classList.add('builder-pill-picker', 'builder-single-topic');
     applyFullProfileHeader();
+  }
+
+  function applyTopicFocusedMode() {
+    applyPillPickerMode();
   }
 
   function applyNoTopicMode() {
     document.body.classList.add('builder-no-topic');
-    applyFullProfileHeader();
+    applyPillPickerMode();
   }
 
   function applyUniversalProfileMode() {
@@ -290,15 +381,6 @@
       .join('');
   }
 
-  function renderYouChoseBadge() {
-    return '<span class="builder-you-chose">You Chose:</span>';
-  }
-
-  function shouldShowYouChoseBadge(field) {
-    if (!activeTopicKeys.length || isUniversalProfile || isNoTopicMode) return false;
-    return activeTopicKeys.some((key) => field.id === `${key}-interests`);
-  }
-
   function renderField(field) {
     if (!fieldVisible(field, profile)) return '';
 
@@ -314,7 +396,9 @@
     const requiredMark = field.required
       ? ' <span class="builder-field__required" aria-hidden="true">*</span>'
       : '';
-    const optionalMark = field.optional ? ' <em>(optional)</em>' : '';
+    const optionalMark = !field.required
+      ? ' <span class="builder-field__optional">(Optional)</span>'
+      : '';
     const requiredAttr = field.required ? ' required' : '';
 
     let input = '';
@@ -341,11 +425,9 @@
 
     const labelFor = field.type !== 'multiselect' ? ` for="${field.id}"` : '';
     const labelTag = field.type !== 'multiselect' ? 'label' : 'span';
-    const youChoseBadge = shouldShowYouChoseBadge(field) ? renderYouChoseBadge() : '';
 
     return `
       <div class="builder-field${fullWidthClass}" data-field-wrap="${field.id}">
-        ${youChoseBadge}
         <div class="builder-field__head">
           <${labelTag} class="builder-field__label"${labelFor}>${field.label}${requiredMark}${optionalMark}</${labelTag}>
           ${field.tooltip ? renderTooltip(field.tooltip) : ''}
@@ -402,31 +484,89 @@
     return `<div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>`;
   }
 
-  function renderTopicCardSection(sectionId, section, fields, titleOverride) {
+  function renderTopicPills() {
+    const soleSelection = selectedTopicKeys.length === MIN_SELECTED_TOPICS;
+    const pills = TOPIC_PILL_ORDER.filter((key) => TOPICS[key])
+      .map((key) => {
+        const label = TOPIC_INTEREST_LABELS[key] || key;
+        const selected = selectedTopicKeys.includes(key);
+        const locked = selected && soleSelection;
+        const stateClass = `${selected ? ' is-selected' : ''}${locked ? ' is-locked' : ''}`;
+        const titleAttr = locked ? ' title="Select another topic before removing this one"' : '';
+        return `<button type="button" class="builder-topic-pill${stateClass}" data-topic-pill="${key}" aria-pressed="${selected}"${titleAttr}>${label}</button>`;
+      })
+      .join('');
+
+    return `
+      <div class="builder-topic-picker">
+        <p class="builder-topic-picker__heading">
+          <strong>Select all topics of interest</strong>
+          <span class="builder-topic-picker__sub">We&rsquo;ll update the profile to ask only what&rsquo;s needed for your topics.</span>
+        </p>
+        <div class="builder-topic-picker__pills" role="group" aria-label="Topics of interest">
+          ${pills}
+        </div>
+      </div>`;
+  }
+
+  function bindTopicPillEvents() {
+    if (!topicPillsRoot) return;
+    topicPillsRoot.querySelectorAll('[data-topic-pill]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        toggleTopicPill(btn.dataset.topicPill);
+      });
+    });
+  }
+
+  function getInterestFieldsForSelectedTopics() {
+    return SECTIONS['getting-started'].fields.filter((field) => {
+      if (!fieldVisible(field, profile)) return false;
+      const topicKey = field.id.replace(/-interests$/, '');
+      return selectedTopicKeys.includes(topicKey);
+    });
+  }
+
+  function renderPillPickerSection(sectionId, section, fields, options = {}) {
+    const { showFundFinder = false, alwaysShow = false } = options;
+    const fundFinderCell = showFundFinder ? renderFundFinderField() : '';
+    const fieldsHtml = fields.map(renderField).join('');
+    if (!fieldsHtml && !fundFinderCell && !alwaysShow) return '';
+
     return `
       <section class="builder-topic-card__section" data-section="${sectionId}" data-status-fields="${statusFieldsAttr(fields)}">
-        ${renderSectionHeader(sectionId, section, titleOverride, fields)}
-        ${renderSectionFields(fields)}
+        ${renderSectionHeader(sectionId, section, null, fields)}
+        ${fieldsHtml || fundFinderCell ? `<div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}${fundFinderCell}</div></div>` : ''}
       </section>`;
   }
 
-  function renderStandaloneSection(sectionId, section, fields, titleOverride) {
-    const fieldsHtml = fields.map(renderField).join('');
-    const showFundFinder = titleOverride === 'Additional Help Topics';
-    if (!fieldsHtml && !showFundFinder) return '';
+  function renderPillPickerLayout() {
+    const interestFields = getInterestFieldsForSelectedTopics();
+    const showFundFinder = selectedTopicKeys.includes('funding');
+    const sections = [];
 
-    const fundFinderCell = showFundFinder ? renderFundFinderField() : '';
+    sections.push(
+      renderPillPickerSection(
+        'getting-started',
+        SECTIONS['getting-started'],
+        interestFields,
+        { showFundFinder, alwaysShow: true }
+      )
+    );
 
-    return `
-      <section class="builder-section is-open" data-section="${sectionId}" data-status-fields="${statusFieldsAttr(fields)}">
-        ${renderSectionHeader(sectionId, section, titleOverride, fields)}
-        <div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}${fundFinderCell}</div></div>
-      </section>`;
-  }
+    const aboutYouFields = SECTIONS['about-you'].fields.filter((f) => fieldVisible(f, profile));
+    sections.push(
+      renderPillPickerSection('about-you', SECTIONS['about-you'], aboutYouFields, { alwaysShow: true })
+    );
 
-  function getExtraSectionTitle(sectionId) {
-    if (sectionId === 'getting-started') return 'Additional Help Topics';
-    return null;
+    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
+      if (sectionId === 'getting-started' || sectionId === 'about-you') return;
+      const visibleFields = section.fields.filter((f) => fieldVisible(f, profile));
+      const relatedFields = visibleFields.filter((field) => isFieldRelated(sectionId, field));
+      if (!relatedFields.length) return;
+      sections.push(renderPillPickerSection(sectionId, section, relatedFields));
+    });
+
+    sectionsRoot.innerHTML = `<div class="builder-topic-card">${sections.filter(Boolean).join('')}</div>`;
   }
 
   function renderFundFinderField() {
@@ -440,101 +580,6 @@
           ${EXTERNAL_LINK_ICON}
         </a>
       </div>`;
-  }
-
-  function partitionSections() {
-    const relatedSections = [];
-    const extraSections = [];
-
-    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
-      const visibleFields = section.fields.filter((f) => fieldVisible(f, profile));
-      if (!visibleFields.length) return;
-
-      const relatedFields = visibleFields.filter((field) => isFieldRelated(sectionId, field));
-      const extraFields = visibleFields.filter((field) => !isFieldRelated(sectionId, field));
-
-      if (relatedFields.length) {
-        relatedSections.push({ sectionId, section, fields: relatedFields });
-      }
-      if (extraFields.length) {
-        extraSections.push({ sectionId, section, fields: extraFields });
-      }
-    });
-
-    return { relatedSections, extraSections };
-  }
-
-  function renderExpandBanner() {
-    return `
-      <div class="builder-expand-banner" id="expandBanner">
-        <p class="builder-expand-banner__text">
-          ${INFO_ICON}
-          <span>Need help with other areas besides <strong>${topicName}</strong>?</span>
-        </p>
-        <button type="button" class="builder-expand-banner__btn" id="expandFullProfileBtn">Show Full Profile</button>
-      </div>`;
-  }
-
-  function renderTopicFocusedLayout() {
-    const { relatedSections, extraSections } = partitionSections();
-    const hasExtra = extraSections.length > 0;
-    const showBanner = hasExtra && !otherAreasExpanded;
-
-    const topicCardHtml = relatedSections
-      .map(({ sectionId, section, fields }) => renderTopicCardSection(sectionId, section, fields))
-      .join('');
-
-    const extraSectionsHtml = extraSections
-      .map(({ sectionId, section, fields }) =>
-        renderStandaloneSection(sectionId, section, fields, getExtraSectionTitle(sectionId)))
-      .join('');
-
-    const panelOpenClass = otherAreasExpanded && !shouldAnimateExpand ? ' is-open' : '';
-    const panelHidden = !otherAreasExpanded;
-
-    let html = '';
-    if (topicCardHtml) {
-      html += `<div class="builder-topic-card">${topicCardHtml}</div>`;
-    }
-    if (showBanner) {
-      html += renderExpandBanner();
-    }
-    if (hasExtra) {
-      html += `
-        <div class="builder-extra-panel${panelOpenClass}" id="extraSectionsPanel"${panelHidden ? ' hidden' : ''} aria-hidden="${panelHidden}">
-          <div class="builder-extra-panel__inner">
-            ${extraSectionsHtml}
-          </div>
-        </div>`;
-    }
-
-    sectionsRoot.innerHTML = html;
-
-    const expandBtn = document.getElementById('expandFullProfileBtn');
-    if (expandBtn) {
-      expandBtn.addEventListener('click', expandFullProfile);
-    }
-
-    if (shouldAnimateExpand) {
-      const panel = document.getElementById('extraSectionsPanel');
-      const banner = document.getElementById('expandBanner');
-      if (banner) banner.remove();
-      if (panel) {
-        panel.hidden = false;
-        panel.setAttribute('aria-hidden', 'false');
-        requestAnimationFrame(() => {
-          panel.classList.add('is-open');
-          shouldAnimateExpand = false;
-        });
-      }
-    }
-  }
-
-  function expandFullProfile() {
-    otherAreasExpanded = true;
-    shouldAnimateExpand = true;
-    updateInfoNoteVisibility();
-    renderSections();
   }
 
   function renderSection(sectionId, section) {
@@ -571,7 +616,7 @@
   }
 
   function renderOtherAreasToggle() {
-    if (isTopicFocusedMode || isNoTopicMode) return;
+    if (isPillPickerMode) return;
 
     const toggleRoot = document.getElementById('otherAreasToggle');
     if (!toggleRoot || isUniversalProfile || isAccordionMode) return;
@@ -751,12 +796,21 @@
     profile = getProfile();
     ensureAccordionSectionValid();
 
-    if (isTopicFocusedMode) {
-      renderTopicFocusedLayout();
+    if (isPillPickerMode) {
+      if (topicPillsRoot) {
+        topicPillsRoot.hidden = false;
+        topicPillsRoot.innerHTML = renderTopicPills();
+        bindTopicPillEvents();
+      }
+      renderPillPickerLayout();
       bindFieldEvents();
       bindMultiselectEvents();
-      updateInfoNoteVisibility();
       return;
+    }
+
+    if (topicPillsRoot) {
+      topicPillsRoot.hidden = true;
+      topicPillsRoot.innerHTML = '';
     }
 
     sectionsRoot.innerHTML = Object.entries(SECTIONS)
@@ -773,7 +827,7 @@
   }
 
   function goToResults() {
-    const keys = activeTopicKeys.filter((key) => key !== 'funding');
+    const keys = (isPillPickerMode ? selectedTopicKeys : activeTopicKeys).filter((key) => key !== 'funding');
     if (!keys.length) {
       window.location.href = 'results.html';
       return;
@@ -790,6 +844,14 @@
 
   function closeCreateAccount() {
     createAccountModal.hidden = true;
+  }
+
+  function openSkipConfirmModal() {
+    if (skipConfirmModal) skipConfirmModal.hidden = false;
+  }
+
+  function closeSkipConfirmModal() {
+    if (skipConfirmModal) skipConfirmModal.hidden = true;
   }
 
   multiselectSearch.addEventListener('input', () => {
@@ -819,7 +881,13 @@
       window.location.href = 'index.html';
       return;
     }
-    goToResults();
+    openSkipConfirmModal();
+  });
+
+  document.getElementById('skipConfirmStayBtn')?.addEventListener('click', closeSkipConfirmModal);
+  document.getElementById('skipConfirmBrowseBtn')?.addEventListener('click', goToResults);
+  document.querySelectorAll('.js-close-skip-confirm').forEach((el) => {
+    el.addEventListener('click', closeSkipConfirmModal);
   });
 
   profileForm.addEventListener('submit', (e) => {

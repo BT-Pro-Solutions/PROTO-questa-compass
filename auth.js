@@ -10,12 +10,6 @@
       icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="1" y="1" width="6.5" height="6.5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="10.5" y="1" width="6.5" height="6.5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="10.5" width="6.5" height="6.5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="10.5" y="10.5" width="6.5" height="6.5" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>',
     },
     {
-      id: 'compass',
-      label: 'Compass',
-      href: 'compass.html',
-      icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 3.5L10.8 9H9l1.8 5.5L9 9H7.2L9 3.5z" fill="currentColor"/></svg>',
-    },
-    {
       id: 'profile',
       label: 'My Profile',
       href: 'profile-builder.html?mode=universal&from=profile',
@@ -68,7 +62,6 @@
   const PROTECTED_PAGES = [
     'dashboard.html',
     'security.html',
-    'compass.html',
     'provider-account.html',
     'provider-resources.html',
     'provider-resource-detail.html',
@@ -122,7 +115,6 @@
     ) return 'provider-services';
     if (page === 'admin-dashboard.html') return 'admin-dashboard';
     if (page === 'dashboard.html') return 'dashboard';
-    if (page === 'compass.html') return 'compass';
     if (page === 'security.html') return 'account';
     if (page === 'results.html') {
       return getUser().role === 'provider' ? 'provider-search' : 'search';

@@ -144,7 +144,7 @@
 
   const SECTIONS = {
     'getting-started': {
-      title: 'What do you need help with?',
+      title: 'Add detailed interests',
       fields: buildTopicInterestFields(),
     },
     'about-you': {

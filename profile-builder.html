@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.21">
+    <link rel="stylesheet" href="styles.css?v=1.0.24">
 </head>
 <body class="page-profile-builder">
     <header class="site-header">
@@ -48,12 +48,19 @@
 
             <div class="builder-layout">
                 <div class="builder-main">
-                    
+                    <div id="topicPillsRoot" hidden></div>
 
                     <form class="builder-form" id="profileForm">
                         <div id="sectionsRoot"></div>
                         <div id="otherAreasToggle" hidden></div>
                     </form>
+                    <p class="builder-privacy-note">
+                        <svg class="builder-privacy-note__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Your data is secure, and only used in accordance with our <a href="#">privacy policy</a>.
+                    </p>
                 </div>
 
                 <aside class="builder-sidebar">
@@ -64,7 +71,7 @@
             <div class="builder-actions-sticky">
                 <div class="builder-actions-sticky__inner">
                     <button type="button" class="builder-btn builder-btn--secondary" id="jumpToResultsBtn">Skip To All Results</button>
-                    <button type="submit" form="profileForm" class="builder-btn builder-btn--primary" id="continueProfileBtn">Save & Continue</button>
+                    <button type="submit" form="profileForm" class="builder-btn builder-btn--primary" id="continueProfileBtn">Save & View Results</button>
                 </div>
             </div>
         </div>
@@ -86,6 +93,19 @@
             <div class="builder-modal__actions builder-modal__actions--end">
                 <button type="button" class="builder-btn builder-btn--cancel" id="multiselectCancelBtn">Cancel</button>
                 <button type="button" class="builder-btn builder-btn--apply" id="multiselectApplyBtn">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="builder-modal" id="skipConfirmModal" hidden>
+        <div class="builder-modal__backdrop js-close-skip-confirm"></div>
+        <div class="builder-modal__panel builder-modal__panel--confirm" role="dialog" aria-labelledby="skipConfirmTitle" aria-describedby="skipConfirmDesc">
+            <button type="button" class="builder-modal__close js-close-skip-confirm" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="skipConfirmTitle">Do you want to save your profile?</h2>
+            <p class="builder-modal__text" id="skipConfirmDesc">Providing some details about yourself will help give you better matching results.</p>
+            <div class="builder-modal__actions builder-modal__actions--confirm">
+                <button type="button" class="builder-btn builder-btn--primary" id="skipConfirmStayBtn">Take me back</button>
+                <button type="button" class="builder-btn builder-btn--outline" id="skipConfirmBrowseBtn">Skip to all results</button>
             </div>
         </div>
     </div>
@@ -124,8 +144,8 @@
         </nav>
     </footer>
 
-    <script src="profile-data.js?v=1.0.21"></script>
-    <script src="auth.js?v=1.0.21"></script>
-    <script src="profile-builder.js?v=1.0.21"></script>
+    <script src="profile-data.js?v=1.0.24"></script>
+    <script src="auth.js?v=1.0.24"></script>
+    <script src="profile-builder.js?v=1.0.24"></script>
 </body>
 </html>
