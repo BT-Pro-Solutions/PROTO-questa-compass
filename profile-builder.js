@@ -504,10 +504,64 @@
           <strong>Select all topics of interest</strong>
           <span class="builder-topic-picker__sub">We&rsquo;ll update the profile to ask only what&rsquo;s needed for your topics.</span>
         </p>
-        <div class="builder-topic-picker__pills" role="group" aria-label="Topics of interest">
-          ${pills}
+        <div class="builder-topic-picker__scroll">
+          <button type="button" class="builder-topic-picker__arrow builder-topic-picker__arrow--prev is-dimmed" aria-label="Scroll topics left" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="builder-topic-picker__pills" role="group" aria-label="Topics of interest">
+            ${pills}
+          </div>
+          <button type="button" class="builder-topic-picker__arrow builder-topic-picker__arrow--next" aria-label="Scroll topics right">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
       </div>`;
+  }
+
+  let topicPillScrollResizeHandler = null;
+
+  function bindTopicPillScrollControls() {
+    const scrollWrap = topicPillsRoot?.querySelector('.builder-topic-picker__scroll');
+    if (!scrollWrap) return;
+
+    const scroller = scrollWrap.querySelector('.builder-topic-picker__pills');
+    const prevBtn = scrollWrap.querySelector('.builder-topic-picker__arrow--prev');
+    const nextBtn = scrollWrap.querySelector('.builder-topic-picker__arrow--next');
+    if (!scroller || !prevBtn || !nextBtn) return;
+
+    function updateArrows() {
+      const isMobile = window.matchMedia('(max-width: 720px)').matches;
+      prevBtn.hidden = !isMobile;
+      nextBtn.hidden = !isMobile;
+      if (!isMobile) return;
+
+      const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+      const atStart = scroller.scrollLeft <= 1;
+      const atEnd = scroller.scrollLeft >= maxScroll - 1;
+      const noOverflow = maxScroll <= 1;
+
+      prevBtn.disabled = atStart || noOverflow;
+      nextBtn.disabled = atEnd || noOverflow;
+      prevBtn.classList.toggle('is-dimmed', prevBtn.disabled);
+      nextBtn.classList.toggle('is-dimmed', nextBtn.disabled);
+    }
+
+    prevBtn.addEventListener('click', () => {
+      scroller.scrollBy({ left: -scroller.clientWidth * 0.75, behavior: 'smooth' });
+    });
+    nextBtn.addEventListener('click', () => {
+      scroller.scrollBy({ left: scroller.clientWidth * 0.75, behavior: 'smooth' });
+    });
+
+    scroller.addEventListener('scroll', updateArrows, { passive: true });
+
+    if (topicPillScrollResizeHandler) {
+      window.removeEventListener('resize', topicPillScrollResizeHandler);
+    }
+    topicPillScrollResizeHandler = updateArrows;
+    window.addEventListener('resize', topicPillScrollResizeHandler);
+
+    updateArrows();
   }
 
   function bindTopicPillEvents() {
@@ -517,6 +571,7 @@
         toggleTopicPill(btn.dataset.topicPill);
       });
     });
+    bindTopicPillScrollControls();
   }
 
   function getInterestFieldsForSelectedTopics() {

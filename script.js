@@ -145,7 +145,48 @@
     return Math.atan2(dy, dx) * (180 / Math.PI) + 90;
   }
 
+  let activeIndex = -1;
+
+  function isDesktopCompass() {
+    return window.matchMedia('(min-width: 721px)').matches;
+  }
+
+  function getPointerTopicIndex() {
+    const rect = centerEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = mouseX - cx;
+    const dy = mouseY - cy;
+    const dist = Math.hypot(dx, dy);
+    const halfW = rect.width / 2;
+
+    const inner = halfW * 0.28;
+    const outer = halfW * 1.85;
+
+    if (dist < inner || dist > outer) return null;
+
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    const normalized = ((angle % 360) + 360) % 360;
+    return Math.floor(((normalized + 30) % 360) / 60);
+  }
+
+  function updateHoverFromPointer() {
+    if (!isDesktopCompass() || !isPointerInMenu) return;
+
+    const index = getPointerTopicIndex();
+    if (index === null) {
+      if (activeIndex !== -1) clearActiveItem();
+      return;
+    }
+
+    if (index !== activeIndex) setActiveItem(index);
+  }
+
   function setActiveItem(index) {
+    activeIndex = index;
+    options.forEach((option, i) => {
+      option.classList.toggle('is-active', i === index);
+    });
     compassMenu.classList.add('is-link-hover');
     edgeHighlight.style.transform = `rotate(${ITEM_ANGLES[index] + LOCKED_OFFSET}deg)`;
     edgeGlow.style.transform = `rotate(${ITEM_ANGLES[index]}deg)`;
@@ -156,6 +197,8 @@
   }
 
   function clearActiveItem() {
+    activeIndex = -1;
+    options.forEach((option) => option.classList.remove('is-active'));
     compassMenu.classList.remove('is-link-hover');
     ringIcons.forEach((icon) => icon.classList.remove('is-active'));
     clearTopicBar();
@@ -165,6 +208,7 @@
     mouseX = e.clientX;
     mouseY = e.clientY;
     needleTarget = getMouseAngle();
+    updateHoverFromPointer();
   });
 
   let isExitAnimating = false;
@@ -252,17 +296,31 @@
   }
 
   options.forEach((option, index) => {
-    option.addEventListener('mouseenter', () => setActiveItem(index));
+    option.addEventListener('mouseenter', () => {
+      if (isDesktopCompass()) return;
+      setActiveItem(index);
+    });
     option.addEventListener('mouseleave', (e) => {
+      if (isDesktopCompass()) return;
       if (!e.relatedTarget?.closest('.cm-option')) {
         clearActiveItem();
       }
     });
     option.addEventListener('click', (e) => {
+      if (isDesktopCompass()) return;
       e.preventDefault();
       const topic = MENU_TOPICS[index];
       if (topic) navigateFromCompassTopic(topic, option);
     });
+  });
+
+  compassMenu.addEventListener('click', (e) => {
+    if (!isDesktopCompass()) return;
+    const index = getPointerTopicIndex();
+    if (index === null) return;
+    e.preventDefault();
+    const topic = MENU_TOPICS[index];
+    if (topic) navigateFromCompassTopic(topic, options[index]);
   });
 
   compassMenu.addEventListener('mouseenter', () => {
