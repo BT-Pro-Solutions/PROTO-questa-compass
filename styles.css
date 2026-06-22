@@ -1406,9 +1406,7 @@
   }
 
   .builder-privacy-note {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
     gap: 8px;
     margin: 16px 0;
     font-size: 12px;
