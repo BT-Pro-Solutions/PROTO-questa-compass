@@ -372,23 +372,23 @@
     },
     {
       topic: 'careers',
-      text: 'Are you looking for help discovering a career path that fits your skills, interests, or experience?',
+      text: 'Do you want help exploring careers, identifying career paths that fit your interests, or gaining career experience and professional skills?',
     },
     {
       topic: 'education-help',
-      text: 'Are you looking for guidance on applying to or enrolling in a college, university, or higher education program?',
+      text: 'Do you need help preparing for college or training programs, understanding education costs, completing the FAFSA, or earning college credit?',
     },
     {
       topic: 'funding',
-      text: 'Do you need help finding scholarships, grants, financial aid, or other funding for your education?',
+      text: 'Are you looking for scholarships, grants, or other financial aid to help pay for education or training?',
     },
     {
       topic: 'education-training',
-      text: 'Are you interested in vocational training, apprenticeships, or professional certification programs?',
+      text: 'Are you looking for colleges, universities, training programs, apprenticeships, or other education opportunities after high school?',
     },
     {
       topic: 'personal-help',
-      text: 'Are you looking for resources to support your personal development, mental wellness, or everyday life skills?',
+      text: 'Do you need support with personal needs like transportation, childcare, wellness, housing, or social connections to help you succeed in school or training?',
     },
   ];
 

@@ -35,7 +35,7 @@
             </svg>
         </div>
         <h1 class="portal-hero__title">My Dashboard</h1>
-        <p class="portal-hero__subtitle">The latest on the funding opportunities that interest you.</p>
+        <p class="portal-hero__subtitle">Keep track of the resources and funding opportunities that interest you.</p>
     </section>
 
     <main class="portal-content">
@@ -54,16 +54,25 @@
         </div>
 
         <section class="portal-section">
-            <h2 class="portal-section__title">Your Saved Items</h2>
+            <h2 class="portal-section__title">Your Saved Resources</h2>
+            <p class="portal-section__desc">Programs and services you&apos;ve saved from Compass results.</p>
 
-            <div class="saved-tabs" role="tablist" aria-label="Saved items">
-                <button type="button" class="saved-tabs__tab is-active" role="tab" aria-selected="true">Due Soon (0)</button>
-                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false">Won (0)</button>
-                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false">Applied (0)</button>
-                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false">Saved (0)</button>
+            <p class="saved-resources__empty" id="savedResourcesEmpty">You haven&apos;t saved any resources yet. Browse results and tap the heart icon to save programs here.</p>
+            <ul class="saved-resources-list" id="savedResourcesList" aria-label="Saved resources"></ul>
+        </section>
+
+        <section class="portal-section portal-section--funding">
+            <h2 class="portal-section__title">Your Saved Funding Opportunities</h2>
+            <p class="portal-section__desc">Scholarships, grants, and other financial aid you&apos;re tracking.</p>
+
+            <div class="saved-tabs saved-tabs--funding" role="tablist" aria-label="Saved funding opportunities">
+                <button type="button" class="saved-tabs__tab is-active" role="tab" aria-selected="true" data-funding-tab="due-soon">Due Soon (0)</button>
+                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false" data-funding-tab="won">Won (0)</button>
+                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false" data-funding-tab="applied">Applied (0)</button>
+                <button type="button" class="saved-tabs__tab" role="tab" aria-selected="false" data-funding-tab="saved">Saved (0)</button>
             </div>
 
-            <div class="saved-panel">
+            <div class="saved-panel saved-panel--funding" id="fundingSavedPanel">
                 <p class="saved-panel__empty">You don&apos;t have any opportunity deadlines (within a week) approaching.</p>
                 <div class="saved-panel__views" aria-label="View options">
                     <button type="button" class="saved-view-btn is-active" aria-label="List view" aria-pressed="true">
@@ -94,30 +103,10 @@
         </nav>
     </footer>
 
+    <script src="profile-data.js?v=1.0.25"></script>
+    <script src="results-data.js?v=1.0.25"></script>
+    <script src="favorites.js?v=1.0.25"></script>
     <script src="auth.js?v=1.0.25"></script>
-    <script>
-      document.querySelectorAll('.saved-tabs__tab').forEach((tab) => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.saved-tabs__tab').forEach((t) => {
-            t.classList.remove('is-active');
-            t.setAttribute('aria-selected', 'false');
-          });
-          tab.classList.add('is-active');
-          tab.setAttribute('aria-selected', 'true');
-        });
-      });
-
-      document.querySelectorAll('.saved-view-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.saved-view-btn').forEach((b) => {
-            b.classList.remove('is-active');
-            b.setAttribute('aria-pressed', 'false');
-          });
-          btn.classList.add('is-active');
-          btn.setAttribute('aria-pressed', 'true');
-        });
-      });
-
-    </script>
+    <script src="dashboard.js?v=1.0.25"></script>
 </body>
 </html>

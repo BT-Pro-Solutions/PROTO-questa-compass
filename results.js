@@ -1,7 +1,7 @@
 (function () {
-  const { TOPICS, TOPIC_INTEREST_LABELS, topicIconHtml, MENU_TOPIC_MAP, FUNDING_EXTERNAL_URL, saveProfile, setTopics } =
+  const { TOPICS, TOPIC_INTEREST_LABELS, topicIconHtml, MENU_TOPIC_MAP, FUNDING_EXTERNAL_URL, saveProfile, setTopics, getProfile, getProfileSynopsis } =
     CompassProfile;
-  const { PLACEHOLDER_OPPORTUNITIES, getResultsConfig } = CompassResults;
+  const { PLACEHOLDER_OPPORTUNITIES, getResultsConfig, getAffiliatedListings, getStandardListings } = CompassResults;
 
   const RESULTS_TOPIC_KEYS = MENU_TOPIC_MAP.filter((key) => key !== 'funding');
   const LOGO_PLACEHOLDER = 'assets/logo-circle.svg';
@@ -31,6 +31,7 @@
 
   const filtersRoot = document.getElementById('filtersRoot');
   const topicFilterRoot = document.getElementById('topicFilterRoot');
+  const profileSummaryRoot = document.getElementById('profileSummaryRoot');
   const resultsList = document.getElementById('resultsList');
   const resultsHeading = document.getElementById('resultsHeading');
   const resultsRange = document.getElementById('resultsRange');
@@ -148,7 +149,13 @@
   }
 
   function renderFilters() {
-    if (!config) return;
+    const refineHeading = document.querySelector('.results-filters__subheading');
+    if (!config) {
+      if (refineHeading) refineHeading.hidden = true;
+      filtersRoot.innerHTML = '';
+      return;
+    }
+    if (refineHeading) refineHeading.hidden = false;
     filtersRoot.innerHTML = config.filters.map(renderFilter).join('');
     bindMatchStrength();
     filtersRoot.querySelectorAll('select, input[type="checkbox"]').forEach((el) => {
@@ -157,11 +164,42 @@
     updateFilterCount();
   }
 
+  function profileBuilderUrl() {
+    if (selectedTopicKeys.length === 1) {
+      return `profile-builder.html?topic=${encodeURIComponent(selectedTopicKeys[0])}&from=results`;
+    }
+    if (selectedTopicKeys.length) {
+      return `profile-builder.html?topics=${selectedTopicKeys.map(encodeURIComponent).join(',')}&from=results`;
+    }
+    return 'profile-builder.html?from=results';
+  }
+
+  function renderProfileSummary() {
+    if (!profileSummaryRoot) return;
+
+    const builderUrl = profileBuilderUrl();
+    const segments = getProfileSynopsis(getProfile(), selectedTopicKeys);
+    const synopsisText = segments.join(' · ');
+    const synopsisHtml = segments.length
+      ? `<p class="results-profile-card__synopsis" title="${synopsisText.replace(/"/g, '&quot;')}">${synopsisText}</p>`
+      : `<p class="results-profile-card__synopsis results-profile-card__synopsis--empty">No profile saved</p>`;
+
+    profileSummaryRoot.innerHTML = `
+      <section class="results-profile-card" aria-label="Your profile summary">
+        <div class="results-profile-card__header">
+          <span class="results-profile-card__title">Profile</span>
+          <a href="${builderUrl}" class="results-profile-card__edit">Edit</a>
+        </div>
+        ${synopsisHtml}
+      </section>`;
+  }
+
   function getActiveFilterCount() {
     let count = 0;
+    const defaultSelectValues = ['Show All', 'Select', 'Any distance', 'Any cost', 'Any format', 'Any schedule'];
     filtersRoot.querySelectorAll('select').forEach((sel) => {
       const val = sel.value;
-      if (val && val !== 'Show All' && val !== 'Select') count += 1;
+      if (val && !defaultSelectValues.includes(val)) count += 1;
     });
     filtersRoot.querySelectorAll('input[type="checkbox"]:checked').forEach(() => {
       count += 1;
@@ -223,7 +261,7 @@
     topicFilterRoot.innerHTML = `
       <div class="results-filter-group results-filter-group--topic">
         <div class="results-filter-label-row">
-          <span class="results-filter-label">MAIN TOPICS</span>
+          <span class="results-filter-label">Main Topics</span>
         </div>
         <div class="results-topic-checks">${checkboxes}</div>
         <a href="${FUNDING_EXTERNAL_URL}" class="results-fund-finder-link" target="_blank" rel="noopener noreferrer">
@@ -243,14 +281,16 @@
   }
 
   function filteredOpportunities() {
-    return PLACEHOLDER_OPPORTUNITIES.filter((opp) =>
-      (opp.topics || []).some((topic) => selectedTopicKeys.includes(topic))
-    );
+    const affiliated = getAffiliatedListings(getProfile());
+    const standard = getStandardListings(selectedTopicKeys);
+    return [...affiliated, ...standard];
   }
 
   function detailUrl(opp) {
     const topic =
-      (opp.topics || []).find((key) => selectedTopicKeys.includes(key)) || selectedTopicKeys[0];
+      (opp.topics || []).find((key) => selectedTopicKeys.includes(key)) ||
+      (opp.topics || [])[0] ||
+      selectedTopicKeys[0];
     const returnUrl = buildResultsUrl(selectedTopicKeys);
     return `detail.html?topic=${encodeURIComponent(topic)}&id=${opp.id}&returnUrl=${encodeURIComponent(returnUrl)}`;
   }
@@ -274,16 +314,25 @@
       </ul>`;
   }
 
+  function renderAffiliationBadge(opp) {
+    if (!opp.listingType) return '';
+    const label = opp.affiliationLabel || (opp.listingType === 'school' ? 'Your School' : 'Your Community');
+    const detail = opp.affiliationDetail ? `<span class="results-item__affiliation-detail">${opp.affiliationDetail}</span>` : '';
+    return `<p class="results-item__affiliation results-item__affiliation--${opp.listingType}"><span class="results-item__affiliation-label">${label}</span>${detail}</p>`;
+  }
+
   function renderResultCard(opp) {
     const matchHtml = config.showMatchStrength
       ? `<span class="results-item__match results-item__match--${opp.match}">${matchLabel(opp.match)}</span>`
       : '';
+    const typeClass = opp.listingType ? ` results-item--${opp.listingType}` : '';
 
     return `
-      <article class="results-item">
+      <article class="results-item${typeClass}">
         ${CompassFavorites.favoriteButtonHtml(opp.id)}
         ${renderProviderLogo(opp)}
         <div class="results-item__body">
+          ${renderAffiliationBadge(opp)}
           ${renderTopicPills(opp.topics || [])}
           <h3 class="results-item__title">${opp.title}</h3>
           <p class="results-item__meta"><strong>${opp.location || 'Indiana'}</strong> · ${opp.programType || 'Program'}</p>
@@ -342,13 +391,6 @@
       .join('');
   }
 
-  function profileBuilderUrl() {
-    if (selectedTopicKeys.length === 1) {
-      return `profile-builder.html?topic=${encodeURIComponent(selectedTopicKeys[0])}&from=results`;
-    }
-    return `profile-builder.html?topics=${selectedTopicKeys.map(encodeURIComponent).join(',')}&from=results`;
-  }
-
   function applyNoTopicState() {
     document.body.classList.add('results-no-topic');
     resultsPrompt.hidden = false;
@@ -391,21 +433,12 @@
   });
 
   if (hasTopics) {
-    const builderUrl = profileBuilderUrl();
-
-    document.getElementById('breadcrumbProfileLink').href = builderUrl;
-    document.getElementById('continueProfileLink').href = `${builderUrl}&expand=all`;
-
-    if (typeof CompassAuth !== 'undefined'
-      && CompassAuth.isLoggedIn()
-      && CompassAuth.getUser().role === 'provider') {
-      document.getElementById('continueProfileLink').hidden = true;
-    }
-
+    document.getElementById('breadcrumbProfileLink').href = profileBuilderUrl();
     const titleTopics = selectedTopicKeys.map(topicLabel).join(', ');
     document.title = `Compass — ${titleTopics} Results`;
   } else {
     applyNoTopicState();
+    document.getElementById('breadcrumbProfileLink').href = profileBuilderUrl();
   }
 
   const createAccountModal = document.getElementById('createAccountModal');
@@ -425,6 +458,7 @@
     alert('Account created! (prototype demo)');
   });
 
+  renderProfileSummary();
   renderTopicFilter();
   renderFilters();
   renderSortOptions();

@@ -39,12 +39,14 @@
                 <div class="results-filters-backdrop" id="filtersBackdrop" hidden></div>
                 <aside class="results-filters" id="filtersPanel" aria-label="Filter results">
                     <div class="results-filters__top">
-                        <h2 class="results-filters__heading">Filters</h2>
+                        <h2 class="results-filters__heading">Results</h2>
                         <button type="button" class="results-filters__close" id="closeFiltersBtn" aria-label="Close filters">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                    <div id="profileSummaryRoot"></div>
                     <div id="topicFilterRoot"></div>
+                    <h3 class="results-filters__subheading">Refine Results</h3>
                     <div id="filtersRoot"></div>
                     <button type="button" class="results-clear-btn" id="clearFiltersBtn">Clear All</button>
                     <p class="results-filters__add-listing">Know about a resource we should include? <a href="provider-add-listing.html">Add a listing for Questa review</a>.</p>
@@ -84,8 +86,6 @@
                     <div class="results-list" id="resultsList"></div>
 
                     <nav class="results-pagination" id="resultsPagination" aria-label="Results pages"></nav>
-
-                    <a href="#" class="results-continue-link" id="continueProfileLink">Continue building your profile for even better results &rarr;</a>
                     </div>
                 </div>
             </div>

@@ -200,8 +200,8 @@
       <h2 class="builder-login-card__title">Keep Your Progress</h2>
       <ul class="builder-login-card__list">
         <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Save your preferences</span></li>
-        <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Favorite specific opportunities</span></li>
-        <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Get notified of new opportunities that match your needs.</span></li>
+        <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Favorite specific resources</span></li>
+        <li><span class="builder-login-card__check" aria-hidden="true">&#10003;</span><span>Come back to find additional resources as your needs change</span></li>
       </ul>
       <a href="#" class="builder-login-card__btn js-login">Log In</a>
       <p class="builder-login-card__footer">Or, <button class="builder-login-card__link js-create-account" type="button">Create your Free Account</button></p>`;

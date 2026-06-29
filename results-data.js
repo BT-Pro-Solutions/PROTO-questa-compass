@@ -176,36 +176,111 @@
         hours: '24 hours a day, 7 days a week',
       },
     },
+    {
+      id: 901,
+      listingType: 'school',
+      affiliationLabel: 'Your School',
+      affiliationDetail: 'Warsaw High School',
+      schoolMatch: 'Warsaw High School',
+      title: 'Warsaw High School Career & College Center',
+      programType: 'School-Based Resource Hub',
+      location: 'Warsaw, IN',
+      desc: 'On-campus support for Warsaw High School students exploring careers, college options, apprenticeships, and personal needs — regardless of which Compass topics you selected.',
+      description:
+        'The Career & College Center connects Warsaw High School students with counseling, college visits, FAFSA help, career exploration, and referrals to community partners. Services span learning help, careers, education readiness, training pathways, and personal support.',
+      eligibility: ['High School'],
+      topics: ['learning-help', 'careers', 'education-help', 'education-training', 'personal-help'],
+      match: 'strong',
+      providerName: 'Warsaw Community Schools',
+      logoUrl: null,
+      providerApprovalStatus: 'approved',
+      contact: {
+        address: '1 Tiger Lane, Warsaw, IN 46580',
+        phone: '(574) 555-0190',
+        email: 'careercenter@warsaw.k12.in.us',
+        website: 'https://example.org/warsaw-career-center',
+        hours: 'Mon–Fri, 7:30 am–3:30 pm during the school year',
+      },
+    },
+    {
+      id: 902,
+      listingType: 'community',
+      affiliationLabel: 'Your Community',
+      affiliationDetail: 'Kosciusko County',
+      residencyMatch: 'Kosciusko County, IN',
+      title: 'Kosciusko County Community Resource Directory',
+      programType: 'Community Resource Directory',
+      location: 'Kosciusko County, IN',
+      desc: 'County-curated directory of local personal help, basic needs, wellness, transportation, and family support services for Kosciusko County residents.',
+      description:
+        'Kosciusko County maintains a community resource directory highlighting trusted providers for childcare, housing, transportation, wellness, social connections, and other personal supports. Compass surfaces this directory for county residents alongside topic-based results.',
+      eligibility: ['High School', 'Young Adult Learner', 'Adult Learner'],
+      topics: ['personal-help'],
+      match: 'strong',
+      providerName: 'Kosciusko County Community Services',
+      logoUrl: null,
+      providerApprovalStatus: 'approved',
+      contact: {
+        address: '121 N Lake St, Warsaw, IN 46580',
+        phone: '(574) 555-0144',
+        email: 'resources@kosciuskocounty.in.gov',
+        website: 'https://example.org/kosciusko-resources',
+        hours: 'Mon–Fri, 8:00 am–4:30 pm',
+      },
+    },
+  ];
+
+  const AFFILIATED_LISTING_TYPES = ['school', 'community'];
+
+  const REFINE_FILTERS = [
+    {
+      type: 'select',
+      id: 'distance',
+      label: 'Distance from Me',
+      tooltip: 'How far you are willing to travel for in-person programs and services.',
+      options: ['Any distance', 'Within 5 miles', 'Within 10 miles', 'Within 25 miles', 'Within 50 miles'],
+    },
+    {
+      type: 'select',
+      id: 'program-cost',
+      label: 'Program Cost',
+      tooltip: 'Filter by whether a program is free, subsidized, or paid.',
+      options: ['Any cost', 'Free', 'Low cost / subsidized', 'Paid program'],
+    },
+    {
+      type: 'select',
+      id: 'format',
+      label: 'Format',
+      tooltip: 'How the program or service is delivered.',
+      options: ['Any format', 'In-person', 'Online', 'Hybrid'],
+    },
+    {
+      type: 'select',
+      id: 'schedule',
+      label: 'Schedule',
+      tooltip: 'When sessions or services are typically available.',
+      options: ['Any schedule', 'Weekday daytime', 'Weekday evening', 'Weekends', 'Flexible / self-paced'],
+    },
+    {
+      type: 'checkbox',
+      id: 'accepting-now',
+      label: 'Accepting Participants Now',
+      tooltip: 'Show only programs currently enrolling or accepting new participants.',
+    },
+    {
+      type: 'checkbox',
+      id: 'transportation',
+      label: 'Transportation Provided',
+      tooltip: 'Programs that offer transportation assistance or are accessible by public transit.',
+    },
   ];
 
   const DEFAULT_RESULTS_CONFIG = {
     resultLabel: 'Resources',
     totalCount: 87,
     showMatchStrength: false,
-    sortOptions: ['Name', 'Recently Added', 'Relevance'],
-    filters: [
-      {
-        type: 'select',
-        id: 'residency',
-        label: 'Residency',
-        tooltip: 'Filter by county or region of residency.',
-        options: ['Show All', 'Allen County', 'Adams County', 'DeKalb County', 'Other Indiana'],
-      },
-      {
-        type: 'select',
-        id: 'student-level',
-        label: 'Student Level',
-        tooltip: 'Your current stage of education.',
-        options: ['Show All', 'High School', 'Young Adult', 'Adult Learner'],
-      },
-      {
-        type: 'select',
-        id: 'program-types',
-        label: 'Program Type',
-        tooltip: 'Types of programs or services offered.',
-        options: ['Show All', 'Counseling Center', 'Campus Program', 'Apprenticeship', 'Wellness', 'Community Line'],
-      },
-    ],
+    sortOptions: ['Name', 'Recently Added', 'Relevance', 'Distance'],
+    filters: REFINE_FILTERS,
   };
 
   const TOPIC_RESULTS = {
@@ -213,132 +288,36 @@
       resultLabel: 'Career Programs',
       totalCount: 24,
       showMatchStrength: false,
-      sortOptions: ['Name', 'Recently Added', 'Relevance'],
-      filters: [
-        {
-          type: 'select',
-          id: 'residency',
-          label: 'Residency',
-          tooltip: 'Filter by county or region of residency.',
-          options: ['Show All', 'Allen County', 'Adams County', 'DeKalb County', 'Other Indiana'],
-        },
-        {
-          type: 'select',
-          id: 'career-interests',
-          label: 'Career Interests',
-          tooltip: 'Career areas you want to explore.',
-          options: ['Show All', 'Healthcare', 'Technology', 'Skilled Trades', 'Business'],
-        },
-        {
-          type: 'select',
-          id: 'student-level',
-          label: 'Student Level',
-          tooltip: 'Your current stage of education.',
-          options: ['Show All', 'High School', 'Young Adult', 'Adult Learner'],
-        },
-      ],
+      sortOptions: ['Name', 'Recently Added', 'Relevance', 'Distance'],
+      filters: REFINE_FILTERS,
     },
     'education-help': {
       resultLabel: 'Education Programs',
       totalCount: 18,
       showMatchStrength: false,
-      sortOptions: ['Name', 'Recently Added', 'Relevance'],
-      filters: [
-        {
-          type: 'select',
-          id: 'program-types',
-          label: 'Program Type',
-          tooltip: 'Types of education support offered.',
-          options: ['Show All', 'Navigation', 'Campus Support', 'Community Line'],
-        },
-        {
-          type: 'select',
-          id: 'college-interest',
-          label: 'College Interest',
-          tooltip: 'Schools you are considering or currently attending.',
-          options: ['Show All', 'Ivy Tech', 'Purdue Fort Wayne', 'Indiana University'],
-        },
-        {
-          type: 'select',
-          id: 'residency',
-          label: 'Residency',
-          tooltip: 'Filter by county or region of residency.',
-          options: ['Show All', 'Allen County', 'Other Indiana'],
-        },
-      ],
+      sortOptions: ['Name', 'Recently Added', 'Relevance', 'Distance'],
+      filters: REFINE_FILTERS,
     },
     'learning-help': {
       resultLabel: 'Learning Programs',
       totalCount: 12,
       showMatchStrength: false,
-      sortOptions: ['Name', 'Recently Added'],
-      filters: [
-        {
-          type: 'select',
-          id: 'student-level',
-          label: 'Student Level',
-          tooltip: 'Your current stage of education.',
-          options: ['Show All', 'High School', 'Young Adult', 'Adult Learner'],
-        },
-        {
-          type: 'select',
-          id: 'residency',
-          label: 'Residency',
-          tooltip: 'Filter by county or region of residency.',
-          options: ['Show All', 'Allen County', 'Other Indiana'],
-        },
-      ],
+      sortOptions: ['Name', 'Recently Added', 'Distance'],
+      filters: REFINE_FILTERS,
     },
     'education-training': {
       resultLabel: 'Training Programs',
       totalCount: 31,
       showMatchStrength: false,
-      sortOptions: ['Name', 'Recently Added', 'Relevance'],
-      filters: [
-        {
-          type: 'select',
-          id: 'program-types',
-          label: 'Program Type',
-          tooltip: 'Types of training programs you are pursuing.',
-          options: ['Show All', 'Apprenticeship', 'Certificate', 'Workforce Center'],
-        },
-        {
-          type: 'select',
-          id: 'training-provider',
-          label: 'Training Provider',
-          tooltip: 'Organizations that offer training or certification.',
-          options: ['Show All', 'Ivy Tech', 'NE Indiana Apprenticeship Hub', 'WorkOne'],
-        },
-        {
-          type: 'select',
-          id: 'residency',
-          label: 'Residency',
-          tooltip: 'Filter by county or region of residency.',
-          options: ['Show All', 'Allen County', 'Other Indiana'],
-        },
-      ],
+      sortOptions: ['Name', 'Recently Added', 'Relevance', 'Distance'],
+      filters: REFINE_FILTERS,
     },
     'personal-help': {
       resultLabel: 'Personal Support Programs',
       totalCount: 15,
       showMatchStrength: false,
-      sortOptions: ['Name', 'Recently Added'],
-      filters: [
-        {
-          type: 'select',
-          id: 'residency',
-          label: 'Residency',
-          tooltip: 'Filter by county or region of residency.',
-          options: ['Show All', 'Allen County', 'Other Indiana'],
-        },
-        {
-          type: 'select',
-          id: 'health-related',
-          label: 'Support Type',
-          tooltip: 'Areas where you need personal or wellness support.',
-          options: ['Show All', 'Mental wellness', 'Basic needs', 'Youth support', 'Family services'],
-        },
-      ],
+      sortOptions: ['Name', 'Recently Added', 'Distance'],
+      filters: REFINE_FILTERS,
     },
   };
 
@@ -350,14 +329,34 @@
   }
 
   function getOpportunity(id) {
-    return PLACEHOLDER_OPPORTUNITIES.find((o) => o.id === Number(id)) || PLACEHOLDER_OPPORTUNITIES[0];
+    return PLACEHOLDER_OPPORTUNITIES.find((o) => String(o.id) === String(id)) || PLACEHOLDER_OPPORTUNITIES[0];
+  }
+
+  function getAffiliatedListings(profile = {}) {
+    return PLACEHOLDER_OPPORTUNITIES.filter((opp) => {
+      if (!AFFILIATED_LISTING_TYPES.includes(opp.listingType)) return false;
+      // Demo: always include affiliated listings regardless of profile selections.
+      return true;
+    });
+  }
+
+  function getStandardListings(topicKeys) {
+    return PLACEHOLDER_OPPORTUNITIES.filter(
+      (opp) =>
+        !AFFILIATED_LISTING_TYPES.includes(opp.listingType) &&
+        (opp.topics || []).some((topic) => topicKeys.includes(topic))
+    );
   }
 
   global.CompassResults = {
     PLACEHOLDER_OPPORTUNITIES,
     TOPIC_RESULTS,
     DEFAULT_RESULTS_CONFIG,
+    REFINE_FILTERS,
+    AFFILIATED_LISTING_TYPES,
     getResultsConfig,
     getOpportunity,
+    getAffiliatedListings,
+    getStandardListings,
   };
 })(window);

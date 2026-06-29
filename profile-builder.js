@@ -345,6 +345,7 @@
     profile[id] = value;
     saveProfile({ [id]: value });
     updateSectionStatuses();
+    updateContinueButtonState();
     if (id === 'student-level') renderSections();
   }
 
@@ -362,6 +363,31 @@
       return requiredFields.every(isFieldFilled);
     }
     return fields.some(isFieldFilled);
+  }
+
+  function getActiveRequiredFields() {
+    const fields = [];
+    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
+      section.fields.forEach((field) => {
+        if (!field.required || !fieldVisible(field, profile)) return;
+        if (!isFieldRelated(sectionId, field)) return;
+        fields.push(field);
+      });
+    });
+    return fields;
+  }
+
+  function meetsMinimumRequirements() {
+    if (isPillPickerMode && selectedTopicKeys.length < MIN_SELECTED_TOPICS) return false;
+    return getActiveRequiredFields().every(isFieldFilled);
+  }
+
+  function updateContinueButtonState() {
+    const btn = document.getElementById('continueProfileBtn');
+    if (!btn) return;
+    const ready = meetsMinimumRequirements();
+    btn.disabled = !ready;
+    btn.setAttribute('aria-disabled', String(!ready));
   }
 
   function getSectionStatusFields(sectionId) {
@@ -532,9 +558,19 @@
     return `<div class="builder-section__fields"><div class="builder-grid">${fieldsHtml}</div></div>`;
   }
 
+  function selectAllTopics() {
+    const allKeys = TOPIC_PILL_ORDER.filter((key) => TOPICS[key]);
+    if (allKeys.every((key) => selectedTopicKeys.includes(key))) return;
+    selectedTopicKeys = [...allKeys];
+    persistSelectedTopics();
+    renderSections();
+  }
+
   function renderTopicPills() {
     const soleSelection = selectedTopicKeys.length === MIN_SELECTED_TOPICS;
-    const pills = TOPIC_PILL_ORDER.filter((key) => TOPICS[key])
+    const allTopicKeys = TOPIC_PILL_ORDER.filter((key) => TOPICS[key]);
+    const allSelected = allTopicKeys.every((key) => selectedTopicKeys.includes(key));
+    const pills = allTopicKeys
       .map((key) => {
         const label = TOPIC_INTEREST_LABELS[key] || key;
         const selected = selectedTopicKeys.includes(key);
@@ -562,6 +598,9 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
+        <p class="builder-topic-picker__select-all">
+          <button type="button" class="builder-topic-picker__select-all-link" data-select-all-topics${allSelected ? ' disabled' : ''}>Select all</button>
+        </p>
       </div>`;
   }
 
@@ -618,6 +657,7 @@
         toggleTopicPill(btn.dataset.topicPill);
       });
     });
+    topicPillsRoot.querySelector('[data-select-all-topics]')?.addEventListener('click', selectAllTopics);
     bindTopicPillScrollControls();
   }
 
@@ -674,10 +714,8 @@
 
   function renderFundFinderField() {
     return `
-      <div class="builder-field builder-field--fund-finder">
-        <div class="builder-field__head" aria-hidden="true">
-          <span class="builder-field__label builder-field__label--spacer">&nbsp;</span>
-        </div>
+      <div class="builder-field builder-field--fund-finder builder-field--full">
+        <p class="builder-fund-finder-note">Scholarships, grants, and other financial aid are available through Fund Finder.</p>
         <a href="${FUNDING_EXTERNAL_URL}" class="builder-fund-finder-link" target="_blank" rel="noopener noreferrer">
           Fund Finder
           ${EXTERNAL_LINK_ICON}
@@ -908,6 +946,7 @@
       renderPillPickerLayout();
       bindFieldEvents();
       bindMultiselectEvents();
+      updateContinueButtonState();
       return;
     }
 
@@ -927,6 +966,7 @@
 
     renderOtherAreasToggle();
     updateInfoNoteVisibility();
+    updateContinueButtonState();
   }
 
   function goToResults() {

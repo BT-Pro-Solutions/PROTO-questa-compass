@@ -124,19 +124,35 @@
   }
 
   function buildTopicInterestFields() {
-    return Object.entries(TOPIC_INTEREST_OPTIONS).map(([topicKey, options]) => {
-      const label = TOPIC_INTEREST_LABELS[topicKey];
-      return {
-        id: `${topicKey}-interests`,
-        label: `${label} Interests`,
-        tooltip: `Select the ${label.toLowerCase()} resources that match what you\u2019re looking for.`,
-        type: 'multiselect',
-        modalTitle: `Select ${label} Interests`,
-        modalDescription: `Choose the ${label.toLowerCase()} sub-categories that apply to you. You can select more than one.`,
-        placeholder: `Select ${label.toLowerCase()} interests\u2026`,
-        options,
-      };
-    });
+    return Object.entries(TOPIC_INTEREST_OPTIONS)
+      .filter(([topicKey]) => topicKey !== 'funding')
+      .map(([topicKey, options]) => {
+        const label = TOPIC_INTEREST_LABELS[topicKey];
+        return {
+          id: `${topicKey}-interests`,
+          label: `${label} Resources`,
+          tooltip: `Select the ${label.toLowerCase()} resources that match what you\u2019re looking for.`,
+          type: 'multiselect',
+          modalTitle: `Select ${label} Resources`,
+          modalDescription: `Choose the ${label.toLowerCase()} resources that apply to you. You can select more than one.`,
+          placeholder: `Select ${label.toLowerCase()} resources\u2026`,
+          options,
+        };
+      });
+  }
+
+  function buildIdentityMultiselectField(id, label, tooltip, options) {
+    return {
+      id,
+      label,
+      tooltip,
+      type: 'multiselect',
+      modalTitle: `Select ${label}`,
+      modalDescription: `Choose the ${label.toLowerCase()} options that apply to you. You can select more than one.`,
+      placeholder: `Select ${label.toLowerCase()}\u2026`,
+      optional: true,
+      options,
+    };
   }
 
   const TOPICS = {
@@ -167,11 +183,8 @@
     funding: {
       title: 'Find Funding',
       description: 'Get help to find scholarships and other financial aid.',
-      expandedSections: ['about-you', 'education-interests', 'financial-aid'],
-      promotedFieldsBySection: {
-        'getting-started': ['funding-interests'],
-        'identity-groups': ['race', 'ethnicity', 'gender', 'designed-for'],
-      },
+      expandedSections: ['about-you', 'education-interests', 'financial-aid', 'identity-groups'],
+      promotedFieldsBySection: {},
     },
     'education-training': {
       title: 'Find Education & Training',
@@ -198,7 +211,7 @@
 
   const SECTIONS = {
     'getting-started': {
-      title: 'Choose any specific areas you have interest in',
+      title: 'Choose any specific resources you’d like to find',
       fields: buildTopicInterestFields(),
     },
     'about-you': {
@@ -224,7 +237,7 @@
           type: 'select',
           placeholder: 'Please Select...',
           required: true,
-          options: ['Allen County, IN', 'Adams County, IN', 'DeKalb County, IN', 'Other Indiana', 'Out of State'],
+          options: ['Allen County, IN', 'Adams County, IN', 'DeKalb County, IN', 'Kosciusko County, IN', 'Other Indiana', 'Out of State'],
         },
         {
           id: 'hs-attending',
@@ -233,7 +246,7 @@
           type: 'select',
           placeholder: 'Select',
           showWhen: { studentLevel: ['hs'] },
-          options: ['Northrop High School', 'Snider High School', 'Homestead High School', 'Other'],
+          options: ['Northrop High School', 'Snider High School', 'Homestead High School', 'Warsaw High School', 'Other'],
         },
         {
           id: 'hs-gpa',
@@ -379,10 +392,12 @@
         { id: 'race', label: 'Race', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['American Indian or Alaska Native', 'Asian', 'Black or African American', 'White', 'Prefer not to say'] },
         { id: 'ethnicity', label: 'Ethnicity', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['Hispanic or Latino', 'Not Hispanic or Latino', 'Prefer not to say'] },
         { id: 'gender', label: 'Gender', tooltip: 'Some programs are designed for specific gender identities.', type: 'select', placeholder: 'Select', optional: true, options: ['Female', 'Male', 'Non-binary', 'Prefer not to say'] },
-        { id: 'designed-for', label: 'Specifically Designed For', tooltip: 'Communities a program may specifically serve.', type: 'select', placeholder: 'Select', optional: true, options: ['First-generation college students', 'Single parents', 'Foster youth', 'Other'] },
-        { id: 'career-interests', label: 'Career Interests', tooltip: 'Career areas you want to explore.', type: 'select', placeholder: 'Select', optional: true, options: ['Healthcare', 'Technology', 'Skilled Trades', 'Business', 'Arts & Design'] },
-        { id: 'health-related', label: 'Health Related', tooltip: 'Health or wellness areas where you need support.', type: 'select', placeholder: 'Select', optional: true, options: ['Mental wellness', 'Substance recovery support', 'Disability services', 'General wellness'] },
-        { id: 'military', label: 'Military / Public Service', tooltip: 'Military or public service affiliations.', type: 'select', placeholder: 'Select', optional: true, options: ['Active duty', 'Veteran', 'National Guard / Reserve', 'Public service employee', 'None'] },
+        buildIdentityMultiselectField('designed-for', 'Specifically Designed For', 'Communities a program may specifically serve.', ['First-generation college students', 'Single parents', 'Foster youth', 'Other']),
+        buildIdentityMultiselectField('activities-affiliations', 'Activities & Affiliations', 'Clubs, organizations, or affiliations you belong to.', ['Clubs & Organizations', 'Athletics', 'Religious Organization', 'Community / Volunteer Group', 'Professional Association', 'Other']),
+        buildIdentityMultiselectField('health-related', 'Health Related', 'Health or wellness areas where you need support.', ['Mental wellness', 'Substance recovery support', 'Disability services', 'General wellness']),
+        buildIdentityMultiselectField('employer-affiliation', 'Employer Affiliation', 'Your current or recent employer, if applicable.', ['Parkview Health', 'General Motors', 'Lutheran Health Network', 'Other Northeast Indiana Employer', 'Not currently employed']),
+        buildIdentityMultiselectField('military', 'Military / Public Service Affiliation', 'Military or public service affiliations.', ['Active duty', 'Veteran', 'National Guard / Reserve', 'Public service employee', 'None']),
+        buildIdentityMultiselectField('career-interests', 'Career Interests', 'Career areas you want to explore.', ['Healthcare', 'Technology', 'Skilled Trades', 'Business', 'Arts & Design']),
       ],
     },
     'financial-aid': {
@@ -502,6 +517,141 @@
     return topic.expandedSections.includes(sectionId);
   }
 
+  function findFieldById(fieldId) {
+    for (const section of Object.values(SECTIONS)) {
+      const field = section.fields.find((f) => f.id === fieldId);
+      if (field) return field;
+    }
+    return null;
+  }
+
+  function formatProfileValue(field, value) {
+    if (value === undefined || value === null || value === '') return null;
+    if (field.type === 'multiselect' || Array.isArray(value)) {
+      const arr = Array.isArray(value) ? value.filter(Boolean) : [value];
+      if (!arr.length) return null;
+      if (arr.length <= 2) return arr.join(', ');
+      return `${arr.slice(0, 2).join(', ')} +${arr.length - 2} more`;
+    }
+    if (field.type === 'select' && field.options) {
+      const match = field.options.find((opt) =>
+        typeof opt === 'object' ? opt.value === value : opt === value
+      );
+      return typeof match === 'object' ? match.label : value;
+    }
+    return String(value).trim() || null;
+  }
+
+  function getProfileSynopsis(profile, topicKeys = []) {
+    const STUDENT_LEVEL_SHORT = {
+      hs: 'HS student',
+      'young-adult': 'Young adult',
+      adult: 'Adult learner',
+    };
+    const keys = topicKeys.length ? topicKeys : getTopics().filter((key) => key !== 'funding');
+    const segments = [];
+
+    if (profile['student-level']) {
+      segments.push(STUDENT_LEVEL_SHORT[profile['student-level']] || profile['student-level']);
+    }
+
+    if (profile.residency) {
+      const short = String(profile.residency)
+        .replace(', IN', '')
+        .replace(' County', ' Co.')
+        .replace('Out of State', 'Out of state');
+      segments.push(short);
+    }
+
+    if (keys.length === 1) {
+      segments.push(TOPIC_INTEREST_LABELS[keys[0]] || keys[0]);
+    } else if (keys.length > 1) {
+      const first = TOPIC_INTEREST_LABELS[keys[0]] || keys[0];
+      segments.push(`${first} +${keys.length - 1}`);
+    }
+
+    let resourceCount = 0;
+    keys.forEach((topicKey) => {
+      const val = profile[`${topicKey}-interests`];
+      if (Array.isArray(val)) resourceCount += val.length;
+    });
+    if (resourceCount) {
+      segments.push(`${resourceCount} resource pick${resourceCount === 1 ? '' : 's'}`);
+    }
+
+    let filledExtras = 0;
+    Object.values(SECTIONS).forEach((section) => {
+      section.fields.forEach((field) => {
+        if (!fieldVisible(field, profile)) return;
+        if (['student-level', 'residency'].includes(field.id)) return;
+        if (field.id.endsWith('-interests')) return;
+        if (formatProfileValue(field, profile[field.id])) filledExtras += 1;
+      });
+    });
+    if (filledExtras) {
+      segments.push(`+${filledExtras} detail${filledExtras === 1 ? '' : 's'}`);
+    }
+
+    return segments;
+  }
+
+  function getProfileSummary(profile, topicKeys = []) {
+    const rows = [];
+    const keys = topicKeys.length ? topicKeys : getTopics().filter((key) => key !== 'funding');
+
+    if (keys.length) {
+      rows.push({
+        label: 'Topics',
+        value: keys.map((key) => TOPIC_INTEREST_LABELS[key] || key).join(', '),
+        isTopics: true,
+      });
+    }
+
+    const aboutYouIds = ['student-level', 'residency', 'hs-attending', 'enrollment-status'];
+    aboutYouIds.forEach((fieldId) => {
+      const field = findFieldById(fieldId);
+      if (!field || !fieldVisible(field, profile)) return;
+      const formatted = formatProfileValue(field, profile[fieldId]);
+      if (formatted) rows.push({ label: field.label, value: formatted });
+    });
+
+    keys.forEach((topicKey) => {
+      const fieldId = `${topicKey}-interests`;
+      const field = findFieldById(fieldId);
+      if (!field) return;
+      const formatted = formatProfileValue(field, profile[fieldId]);
+      if (formatted) {
+        rows.push({
+          label: `${TOPIC_INTEREST_LABELS[topicKey] || topicKey} resources`,
+          value: formatted,
+        });
+      }
+    });
+
+    let extraCount = 0;
+    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
+      section.fields.forEach((field) => {
+        if (!fieldVisible(field, profile)) return;
+        if (aboutYouIds.includes(field.id)) return;
+        if (field.id.endsWith('-interests')) return;
+        const formatted = formatProfileValue(field, profile[field.id]);
+        if (!formatted) return;
+        if (rows.some((row) => row.label === field.label)) return;
+        if (rows.length < 6) {
+          rows.push({ label: field.label, value: formatted });
+        } else {
+          extraCount += 1;
+        }
+      });
+    });
+
+    if (extraCount > 0) {
+      rows.push({ label: 'Additional details', value: `${extraCount} more field${extraCount === 1 ? '' : 's'}` });
+    }
+
+    return rows;
+  }
+
   global.CompassProfile = {
     TOPICS,
     TOPIC_INTEREST_OPTIONS,
@@ -528,5 +678,9 @@
     getPromotedFieldIds,
     identityFieldPromoted,
     sectionExpanded,
+    findFieldById,
+    formatProfileValue,
+    getProfileSummary,
+    getProfileSynopsis,
   };
 })(window);
