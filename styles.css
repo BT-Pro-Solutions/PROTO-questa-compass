@@ -185,7 +185,9 @@
 
   .compass-topic-bar {
     position: absolute;
+    border: 2px solid var(--dark-teal);
     bottom: 0px;
+    border-radius: 0 0 22px 22px;
     left: 0;
     right: 0;
     display: flex;
@@ -246,6 +248,7 @@
 
   .compass-topic-bar__name {
     font-weight: 800;
+    white-space: nowrap;
   }
 
   .compass-topic-bar__includes {
@@ -3052,6 +3055,12 @@
     grid-template-columns: 300px 1fr;
     gap: 28px;
     align-items: start;
+    overflow: visible;
+  }
+
+  .results-layout--filters .results-main {
+    position: relative;
+    z-index: 1;
   }
 
   .results-profile-card {
@@ -3121,8 +3130,10 @@
   .results-filters {
     position: sticky;
     top: 24px;
+    z-index: 20;
     background: transparent;
     padding: 0;
+    overflow: visible;
   }
 
   .results-filters__heading {
@@ -3169,6 +3180,7 @@
 
   .results-filter-group {
     margin-bottom: 20px;
+    overflow: visible;
   }
 
   .results-filter-group--match {
@@ -3241,6 +3253,25 @@
     gap: 6px;
     margin-bottom: 6px;
     position: relative;
+    overflow: visible;
+  }
+
+  .results-filter-label-row .builder-tooltip,
+  .results-filter-check-row .builder-tooltip {
+    top: 0;
+    align-self: center;
+  }
+
+  .results-filters .builder-tooltip:hover::after {
+    top: calc(100% + 6px);
+    bottom: auto;
+    left: 0;
+    right: auto;
+    max-width: 280px;
+    min-width: 0;
+    width: max-content;
+    z-index: 200;
+    border-radius: 6px;
   }
 
   .results-filter-label {
