@@ -4155,6 +4155,21 @@
     text-decoration: underline;
   }
 
+  .detail-map {
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e8ecef;
+    background: #eef1f3;
+  }
+
+  .detail-map__embed {
+    display: block;
+    width: 100%;
+    height: 280px;
+    border: 0;
+  }
+
   .detail-eligibility {
     display: flex;
     flex-wrap: wrap;

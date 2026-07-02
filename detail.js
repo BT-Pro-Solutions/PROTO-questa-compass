@@ -45,13 +45,29 @@
       </ul>`;
   }
 
+  function isPhysicalAddress(address) {
+    if (!address?.trim()) return false;
+    const normalized = address.trim().toLowerCase();
+    if (/^(online|virtual|remote|n\/a|none|varies)$/i.test(normalized)) return false;
+    return !/(online only|virtual only|remote only|no physical)/i.test(normalized);
+  }
+
+  function mapsDirectionsUrl(address) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  }
+
   function renderContactSection() {
     const root = document.getElementById('detailContact');
     const contact = opp.contact || {};
     if (!root) return;
 
     const items = [
-      { key: 'address', label: 'Address', value: contact.address },
+      {
+        key: 'address',
+        label: 'Address',
+        value: contact.address,
+        href: isPhysicalAddress(contact.address) ? mapsDirectionsUrl(contact.address) : null,
+      },
       { key: 'phone', label: 'Phone', value: contact.phone, href: contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null },
       { key: 'email', label: 'Email', value: contact.email, href: contact.email ? `mailto:${contact.email}` : null },
       { key: 'website', label: 'Website', value: contact.website?.replace(/^https?:\/\//, ''), href: contact.website },
@@ -61,7 +77,7 @@
     root.innerHTML = items
       .map((item) => {
         const valueHtml = item.href
-          ? `<a href="${item.href}" class="detail-contact__link"${item.key === 'website' ? ' target="_blank" rel="noopener noreferrer"' : ''}>${item.value}</a>`
+          ? `<a href="${item.href}" class="detail-contact__link"${item.key === 'website' || item.key === 'address' ? ' target="_blank" rel="noopener noreferrer"' : ''}>${item.value}</a>`
           : `<span>${item.value}</span>`;
         return `
           <li class="detail-contact__item">
@@ -73,6 +89,16 @@
           </li>`;
       })
       .join('');
+  }
+
+  function renderMap() {
+    const container = document.getElementById('detailMap');
+    const iframe = document.getElementById('detailMapEmbed');
+    const address = opp.contact?.address?.trim();
+    if (!container || !iframe || !isPhysicalAddress(address)) return;
+
+    iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+    container.hidden = false;
   }
 
   document.title = `Compass — ${opp.title}`;
@@ -88,6 +114,7 @@
     .join('');
 
   renderContactSection();
+  renderMap();
 
   const websiteBtn = document.getElementById('detailWebsiteBtn');
   if (websiteBtn) {
