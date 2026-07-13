@@ -219,8 +219,8 @@
       fields: [
         {
           id: 'student-level',
-          label: 'Student Level',
-          tooltip: 'Your current stage of education helps us show the most relevant resources.',
+          label: 'What best describes you?',
+          tooltip: 'This helps us show the most relevant resources for your role and stage of education.',
           type: 'select',
           placeholder: 'Please Select...',
           required: true,
@@ -228,6 +228,12 @@
             { value: 'hs', label: 'Attending High School' },
             { value: 'young-adult', label: 'Young Adult (18–24) Learner' },
             { value: 'adult', label: 'Adult (25+) Learner' },
+            { value: 'k12-educator', label: 'K12 Educator' },
+            { value: 'college-educator', label: 'College Educator' },
+            { value: 'training-educator', label: 'Training Educator' },
+            { value: 'family-member', label: 'Family Member' },
+            { value: 'community-member', label: 'Community Member' },
+            { value: 'resource-provider', label: 'Resource Provider' },
           ],
         },
         {
@@ -547,6 +553,12 @@
       hs: 'HS student',
       'young-adult': 'Young adult',
       adult: 'Adult learner',
+      'k12-educator': 'K12 educator',
+      'college-educator': 'College educator',
+      'training-educator': 'Training educator',
+      'family-member': 'Family member',
+      'community-member': 'Community member',
+      'resource-provider': 'Resource provider',
     };
     const keys = topicKeys.length ? topicKeys : getTopics().filter((key) => key !== 'funding');
     const segments = [];
