@@ -143,8 +143,8 @@
             </div>
 
             <div class="compass-card__cta-row">
-                <a href="results.html" class="compass-card__cta compass-card__cta--mobile">Browse All</a>
-                <a href="#" class="compass-card__cta compass-card__cta--mobile js-quiz-open">Not sure where to start?</a>
+                <a href="#" class="compass-card__cta compass-card__cta--mobile js-quiz-open">Get Started</a>
+                <a href="results.html" class="compass-card__cta compass-card__cta--mobile compass-card__cta--skip">Browse All Resources</a>
             </div>
             <a href="#" class="quincy-callout js-quiz-open">
                 <img src="assets/Quincy-Corner.png" alt="Quincy">
@@ -158,17 +158,16 @@
             <div class="quiz-view" id="quizView" aria-hidden="true">
                 <video src="assets/blur-loop-compressed.mp4" autoplay muted loop playsinline class="cm-blur-motion quiz-view__video"></video>
                 <div class="overlay-color"></div>
-                <div class="overlay-grain"></div>
 
                 <div class="quiz-content" id="quizContent">
                     <img src="assets/Quincy-Circle.png" alt="Quincy" class="quiz-quincy">
                     <p class="quiz-counter"><span class="quiz-counter__num" id="quizNum"></span></p>
                     <p class="quiz-question" id="quizQuestion"></p>
                     <div class="quiz-actions">
-                        <button class="quiz-btn quiz-btn--back js-quiz-back" type="button">Back</button>
                         <button class="quiz-btn quiz-btn--yes" id="quizYes" type="button">Yes</button>
                         <button class="quiz-btn quiz-btn--no js-quiz-no" type="button">No</button>
                     </div>
+                    <button class="quiz-btn quiz-btn--back js-quiz-back" type="button">Back</button>
                 </div>
 
                 <div class="quiz-final" id="quizFinal" hidden>

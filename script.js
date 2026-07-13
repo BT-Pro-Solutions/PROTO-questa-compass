@@ -431,29 +431,92 @@
 
   let currentIndex = 0;
   let selectedTopics = [];
+  let quizAnimating = false;
 
-  function showQuestion(index) {
-    const q = QUESTIONS[index];
-    quizNum.textContent      = `(${index + 1} of ${QUESTIONS.length})`;
-    quizQuestion.textContent = q.text;
+  const QUIZ_SLIDE_OUT_MS = 220;
+  const QUIZ_SLIDE_IN_MS = 280;
 
-    quizContent.hidden = false;
-    quizFinal.hidden   = true;
-    quizFinal.classList.remove('quiz-final--has-topics');
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  function goBackQuestion() {
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function clearQuizSlideClasses(panel) {
+    if (!panel) return;
+    panel.classList.remove(
+      'quiz-panel-animating',
+      'quiz-slide-out-forward',
+      'quiz-slide-out-back',
+      'quiz-slide-in-forward',
+      'quiz-slide-in-back'
+    );
+  }
+
+  async function animateQuizPanel(panel, direction, updateFn) {
+    if (!panel || prefersReducedMotion()) {
+      updateFn();
+      return;
+    }
+
+    quizAnimating = true;
+    clearQuizSlideClasses(panel);
+    panel.classList.add('quiz-panel-animating');
+    panel.classList.add(direction === 'back' ? 'quiz-slide-out-back' : 'quiz-slide-out-forward');
+    await wait(QUIZ_SLIDE_OUT_MS);
+
+    updateFn();
+
+    panel.classList.remove('quiz-slide-out-forward', 'quiz-slide-out-back');
+    // Force a reflow so the enter animation always restarts
+    void panel.offsetWidth;
+    panel.classList.add(direction === 'back' ? 'quiz-slide-in-back' : 'quiz-slide-in-forward');
+    await wait(QUIZ_SLIDE_IN_MS);
+
+    clearQuizSlideClasses(panel);
+    quizAnimating = false;
+  }
+
+  function renderQuestion(index) {
+    const q = QUESTIONS[index];
+    quizNum.textContent = `(${index + 1} of ${QUESTIONS.length})`;
+    quizQuestion.textContent = q.text;
+    quizContent.hidden = false;
+    quizFinal.hidden = true;
+    quizFinal.classList.remove('quiz-final--has-topics');
+    updateYesButtonState(index);
+  }
+
+  function updateYesButtonState(index) {
+    if (!quizYes) return;
+    const topic = QUESTIONS[index]?.topic;
+    const isSelected = Boolean(topic && selectedTopics.includes(topic));
+    quizYes.classList.toggle('is-active', isSelected);
+    quizYes.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+  }
+
+  function showQuestion(index, { animate = false, direction = 'forward' } = {}) {
+    if (!animate) {
+      clearQuizSlideClasses(quizContent);
+      renderQuestion(index);
+      return Promise.resolve();
+    }
+    return animateQuizPanel(quizContent, direction, () => renderQuestion(index));
+  }
+
+  async function goBackQuestion() {
+    if (quizAnimating) return;
     if (currentIndex <= 0) {
       closeQuiz();
       return;
     }
     currentIndex -= 1;
-    const topic = QUESTIONS[currentIndex].topic;
-    selectedTopics = selectedTopics.filter((t) => t !== topic);
-    showQuestion(currentIndex);
+    await showQuestion(currentIndex, { animate: true, direction: 'back' });
   }
 
-  function showQuizComplete() {
+  function renderQuizComplete() {
     quizContent.hidden = true;
     quizFinal.hidden = false;
 
@@ -502,9 +565,35 @@
     }
   }
 
+  async function showQuizComplete() {
+    if (quizAnimating) return;
+    if (prefersReducedMotion()) {
+      renderQuizComplete();
+      return;
+    }
+
+    quizAnimating = true;
+
+    clearQuizSlideClasses(quizContent);
+    quizContent.classList.add('quiz-panel-animating', 'quiz-slide-out-forward');
+    await wait(QUIZ_SLIDE_OUT_MS);
+
+    clearQuizSlideClasses(quizContent);
+    renderQuizComplete();
+
+    clearQuizSlideClasses(quizFinal);
+    quizFinal.classList.add('quiz-panel-animating', 'quiz-slide-in-forward');
+    await wait(QUIZ_SLIDE_IN_MS);
+    clearQuizSlideClasses(quizFinal);
+    quizAnimating = false;
+  }
+
   function openQuiz() {
     currentIndex = 0;
     selectedTopics = [];
+    quizAnimating = false;
+    clearQuizSlideClasses(quizContent);
+    clearQuizSlideClasses(quizFinal);
     showQuestion(0);
 
     card.classList.add('quiz-active');
@@ -516,18 +605,22 @@
   }
 
   function closeQuiz() {
+    quizAnimating = false;
+    clearQuizSlideClasses(quizContent);
+    clearQuizSlideClasses(quizFinal);
     card.classList.remove('quiz-active');
     quizView.setAttribute('aria-hidden', 'true');
 
     if (backBtn) backBtn.hidden = true;
   }
 
-  function advanceQuestion() {
+  async function advanceQuestion() {
+    if (quizAnimating) return;
     currentIndex += 1;
     if (currentIndex >= QUESTIONS.length) {
-      showQuizComplete();
+      await showQuizComplete();
     } else {
-      showQuestion(currentIndex);
+      await showQuestion(currentIndex, { animate: true, direction: 'forward' });
     }
   }
 
@@ -547,9 +640,17 @@
     });
   });
 
-  // "No" button advances to next question
+  // "No" button clears a prior Yes for this topic, then advances
   document.querySelectorAll('.js-quiz-no').forEach((el) => {
-    el.addEventListener('click', advanceQuestion);
+    el.addEventListener('click', () => {
+      if (quizAnimating) return;
+      const topic = QUESTIONS[currentIndex]?.topic;
+      if (topic) {
+        selectedTopics = selectedTopics.filter((t) => t !== topic);
+      }
+      updateYesButtonState(currentIndex);
+      advanceQuestion();
+    });
   });
 
   document.querySelectorAll('.js-quiz-back').forEach((el) => {
@@ -558,10 +659,12 @@
 
   if (quizYes) {
     quizYes.addEventListener('click', () => {
+      if (quizAnimating) return;
       const { topic } = QUESTIONS[currentIndex];
       if (!selectedTopics.includes(topic)) {
         selectedTopics.push(topic);
       }
+      updateYesButtonState(currentIndex);
       advanceQuestion();
     });
   }
