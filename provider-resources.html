@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.28">
+    <link rel="stylesheet" href="styles.css?v=1.0.29">
 </head>
 <body class="page-provider">
     <header class="site-header">
@@ -33,10 +33,12 @@
             </svg>
         </div>
         <h1 class="portal-hero__title">My Listings</h1>
-        <p class="portal-hero__subtitle">Resources added by or assigned to your provider account.</p>
+        <p class="portal-hero__subtitle">Resources for your organization. Owners and team members can manage listings; only owners manage users on Account.</p>
     </section>
 
     <main class="portal-content">
+        <div class="provider-flash" id="providerFlash" hidden></div>
+
         <div class="provider-services">
             <a href="provider-add-listing.html" class="builder-btn builder-btn--primary">Add Single Listing</a>
             <a href="provider-add-listings-bulk.html" class="builder-btn builder-btn--secondary">Add Multiple Listings</a>
@@ -68,8 +70,19 @@
         </nav>
     </footer>
 
-    <script src="auth.js?v=1.0.28"></script>
+    <script src="provider-org-data.js?v=1.0.29"></script>
+    <script src="auth.js?v=1.0.29"></script>
     <script src="provider-listings-data.js?v=1.0.28"></script>
     <script src="provider-resources.js?v=1.0.28"></script>
+    <script>
+      (function () {
+        const flash = CompassAuth.consumeFlashMessage();
+        const el = document.getElementById('providerFlash');
+        if (flash && el) {
+          el.hidden = false;
+          el.textContent = flash;
+        }
+      })();
+    </script>
 </body>
 </html>

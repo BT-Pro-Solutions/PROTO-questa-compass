@@ -124,6 +124,15 @@
   }
 
   function buildTopicInterestFields() {
+    const TOOLTIPS = {
+      'learning-help': 'Select the learning resources that match your needs.',
+      careers: 'Select the career resources that match your needs.',
+      'education-help': 'Select the resources you need to get ready for college or further training.',
+      'education-training':
+        'Select the type of education you\u2019re seeking to find local programs that offer those credentials.',
+      'personal-help': 'Select the personal help resources that match your needs.',
+    };
+
     return Object.entries(TOPIC_INTEREST_OPTIONS)
       .filter(([topicKey]) => topicKey !== 'funding')
       .map(([topicKey, options]) => {
@@ -131,7 +140,9 @@
         return {
           id: `${topicKey}-interests`,
           label: `${label} Resources`,
-          tooltip: `Select the ${label.toLowerCase()} resources that match what you\u2019re looking for.`,
+          tooltip:
+            TOOLTIPS[topicKey] ||
+            `Select the ${label.toLowerCase()} resources that match your needs.`,
           type: 'multiselect',
           modalTitle: `Select ${label} Resources`,
           modalDescription: `Choose the ${label.toLowerCase()} resources that apply to you. You can select more than one.`,
@@ -220,7 +231,7 @@
         {
           id: 'student-level',
           label: 'What best describes you?',
-          tooltip: 'This helps us show the most relevant resources for your role and stage of education.',
+          tooltip: 'Your current stage of education helps us show the most relevant resources.',
           type: 'select',
           placeholder: 'Please Select...',
           required: true,
@@ -239,7 +250,7 @@
         {
           id: 'residency',
           label: 'Residency',
-          tooltip: 'Many opportunities are limited to residents of specific counties or states.',
+          tooltip: 'Many opportunities are available to residents of specific counties.',
           type: 'select',
           placeholder: 'Please Select...',
           required: true,
@@ -248,7 +259,7 @@
         {
           id: 'hs-attending',
           label: 'High School Attending',
-          tooltip: 'Select the high school you currently attend or most recently attended.',
+          tooltip: 'Select the high school you currently attend.',
           type: 'select',
           placeholder: 'Select',
           showWhen: { studentLevel: ['hs'] },
@@ -267,7 +278,7 @@
         {
           id: 'enrollment-status',
           label: 'Enrollment Status',
-          tooltip: 'Are you currently enrolled in a college or training program?',
+          tooltip: 'Are you currently enrolled in a college or post-high school training program?',
           type: 'select',
           placeholder: 'Select',
           showWhen: { studentLevel: ['young-adult', 'adult'] },
@@ -276,7 +287,7 @@
         {
           id: 'college-gpa',
           label: 'College GPA',
-          tooltip: 'Your cumulative college GPA, if applicable.',
+          tooltip: 'Your cumulative college GPA if applicable.',
           type: 'select',
           placeholder: 'Select',
           showWhen: { studentLevel: ['young-adult', 'adult'] },
@@ -290,7 +301,7 @@
         {
           id: 'program-types',
           label: 'Program Types',
-          tooltip: 'Types of programs you are interested in, such as certificate, associate, or bachelor\u2019s.',
+          tooltip: 'Types of credential programs you are seeking.',
           type: 'multiselect',
           modalTitle: 'Select Program Types',
           modalDescription: 'Choose the program type(s) you are currently pursuing or plan to pursue.',
@@ -309,7 +320,7 @@
         {
           id: 'field-of-study',
           label: 'Field of Study or Trades',
-          tooltip: 'The subject area or trade you want to pursue.',
+          tooltip: 'The subject area (major) or trade you want to pursue.',
           type: 'multiselect',
           modalTitle: 'Select Fields of Study',
           modalDescription: 'Select the major(s), subject(s), or skilled trade(s) you are currently taking or plan to study.',
@@ -350,7 +361,7 @@
         },
         {
           id: 'college-interest',
-          label: 'College Interest',
+          label: 'Colleges of Interest',
           tooltip: 'Schools you are considering or currently attending.',
           type: 'multiselect',
           modalTitle: 'Select Colleges',
@@ -369,7 +380,7 @@
         {
           id: 'training-provider',
           label: 'Training Provider',
-          tooltip: 'Organizations that offer the training or certification you need.',
+          tooltip: 'Select the training providers for trades and/or certifications that are not colleges.',
           type: 'multiselect',
           modalTitle: 'Select Training Providers',
           modalDescription: 'Choose the training provider(s) you are interested in or currently enrolled with.',
@@ -397,24 +408,24 @@
       fields: [
         { id: 'race', label: 'Race', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['American Indian or Alaska Native', 'Asian', 'Black or African American', 'White', 'Prefer not to say'] },
         { id: 'ethnicity', label: 'Ethnicity', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['Hispanic or Latino', 'Not Hispanic or Latino', 'Prefer not to say'] },
-        { id: 'gender', label: 'Gender', tooltip: 'Some programs are designed for specific gender identities.', type: 'select', placeholder: 'Select', optional: true, options: ['Female', 'Male', 'Non-binary', 'Prefer not to say'] },
+        { id: 'gender', label: 'Gender', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['Female', 'Male', 'Non-binary', 'Prefer not to say'] },
         buildIdentityMultiselectField('designed-for', 'Specifically Designed For', 'Communities a program may specifically serve.', ['First-generation college students', 'Single parents', 'Foster youth', 'Other']),
-        buildIdentityMultiselectField('activities-affiliations', 'Activities & Affiliations', 'Clubs, organizations, or affiliations you belong to.', ['Clubs & Organizations', 'Athletics', 'Religious Organization', 'Community / Volunteer Group', 'Professional Association', 'Other']),
-        buildIdentityMultiselectField('health-related', 'Health Related', 'Health or wellness areas where you need support.', ['Mental wellness', 'Substance recovery support', 'Disability services', 'General wellness']),
-        buildIdentityMultiselectField('employer-affiliation', 'Employer Affiliation', 'Your current or recent employer, if applicable.', ['Parkview Health', 'General Motors', 'Lutheran Health Network', 'Other Northeast Indiana Employer', 'Not currently employed']),
-        buildIdentityMultiselectField('military', 'Military / Public Service Affiliation', 'Military or public service affiliations.', ['Active duty', 'Veteran', 'National Guard / Reserve', 'Public service employee', 'None']),
+        buildIdentityMultiselectField('activities-affiliations', 'Activities & Affiliations', 'Specific resources may be available based on your clubs, organizations, or affiliations.', ['Clubs & Organizations', 'Athletics', 'Religious Organization', 'Community / Volunteer Group', 'Professional Association', 'Other']),
+        buildIdentityMultiselectField('health-related', 'Health Related', 'Specific resources may be available based on your health or wellness needs.', ['Mental wellness', 'Substance recovery support', 'Disability services', 'General wellness']),
+        buildIdentityMultiselectField('employer-affiliation', 'Employer Affiliation', 'Specific resources may be available based on your current employer or where family members work.', ['Parkview Health', 'General Motors', 'Lutheran Health Network', 'Other Northeast Indiana Employer', 'Not currently employed']),
+        buildIdentityMultiselectField('military', 'Military / Public Service Affiliation', 'Specific resources may be available based on your military or public service affiliations.', ['Active duty', 'Veteran', 'National Guard / Reserve', 'Public service employee', 'None']),
         buildIdentityMultiselectField('career-interests', 'Career Interests', 'Career areas you want to explore.', ['Healthcare', 'Technology', 'Skilled Trades', 'Business', 'Arts & Design']),
       ],
     },
     'financial-aid': {
       title: 'Your Financial Aid Preferences',
       fields: [
-        { id: 'gpa-requirement', label: 'GPA Requirement', tooltip: 'Filter by whether an opportunity has a GPA minimum.', type: 'select', placeholder: 'Select', options: ['Show all', 'No GPA requirement only', 'Has GPA requirement'] },
-        { id: 'financial-need', label: 'Financial Need Requirement', tooltip: 'Filter by need-based vs merit-based opportunities.', type: 'select', placeholder: 'Select', options: ['Show all', 'Need-based only', 'Merit-based only'] },
-        { id: 'multi-year', label: 'Multi-Year / Renewable', tooltip: 'Show only funding that renews across multiple years.', type: 'select', placeholder: 'Select', options: ['Show all', 'Renewable only', 'One-time only'] },
-        { id: 'accepting-applications', label: 'Accepting Applications', tooltip: 'Show only opportunities currently accepting applications.', type: 'select', placeholder: 'Select', options: ['Show all', 'Accepting now only'] },
+        { id: 'gpa-requirement', label: 'GPA Requirement', tooltip: 'Select this option to see opportunities that require a specific GPA.', type: 'select', placeholder: 'Select', options: ['Show all', 'No GPA requirement only', 'Has GPA requirement'] },
+        { id: 'financial-need', label: 'Financial Need Requirement', tooltip: 'Select this option to see opportunities awarded based on financial need.', type: 'select', placeholder: 'Select', options: ['Show all', 'Need-based only', 'Merit-based only'] },
+        { id: 'multi-year', label: 'Multi-Year / Renewable', tooltip: 'Select this option to see opportunities that provide funding for more than one year.', type: 'select', placeholder: 'Select', options: ['Show all', 'Renewable only', 'One-time only'] },
+        { id: 'accepting-applications', label: 'Accepting Applications', tooltip: 'Filter by whether funding opportunities are accepting applications right now. "Show All" lists open and closed opportunities so you can see things that will open again in the future, but aren\u2019t currently taking applications.', type: 'select', placeholder: 'Select', options: ['Show all', 'Accepting now only'] },
         { id: 'funding-type', label: 'Funding Opportunity Type', tooltip: 'Scholarship, grant, loan forgiveness, etc.', type: 'select', placeholder: 'Select', options: ['Show all', 'Scholarship', 'Grant', 'Loan Forgiveness', 'Work-study'] },
-        { id: 'show-questa-only', label: 'Show Only Questa', tooltip: 'Limit results to Questa Foundation opportunities.', type: 'select', placeholder: 'Select', options: ['No', 'Yes'] },
+        { id: 'show-questa-only', label: 'Show Only Questa', tooltip: 'Select this option to only show funding opportunities provided by Questa Education Foundation.', type: 'select', placeholder: 'Select', options: ['No', 'Yes'] },
       ],
     },
   };

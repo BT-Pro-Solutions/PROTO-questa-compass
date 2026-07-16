@@ -25,6 +25,13 @@
   ];
   const MIN_SELECTED_TOPICS = 1;
   const DEFAULT_TOPIC_KEY = TOPIC_PILL_ORDER[0];
+  const SECTION_ORDER = [
+    'about-you',
+    'getting-started',
+    'education-interests',
+    'identity-groups',
+    'financial-aid',
+  ];
 
   const OTHER_AREAS_COPY = {
     expand: 'Need help with other areas?',
@@ -167,10 +174,11 @@
   }
 
   function getFirstVisibleSectionId() {
-    for (const [id, section] of Object.entries(SECTIONS)) {
-      if (section.fields.some((f) => fieldVisible(f, profile))) return id;
+    for (const id of SECTION_ORDER) {
+      const section = SECTIONS[id];
+      if (section?.fields.some((f) => fieldVisible(f, profile))) return id;
     }
-    return Object.keys(SECTIONS)[0];
+    return SECTION_ORDER[0] || Object.keys(SECTIONS)[0];
   }
 
   function ensureAccordionSectionValid() {
@@ -197,32 +205,24 @@
   function isFieldRelated(sectionId, field) {
     if (isAccordionMode) return true;
     if (isPillPickerMode) {
-      if (sectionId === 'about-you') return true;
       if (sectionId === 'getting-started') {
         const topicKey = field.id.replace(/-interests$/, '');
         return selectedTopicKeys.includes(topicKey);
       }
-      if (!selectedTopicKeys.length) return false;
-      return fieldRelatedToTopics(selectedTopicKeys, sectionId, field.id);
+      // Topic selection only filters the resources section; show all other fields.
+      return true;
     }
     if (!activeTopicKeys.length) return true;
     return fieldRelatedToTopics(activeTopicKeys, sectionId, field.id);
   }
 
   function clearFieldsForDeselectedTopic(topicKey) {
-    const updates = {};
-    Object.entries(SECTIONS).forEach(([sectionId, section]) => {
-      section.fields.forEach((field) => {
-        if (!fieldVisible(field, profile)) return;
-        if (!fieldRelatedToTopic(topicKey, sectionId, field.id)) return;
-        if (fieldRelatedToTopics(selectedTopicKeys, sectionId, field.id)) return;
-        updates[field.id] = field.type === 'multiselect' ? [] : '';
-      });
-    });
-    if (Object.keys(updates).length) {
-      saveProfile(updates);
-      profile = { ...profile, ...updates };
-    }
+    const fieldId = `${topicKey}-interests`;
+    const field = SECTIONS['getting-started']?.fields.find((f) => f.id === fieldId);
+    if (!field) return;
+    const updates = { [fieldId]: field.type === 'multiselect' ? [] : '' };
+    saveProfile(updates);
+    profile = { ...profile, ...updates };
   }
 
   function indicateMinimumTopicRequired() {
@@ -384,10 +384,35 @@
 
   function updateContinueButtonState() {
     const btn = document.getElementById('continueProfileBtn');
-    if (!btn) return;
+    const sticky = document.querySelector('.builder-actions-sticky');
     const ready = meetsMinimumRequirements();
-    btn.disabled = !ready;
-    btn.setAttribute('aria-disabled', String(!ready));
+    if (btn) {
+      btn.disabled = !ready;
+      btn.setAttribute('aria-disabled', String(!ready));
+    }
+    if (sticky) sticky.classList.toggle('is-form-valid', ready);
+    updateResultsReadyNotice(ready);
+  }
+
+  function updateResultsReadyNotice(ready = meetsMinimumRequirements()) {
+    const notice = document.getElementById('builderResultsReady');
+    if (!notice) return;
+
+    if (ready) {
+      notice.hidden = false;
+      // Allow the browser to apply the hidden removal before animating in
+      requestAnimationFrame(() => {
+        notice.classList.add('is-visible');
+      });
+    } else {
+      notice.classList.remove('is-visible');
+      const onEnd = (event) => {
+        if (event.propertyName !== 'opacity') return;
+        notice.removeEventListener('transitionend', onEnd);
+        if (!notice.classList.contains('is-visible')) notice.hidden = true;
+      };
+      notice.addEventListener('transitionend', onEnd);
+    }
   }
 
   function getSectionStatusFields(sectionId) {
@@ -400,41 +425,11 @@
     return fields.map((f) => f.id).join(',');
   }
 
-  function renderSectionStatus(fields) {
-    const filled = sectionIsComplete(fields);
-    const tip = filled ? "Nice work! You've entered info here." : 'This section is incomplete';
-    const ariaLabel = filled ? 'Section has data entered' : 'This section is incomplete';
-    const stateClass = filled ? 'builder-section-status--filled' : 'builder-section-status--empty';
-    const checkIcon = filled
-      ? '<svg class="builder-section-status__check" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
-      : '';
-
-    return `<span class="builder-section-status ${stateClass}" tabindex="0" role="status" aria-label="${ariaLabel}" data-tip="${tip}">${checkIcon}</span>`;
+  function renderSectionStatus() {
+    return '';
   }
 
-  function resolveStatusFields(sectionEl) {
-    const sectionId = sectionEl.dataset.section;
-    const fieldIds = (sectionEl.dataset.statusFields || '').split(',').filter(Boolean);
-    if (fieldIds.length) {
-      const section = SECTIONS[sectionId];
-      if (!section) return [];
-      return section.fields.filter((f) => fieldIds.includes(f.id));
-    }
-    return getSectionStatusFields(sectionId);
-  }
-
-  function updateSectionStatuses() {
-    sectionsRoot.querySelectorAll('[data-section]').forEach((el) => {
-      const html = renderSectionStatus(resolveStatusFields(el));
-      const existing = el.querySelector('.builder-section-status');
-      if (existing) {
-        existing.outerHTML = html;
-      } else {
-        const row = el.querySelector('.builder-section__title-row, .builder-section__toggle-row');
-        if (row) row.insertAdjacentHTML('beforeend', html);
-      }
-    });
-  }
+  function updateSectionStatuses() {}
 
   function renderTooltip(text) {
     return `<button type="button" class="builder-tooltip" aria-label="More info" data-tip="${text}">?</button>`;
@@ -585,7 +580,7 @@
       <div class="builder-topic-picker">
         <p class="builder-topic-picker__heading">
           <strong>What topic(s) would you like to explore?</strong>
-          <span class="builder-topic-picker__sub">We&rsquo;ll only ask you about the topics you select.</span>
+          <span class="builder-topic-picker__sub">This updates the specific resources you can choose below.</span>
         </p>
         <div class="builder-topic-picker__scroll">
           <button type="button" class="builder-topic-picker__arrow builder-topic-picker__arrow--prev is-dimmed" aria-label="Scroll topics left" disabled>
@@ -685,9 +680,17 @@
   function renderPillPickerLayout() {
     const interestFields = getInterestFieldsForSelectedTopics();
     const showFundFinder = selectedTopicKeys.includes('funding');
-    const sections = [];
+    const optionalSections = [];
 
-    sections.push(
+    const aboutYouFields = SECTIONS['about-you'].fields.filter((f) => fieldVisible(f, profile));
+    const aboutYouHtml = renderPillPickerSection(
+      'about-you',
+      SECTIONS['about-you'],
+      aboutYouFields,
+      { alwaysShow: true }
+    );
+
+    optionalSections.push(
       renderPillPickerSection(
         'getting-started',
         SECTIONS['getting-started'],
@@ -696,20 +699,24 @@
       )
     );
 
-    const aboutYouFields = SECTIONS['about-you'].fields.filter((f) => fieldVisible(f, profile));
-    sections.push(
-      renderPillPickerSection('about-you', SECTIONS['about-you'], aboutYouFields, { alwaysShow: true })
-    );
-
     Object.entries(SECTIONS).forEach(([sectionId, section]) => {
       if (sectionId === 'getting-started' || sectionId === 'about-you') return;
       const visibleFields = section.fields.filter((f) => fieldVisible(f, profile));
-      const relatedFields = visibleFields.filter((field) => isFieldRelated(sectionId, field));
-      if (!relatedFields.length) return;
-      sections.push(renderPillPickerSection(sectionId, section, relatedFields));
+      if (!visibleFields.length) return;
+      optionalSections.push(renderPillPickerSection(sectionId, section, visibleFields));
     });
 
-    sectionsRoot.innerHTML = `<div class="builder-topic-card">${sections.filter(Boolean).join('')}</div>`;
+    const optionalHtml = optionalSections.filter(Boolean).join('');
+
+    sectionsRoot.innerHTML = `
+      <div class="builder-topic-card">${aboutYouHtml}</div>
+      <p class="builder-privacy-note builder-optional-note">
+        <svg class="builder-privacy-note__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Optional fields for better matching results.
+      </p>
+      ${optionalHtml ? `<div class="builder-topic-card">${optionalHtml}</div>` : ''}`;
   }
 
   function renderFundFinderField() {
@@ -955,8 +962,9 @@
       topicPillsRoot.innerHTML = '';
     }
 
-    sectionsRoot.innerHTML = Object.entries(SECTIONS)
-      .map(([id, section]) => renderSection(id, section))
+    sectionsRoot.innerHTML = SECTION_ORDER
+      .filter((id) => SECTIONS[id])
+      .map((id) => renderSection(id, SECTIONS[id]))
       .join('');
 
     bindFieldEvents();

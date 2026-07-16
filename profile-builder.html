@@ -73,8 +73,14 @@
 
             <div class="builder-actions-sticky">
                 <div class="builder-actions-sticky__inner">
-                    <button type="button" class="builder-btn builder-btn--secondary" id="jumpToResultsBtn">Skip To All Results</button>
-                    <button type="submit" form="profileForm" class="builder-btn builder-btn--primary" id="continueProfileBtn" disabled>Save & View Results</button>
+                    <div class="builder-actions-sticky__buttons">
+                        <button type="button" class="builder-btn builder-btn--secondary" id="jumpToResultsBtn">Skip To All Results</button>
+                        <button type="submit" form="profileForm" class="builder-btn builder-btn--primary" id="continueProfileBtn" disabled>Save & View Results</button>
+                    </div>
+                    <div class="builder-results-ready" id="builderResultsReady" aria-live="polite" hidden>
+                        <strong>Results Available!</strong> 
+                        <p>View them now or fill out more details for better matching.</p>
+                    </div>
                 </div>
             </div>
         </div>

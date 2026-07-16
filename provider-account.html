@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.28">
+    <link rel="stylesheet" href="styles.css?v=1.0.30">
 </head>
 <body class="page-provider">
     <header class="site-header">
@@ -33,24 +33,31 @@
             </svg>
         </div>
         <h1 class="portal-hero__title">Provider Account</h1>
-        <p class="portal-hero__subtitle">Review organization details and notification preferences for your Questa Compass provider account.</p>
+        <p class="portal-hero__subtitle" id="accountHeroSubtitle">Organization details, team access, and notification preferences.</p>
     </section>
 
     <main class="portal-content">
+        <div class="provider-flash" id="providerFlash" hidden></div>
+
         <section class="portal-section provider-form-card">
+            <div class="provider-account-role" id="accountRoleBanner"></div>
             <h2 class="portal-section__title">Organization Details</h2>
             <form class="provider-form-grid">
                 <label class="builder-field">
                     <span class="builder-field__label">Organization Name</span>
-                    <input type="text" class="builder-input" value="Bright Futures Community Foundation">
+                    <input type="text" class="builder-input" id="accountOrgName" value="Bright Futures Community Foundation">
                 </label>
                 <label class="builder-field">
-                    <span class="builder-field__label">Primary Contact</span>
-                    <input type="text" class="builder-input" value="Alex Provider">
+                    <span class="builder-field__label">Your role</span>
+                    <input type="text" class="builder-input" id="accountOrgRole" value="Owner" readonly>
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Signed-in contact</span>
+                    <input type="text" class="builder-input" id="accountContactName" value="Alex Provider" readonly>
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Email Address</span>
-                    <input type="email" class="builder-input" value="alex@brightfutures.org">
+                    <input type="email" class="builder-input" id="accountEmail" value="alex@brightfutures.org" readonly>
                 </label>
                 <label class="builder-field">
                     <span class="builder-field__label">Website</span>
@@ -58,15 +65,45 @@
                 </label>
                 <label class="builder-field builder-field--full">
                     <span class="builder-field__label">Internal Notes</span>
-                    <textarea class="builder-input provider-textarea">Provider was invited by Questa staff after submitting a new scholarship listing.</textarea>
+                    <textarea class="builder-input provider-textarea">Provider organization managed in Compass. Owners control team access; all active users can manage listings.</textarea>
                 </label>
             </form>
             <button type="button" class="builder-btn builder-btn--primary portal-save-btn" id="saveProviderAccountBtn">Save Account</button>
         </section>
 
+        <section class="portal-section" id="joinRequestsSection" hidden>
+            <div class="provider-section-head">
+                <div>
+                    <h2 class="portal-section__title">Join requests</h2>
+                    <p class="portal-section__desc">People who asked to join this organization. Approved users join as members. Only owners can approve or deny.</p>
+                </div>
+                <span class="provider-count-badge" id="joinRequestCount">0</span>
+            </div>
+            <div class="provider-request-list" id="joinRequestList"></div>
+        </section>
+
+        <section class="portal-section">
+            <div class="provider-section-head">
+                <div>
+                    <h2 class="portal-section__title">Team members</h2>
+                    <p class="portal-section__desc" id="teamSectionDesc">Owners can edit roles, remove users, or set other owners. New teammates create their own account and request access.</p>
+                </div>
+            </div>
+            <div class="provider-member-list" id="memberList"></div>
+
+            <div class="provider-invite-link" id="inviteLinkPanel" hidden>
+                <h3 class="provider-form-section__title">Invite teammates</h3>
+                <p class="portal-section__desc">Share this link so colleagues can create their own account and request to join your organization. You can’t create accounts for them here.</p>
+                <div class="provider-invite-link__row">
+                    <input type="text" class="builder-input" id="inviteLinkInput" readonly>
+                    <button type="button" class="builder-btn builder-btn--secondary" id="copyInviteLinkBtn">Copy link</button>
+                </div>
+            </div>
+        </section>
+
         <section class="portal-section">
             <h2 class="portal-section__title">Notification Preferences</h2>
-            <p class="portal-section__desc">Provider contacts receive email when claims, submissions, or edits need attention.</p>
+            <p class="portal-section__desc">Provider contacts receive email when claims, submissions, join requests, or edits need attention.</p>
             <table class="notif-table">
                 <thead>
                     <tr>
@@ -87,14 +124,18 @@
                         <td>Claim request status</td>
                         <td><label class="notif-check"><input type="checkbox" checked><span class="notif-check__box" aria-hidden="true"></span></label></td>
                     </tr>
+                    <tr>
+                        <td>Join requests (owners)</td>
+                        <td><label class="notif-check"><input type="checkbox" checked><span class="notif-check__box" aria-hidden="true"></span></label></td>
+                    </tr>
                 </tbody>
             </table>
         </section>
 
         <section class="portal-section">
-            <h2 class="portal-section__title portal-section__title--teal">Password Reset</h2>
-            <p class="portal-section__desc">Keep your provider account secure with a new password.</p>
-            <button type="button" class="builder-btn builder-btn--primary security-reset-btn" id="resetPasswordBtn">Send Password Reset Email</button>
+            <h2 class="portal-section__title portal-section__title--teal">Account security</h2>
+            <p class="portal-section__desc">Passwords and multi-factor authentication are managed in your sign-in account, not inside Compass.</p>
+            <button type="button" class="builder-btn builder-btn--primary security-reset-btn" id="openAccountSecurityBtn">Manage account security</button>
         </section>
     </main>
 
@@ -108,15 +149,8 @@
         </nav>
     </footer>
 
-    <script src="auth.js?v=1.0.28"></script>
-    <script>
-      document.getElementById('saveProviderAccountBtn').addEventListener('click', () => {
-        alert('Provider account saved. (prototype demo)');
-      });
-
-      document.getElementById('resetPasswordBtn').addEventListener('click', () => {
-        alert('Password reset email sent! (prototype demo)');
-      });
-    </script>
+    <script src="provider-org-data.js?v=1.0.30"></script>
+    <script src="auth.js?v=1.0.30"></script>
+    <script src="provider-account.js?v=1.0.30"></script>
 </body>
 </html>
