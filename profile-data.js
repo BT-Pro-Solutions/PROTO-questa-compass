@@ -183,7 +183,7 @@
     funding: {
       title: 'Find Funding',
       description: 'Get help to find scholarships and other financial aid.',
-      expandedSections: ['about-you', 'education-interests', 'financial-aid', 'identity-groups'],
+      expandedSections: ['about-you', 'education-interests', 'identity-groups'],
       promotedFieldsBySection: {},
     },
     'education-training': {
@@ -195,7 +195,6 @@
         'education-interests': [
           'field-of-study',
           'training-provider',
-          'additional-training-provider',
         ],
       },
     },
@@ -219,8 +218,8 @@
       fields: [
         {
           id: 'student-level',
-          label: 'What best describes you?',
-          tooltip: 'This helps us show the most relevant resources for your role and stage of education.',
+          label: 'Student Level',
+          tooltip: 'This helps us show the most relevant resources for your stage of education.',
           type: 'select',
           placeholder: 'Please Select...',
           required: true,
@@ -228,12 +227,6 @@
             { value: 'hs', label: 'Attending High School' },
             { value: 'young-adult', label: 'Young Adult (18–24) Learner' },
             { value: 'adult', label: 'Adult (25+) Learner' },
-            { value: 'k12-educator', label: 'K12 Educator' },
-            { value: 'college-educator', label: 'College Educator' },
-            { value: 'training-educator', label: 'Training Educator' },
-            { value: 'family-member', label: 'Family Member' },
-            { value: 'community-member', label: 'Community Member' },
-            { value: 'resource-provider', label: 'Resource Provider' },
           ],
         },
         {
@@ -270,17 +263,9 @@
           tooltip: 'Are you currently enrolled in a college or training program?',
           type: 'select',
           placeholder: 'Select',
+          required: true,
           showWhen: { studentLevel: ['young-adult', 'adult'] },
           options: ['Currently Enrolled', 'Accepted — Not Yet Enrolled', 'Not Currently Enrolled'],
-        },
-        {
-          id: 'college-gpa',
-          label: 'College GPA',
-          tooltip: 'Your cumulative college GPA, if applicable.',
-          type: 'select',
-          placeholder: 'Select',
-          showWhen: { studentLevel: ['young-adult', 'adult'] },
-          options: ['4.0', '3.5 – 3.99', '3.0 – 3.49', '2.5 – 2.99', 'Below 2.5', 'N/A'],
         },
       ],
     },
@@ -350,12 +335,13 @@
         },
         {
           id: 'college-interest',
-          label: 'College Interest',
+          label: 'College Interest or Attending',
           tooltip: 'Schools you are considering or currently attending.',
           type: 'multiselect',
           modalTitle: 'Select Colleges',
           modalDescription: 'Choose the college(s) or university(ies) you are interested in or currently attending.',
           placeholder: 'Select colleges\u2026',
+          requiredWhen: { enrollmentStatus: ['Currently Enrolled'] },
           options: [
             'Ivy Tech Community College',
             'Purdue University Fort Wayne',
@@ -382,14 +368,6 @@
             'Local Apprenticeship Program',
           ],
         },
-        {
-          id: 'additional-training-provider',
-          label: 'Additional Training Provider',
-          helperText: 'Unable to find your training provider in the list? Enter it here!',
-          type: 'text',
-          placeholder: 'Enter provider name',
-          fullWidth: true,
-        },
       ],
     },
     'identity-groups': {
@@ -398,23 +376,9 @@
         { id: 'race', label: 'Race', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['American Indian or Alaska Native', 'Asian', 'Black or African American', 'White', 'Prefer not to say'] },
         { id: 'ethnicity', label: 'Ethnicity', tooltip: 'Used to match identity-specific opportunities.', type: 'select', placeholder: 'Select', optional: true, options: ['Hispanic or Latino', 'Not Hispanic or Latino', 'Prefer not to say'] },
         { id: 'gender', label: 'Gender', tooltip: 'Some programs are designed for specific gender identities.', type: 'select', placeholder: 'Select', optional: true, options: ['Female', 'Male', 'Non-binary', 'Prefer not to say'] },
-        buildIdentityMultiselectField('designed-for', 'Specifically Designed For', 'Communities a program may specifically serve.', ['First-generation college students', 'Single parents', 'Foster youth', 'Other']),
-        buildIdentityMultiselectField('activities-affiliations', 'Activities & Affiliations', 'Clubs, organizations, or affiliations you belong to.', ['Clubs & Organizations', 'Athletics', 'Religious Organization', 'Community / Volunteer Group', 'Professional Association', 'Other']),
-        buildIdentityMultiselectField('health-related', 'Health Related', 'Health or wellness areas where you need support.', ['Mental wellness', 'Substance recovery support', 'Disability services', 'General wellness']),
-        buildIdentityMultiselectField('employer-affiliation', 'Employer Affiliation', 'Your current or recent employer, if applicable.', ['Parkview Health', 'General Motors', 'Lutheran Health Network', 'Other Northeast Indiana Employer', 'Not currently employed']),
+        buildIdentityMultiselectField('designed-for', 'Specifically Designed For', 'Communities a program may specifically serve.', ['First-generation college students', 'Single parents', 'Foster youth', 'Student with disabilities', 'Other']),
         buildIdentityMultiselectField('military', 'Military / Public Service Affiliation', 'Military or public service affiliations.', ['Active duty', 'Veteran', 'National Guard / Reserve', 'Public service employee', 'None']),
         buildIdentityMultiselectField('career-interests', 'Career Interests', 'Career areas you want to explore.', ['Healthcare', 'Technology', 'Skilled Trades', 'Business', 'Arts & Design']),
-      ],
-    },
-    'financial-aid': {
-      title: 'Your Financial Aid Preferences',
-      fields: [
-        { id: 'gpa-requirement', label: 'GPA Requirement', tooltip: 'Filter by whether an opportunity has a GPA minimum.', type: 'select', placeholder: 'Select', options: ['Show all', 'No GPA requirement only', 'Has GPA requirement'] },
-        { id: 'financial-need', label: 'Financial Need Requirement', tooltip: 'Filter by need-based vs merit-based opportunities.', type: 'select', placeholder: 'Select', options: ['Show all', 'Need-based only', 'Merit-based only'] },
-        { id: 'multi-year', label: 'Multi-Year / Renewable', tooltip: 'Show only funding that renews across multiple years.', type: 'select', placeholder: 'Select', options: ['Show all', 'Renewable only', 'One-time only'] },
-        { id: 'accepting-applications', label: 'Accepting Applications', tooltip: 'Show only opportunities currently accepting applications.', type: 'select', placeholder: 'Select', options: ['Show all', 'Accepting now only'] },
-        { id: 'funding-type', label: 'Funding Opportunity Type', tooltip: 'Scholarship, grant, loan forgiveness, etc.', type: 'select', placeholder: 'Select', options: ['Show all', 'Scholarship', 'Grant', 'Loan Forgiveness', 'Work-study'] },
-        { id: 'show-questa-only', label: 'Show Only Questa', tooltip: 'Limit results to Questa Foundation opportunities.', type: 'select', placeholder: 'Select', options: ['No', 'Yes'] },
       ],
     },
   };
@@ -500,6 +464,16 @@
     return true;
   }
 
+  function isFieldRequired(field, profile) {
+    if (field.requiredWhen) {
+      if (field.requiredWhen.enrollmentStatus) {
+        const status = profile['enrollment-status'];
+        return Boolean(status && field.requiredWhen.enrollmentStatus.includes(status));
+      }
+    }
+    return !!field.required;
+  }
+
   function fieldPromotedForTopic(topicKey, sectionId, fieldId) {
     const topic = TOPICS[topicKey];
     if (!topic) return false;
@@ -553,12 +527,6 @@
       hs: 'HS student',
       'young-adult': 'Young adult',
       adult: 'Adult learner',
-      'k12-educator': 'K12 educator',
-      'college-educator': 'College educator',
-      'training-educator': 'Training educator',
-      'family-member': 'Family member',
-      'community-member': 'Community member',
-      'resource-provider': 'Resource provider',
     };
     const keys = topicKeys.length ? topicKeys : getTopics().filter((key) => key !== 'funding');
     const segments = [];
@@ -684,6 +652,7 @@
     getTopic,
     getTopics,
     fieldVisible,
+    isFieldRequired,
     fieldPromotedForTopic,
     fieldRelatedToTopic,
     fieldRelatedToTopics,

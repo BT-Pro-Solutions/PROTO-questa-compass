@@ -11,6 +11,7 @@
     setTopic,
     setTopics,
     fieldVisible,
+    isFieldRequired,
     fieldRelatedToTopic,
     fieldRelatedToTopics,
   } = CompassProfile;
@@ -346,7 +347,7 @@
     saveProfile({ [id]: value });
     updateSectionStatuses();
     updateContinueButtonState();
-    if (id === 'student-level') renderSections();
+    if (id === 'student-level' || id === 'enrollment-status') renderSections();
   }
 
   function isFieldFilled(field) {
@@ -358,7 +359,7 @@
   }
 
   function sectionIsComplete(fields) {
-    const requiredFields = fields.filter((field) => field.required);
+    const requiredFields = fields.filter((field) => isFieldRequired(field, profile));
     if (requiredFields.length) {
       return requiredFields.every(isFieldFilled);
     }
@@ -369,7 +370,7 @@
     const fields = [];
     Object.entries(SECTIONS).forEach(([sectionId, section]) => {
       section.fields.forEach((field) => {
-        if (!field.required || !fieldVisible(field, profile)) return;
+        if (!isFieldRequired(field, profile) || !fieldVisible(field, profile)) return;
         if (!isFieldRelated(sectionId, field)) return;
         fields.push(field);
       });
@@ -467,13 +468,14 @@
       : '';
     const fullWidthClass = field.fullWidth ? ' builder-field--full' : '';
 
-    const requiredMark = field.required
+    const required = isFieldRequired(field, profile);
+    const requiredMark = required
       ? ' <span class="builder-field__required" aria-hidden="true">*</span>'
       : '';
-    const optionalMark = !field.required
+    const optionalMark = !required
       ? ' <span class="builder-field__optional">(Optional)</span>'
       : '';
-    const requiredAttr = field.required ? ' required' : '';
+    const requiredAttr = required ? ' required' : '';
 
     let input = '';
     if (field.type === 'multiselect') {
