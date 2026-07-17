@@ -69,7 +69,7 @@
               </select>
             </label>
             ${isSelf
-              ? '<span class="provider-member-card__you">You</span>'
+              ? ''
               : `<button type="button" class="builder-btn builder-btn--cancel provider-member-remove" data-remove-member="${member.id}">Remove</button>`}
           </div>`
         : `<span class="provider-role-pill">${roleLabel(member.role)}${isSelf ? ' · You' : ''}</span>`;

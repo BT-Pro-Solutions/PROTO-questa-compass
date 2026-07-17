@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in — Questa Compass</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.30">
+</head>
+<body class="page-keycloak">
+    <main class="keycloak-shell">
+        <div class="keycloak-card">
+            <div class="keycloak-card__brand">
+                <p class="keycloak-card__product">Questa Compass</p>
+                <p class="keycloak-card__provider">Secure sign-in</p>
+            </div>
+
+            <div id="keycloakLoading" class="keycloak-loading">
+                <div class="keycloak-loading__spinner" aria-hidden="true"></div>
+                <h1 class="keycloak-card__title">Redirecting to sign in…</h1>
+                <p class="keycloak-card__text">You’ll authenticate with your organization credentials, then return to Compass.</p>
+            </div>
+
+            <div id="keycloakForm" class="keycloak-form" hidden>
+                <h1 class="keycloak-card__title">Sign in</h1>
+                <p class="keycloak-card__text">Enter your credentials to continue to Questa Compass.</p>
+
+                <label class="builder-field">
+                    <span class="builder-field__label">Username or email</span>
+                    <input type="email" class="builder-input" id="keycloakEmail" autocomplete="username">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Password</span>
+                    <input type="password" class="builder-input" id="keycloakPassword" value="••••••••" autocomplete="current-password">
+                </label>
+<br><br>
+                <button type="button" class="builder-btn builder-btn--primary builder-btn--full" id="keycloakContinueBtn">
+                    Sign In
+                </button>
+                <button type="button" class="keycloak-cancel" id="keycloakCancelBtn">Cancel and return</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="provider-org-data.js?v=1.0.30"></script>
+    <script src="auth.js?v=1.0.30"></script>
+    <script>
+      (function () {
+        const loading = document.getElementById('keycloakLoading');
+        const form = document.getElementById('keycloakForm');
+        const emailInput = document.getElementById('keycloakEmail');
+        const pending = CompassAuth.getKeycloakPending();
+
+        emailInput.value = pending?.user?.email || 'user@example.org';
+
+        window.setTimeout(() => {
+          loading.hidden = true;
+          form.hidden = false;
+          emailInput.focus();
+        }, 900);
+
+        document.getElementById('keycloakContinueBtn').addEventListener('click', () => {
+          CompassAuth.completeKeycloakAuth();
+        });
+
+        document.getElementById('keycloakCancelBtn').addEventListener('click', () => {
+          const cancelTo = pending?.cancelTo || 'provider-login.html';
+          CompassAuth.clearKeycloakPending();
+          window.location.assign(cancelTo);
+        });
+      })();
+    </script>
+</body>
+</html>

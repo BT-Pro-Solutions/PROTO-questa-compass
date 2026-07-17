@@ -32,44 +32,24 @@
             </svg>
         </div>
         <h1 class="portal-hero__title">Provider Portal</h1>
-        <p class="portal-hero__subtitle">Partner organizations sign in to manage Compass listings and teammates.</p>
+        <p class="portal-hero__subtitle">For providers who want to manage their listings in Questa Compass.</p>
     </section>
 
     <main class="portal-content portal-content--narrow">
         <div class="provider-flash" id="providerFlash" hidden></div>
 
-        <section class="portal-section provider-auth-card">
-            <p class="provider-auth-card__eyebrow">Partner access</p>
-            <h2 class="portal-section__title">Sign in</h2>
-            <p class="portal-section__desc">
-                You’ll leave Compass briefly to sign in, then return here. Owners can manage users and join requests; other users can manage listings only.
-            </p>
+        <section class="provider-auth-options" aria-label="Provider account options">
+            <article class="provider-auth-option">
+                <h2 class="provider-auth-option__title">Sign in</h2>
+                <p class="provider-auth-option__desc">Access your provider account to manage your organization’s listings.</p>
+                <button type="button" class="builder-btn builder-btn--primary provider-auth-option__button" id="providerLoginBtn">Sign In</button>
+            </article>
 
-            <div class="provider-persona-list">
-                <article class="provider-persona-card">
-                    <div>
-                        <h3 class="provider-persona-card__title">Organization owner</h3>
-                        <p class="provider-persona-card__text">Alex Provider · Bright Futures — manage listings, teammates, and join requests.</p>
-                    </div>
-                    <button type="button" class="builder-btn builder-btn--primary" id="loginOwnerBtn">
-                        Continue to sign in
-                    </button>
-                </article>
-                <article class="provider-persona-card">
-                    <div>
-                        <h3 class="provider-persona-card__title">Team member</h3>
-                        <p class="provider-persona-card__text">Jordan Lee · Bright Futures — manage listings, but not organization users.</p>
-                    </div>
-                    <button type="button" class="builder-btn builder-btn--secondary" id="loginMemberBtn">
-                        Continue to sign in
-                    </button>
-                </article>
-            </div>
-
-            <div class="provider-auth-card__actions">
-                <a href="provider-create-account.html" class="builder-btn builder-btn--secondary">Create Provider Account</a>
-            </div>
-            <p class="provider-auth-card__note">Questa staff can also <button type="button" class="provider-link-button" id="adminLoginBtn">open the admin review dashboard</button> for this prototype.</p>
+            <article class="provider-auth-option">
+                <h2 class="provider-auth-option__title">Create an account</h2>
+                <p class="provider-auth-option__desc">Set up provider access for your organization or request to join an existing organization.</p>
+                <a href="provider-create-account.html" class="builder-btn builder-btn--secondary provider-auth-option__button">Create Account</a>
+            </article>
         </section>
     </main>
 
@@ -94,25 +74,12 @@
           flashEl.textContent = flash;
         }
 
-        function loginViaAuth(personaKey) {
-          const user = CompassProviderOrgs.DEMO_USERS[personaKey];
+        document.getElementById('providerLoginBtn').addEventListener('click', () => {
           CompassAuth.startKeycloakAuth({
             intent: 'login',
-            returnTo: 'provider-resources.html',
+            returnTo: 'provider-account.html',
             cancelTo: 'provider-login.html',
-            user,
-          });
-        }
-
-        document.getElementById('loginOwnerBtn').addEventListener('click', () => loginViaAuth('owner'));
-        document.getElementById('loginMemberBtn').addEventListener('click', () => loginViaAuth('member'));
-
-        document.getElementById('adminLoginBtn').addEventListener('click', () => {
-          CompassAuth.startKeycloakAuth({
-            intent: 'login',
-            returnTo: 'admin-dashboard.html',
-            cancelTo: 'provider-login.html',
-            user: { initials: 'QA', firstName: 'Questa', lastName: 'Admin', role: 'admin' },
+            user: CompassProviderOrgs.DEMO_USERS.owner,
           });
         });
       })();

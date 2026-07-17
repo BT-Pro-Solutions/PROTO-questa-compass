@@ -118,7 +118,7 @@
 
   /**
    * Simulate hopping out to Keycloak for sign-in or account creation.
-   * Stores pending auth context, then navigates to keycloak-sim.html.
+   * Stores pending auth context, then navigates to the matching sim page.
    *
    * @param {object} options
    * @param {'login'|'register'} options.intent
@@ -143,11 +143,10 @@
       JSON.stringify({ intent, returnTo, cancelTo, user, joinRequest, flashMessage })
     );
 
-    const params = new URLSearchParams({
-      intent,
-      return: returnTo,
-    });
-    window.location.assign(`keycloak-sim.html?${params.toString()}`);
+    const page = intent === 'register'
+      ? 'keycloak-sim-register.html'
+      : 'keycloak-sim-login.html';
+    window.location.assign(page);
   }
 
   function completeKeycloakAuth() {
@@ -232,13 +231,34 @@
     return STUDENT_NAV_ITEMS;
   }
 
+  function hasProviderJoinRequests() {
+    const user = getUser();
+    if (user.role !== 'provider' || user.orgRole !== 'owner') return false;
+
+    const orgId = user.organizationId || 'bright-futures';
+    if (typeof CompassProviderOrgs !== 'undefined') {
+      return CompassProviderOrgs.getJoinRequests(orgId).length > 0;
+    }
+
+    try {
+      const raw = sessionStorage.getItem('compass-provider-join-requests');
+      if (!raw) return orgId === 'bright-futures';
+      const store = JSON.parse(raw);
+      return Array.isArray(store[orgId]) && store[orgId].length > 0;
+    } catch {
+      return false;
+    }
+  }
+
   function renderUserNav(activeId) {
+    const showAccountDot = hasProviderJoinRequests();
     const tabs = getNavItemsForRole(getUser().role).map((item) => {
       const isActive = item.id === activeId;
+      const showDot = showAccountDot && item.id === 'provider-account';
       return `
-        <a href="${item.href}" class="user-nav__tab${isActive ? ' is-active' : ''}"${isActive ? ' aria-current="page"' : ''}>
+        <a href="${item.href}" class="user-nav__tab${isActive ? ' is-active' : ''}${showDot ? ' has-notification' : ''}"${isActive ? ' aria-current="page"' : ''}${showDot ? ' aria-label="Account, new join requests"' : ''}>
           <span class="user-nav__icon">${item.icon}</span>
-          <span class="user-nav__label">${item.label}</span>
+          <span class="user-nav__label">${item.label}${showDot ? '<span class="user-nav__dot" aria-hidden="true"></span>' : ''}</span>
         </a>`;
     }).join('');
 
@@ -257,7 +277,7 @@
 
   function renderLoggedInActions(user) {
     const dashboardHref = user.role === 'provider'
-      ? 'provider-resources.html'
+      ? 'provider-account.html'
       : user.role === 'admin'
         ? 'admin-dashboard.html'
         : 'dashboard.html';

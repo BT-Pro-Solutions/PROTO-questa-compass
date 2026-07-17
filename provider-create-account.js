@@ -146,7 +146,7 @@
 
     CompassAuth.startKeycloakAuth({
       intent: 'register',
-      returnTo: 'provider-resources.html',
+      returnTo: 'provider-account.html',
       cancelTo: 'provider-create-account.html',
       user: {
         ...CREATE_AUTH_PROFILE,
