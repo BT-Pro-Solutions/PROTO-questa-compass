@@ -133,9 +133,10 @@
     && CompassAuth.isLoggedIn()
     && CompassAuth.getUser().role === 'provider';
 
-  if (opp.providerApprovalStatus === 'unclaimed') {
-    unclaimedCallout.hidden = false;
-  } else if (opp.providerName) {
+  // Always show the claim CTA so new providers are prompted to create an account.
+  if (unclaimedCallout) unclaimedCallout.hidden = false;
+
+  if (opp.providerApprovalStatus !== 'unclaimed' && opp.providerName) {
     providerSection.hidden = false;
     providerText.textContent = `Managed by ${opp.providerName}. Listing approved by Questa staff.`;
   }
@@ -194,7 +195,7 @@
       claimModalSuccess.hidden = false;
       return;
     }
-    window.location.assign('provider-login.html');
+    window.location.assign('provider-create-account.html');
   });
 
   const createAccountModal = document.getElementById('createAccountModal');

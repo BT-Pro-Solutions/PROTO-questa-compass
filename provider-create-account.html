@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.28">
+    <link rel="stylesheet" href="styles.css?v=1.0.30">
 </head>
 <body class="page-provider">
     <header class="site-header">
@@ -31,64 +31,116 @@
                 <path d="M31 8v8M27 12h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
         </div>
-        <h1 class="portal-hero__title">Create Provider Account</h1>
-        <p class="portal-hero__subtitle">For organizations that want to manage services shown in Questa Compass.</p>
+        <h1 class="portal-hero__title">Join as a Provider</h1>
+        <p class="portal-hero__subtitle">Find your organization first so we avoid duplicate accounts. You’ll create or sign in to your account next.</p>
     </section>
 
     <main class="portal-content">
-        <section class="portal-section provider-form-card">
+        <div class="provider-flash" id="providerFlash" hidden></div>
+
+        <section class="portal-section provider-form-card" id="signupWizard">
             <div class="provider-onboarding-paths">
                 <article>
-                    <span class="provider-step-badge">Path 1</span>
-                    <h2>Provider creates account</h2>
-                    <p>Partner enters organization and contact details, then starts adding or claiming resources.</p>
+                    <span class="provider-step-badge">1</span>
+                    <h2>Match an existing org</h2>
+                    <p>Search Compass for your organization. If it’s already set up, request to join so an owner can approve you.</p>
                 </article>
                 <article>
-                    <span class="provider-step-badge">Path 2</span>
-                    <h2>Questa sends invitation</h2>
-                    <p>Staff pre-stubs account and resource info, then provider receives a welcome email to review and finalize.</p>
+                    <span class="provider-step-badge">2</span>
+                    <h2>Or create a new one</h2>
+                    <p>No match? Set up a new provider organization. You’ll become the owner and can invite teammates later.</p>
                 </article>
             </div>
 
-            <form class="provider-form-grid">
-                <label class="builder-field">
-                    <span class="builder-field__label">Organization Name</span>
-                    <input type="text" class="builder-input" value="Bright Futures Community Foundation">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Organization Type</span>
-                    <select class="builder-input">
-                        <option>Community foundation</option>
-                        <option>Scholarship provider</option>
-                        <option>Training provider</option>
-                        <option>Support service provider</option>
-                    </select>
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Primary Contact First Name</span>
-                    <input type="text" class="builder-input" value="Alex">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Primary Contact Last Name</span>
-                    <input type="text" class="builder-input" value="Provider">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Email Address</span>
-                    <input type="email" class="builder-input" value="alex@brightfutures.org">
-                </label>
-                <label class="builder-field">
-                    <span class="builder-field__label">Phone</span>
-                    <input type="tel" class="builder-input" value="260-555-0198">
-                </label>
-                <label class="builder-field builder-field--full">
-                    <span class="builder-field__label">Services You Plan to Manage</span>
-                    <textarea class="builder-input provider-textarea">Scholarships, emergency grants, and renewable awards for Northeast Indiana learners.</textarea>
-                </label>
-            </form>
+            <!-- Step: search -->
+            <div data-signup-step="search">
+                <h2 class="portal-section__title">Find your organization</h2>
+                <p class="portal-section__desc">Start typing a name. We'll attempt to find a matching organization in Compass.</p>
 
-            <div class="provider-form-actions">
-                <button type="button" class="builder-btn builder-btn--primary" id="createProviderBtn">Create Provider Account</button>
-                <a href="provider-login.html" class="detail-actions__back">Already have an account?</a>
+                <label class="builder-field">
+                    <span class="builder-field__label">Organization name</span>
+                    <input type="search" class="builder-input" id="orgSearchInput" placeholder="e.g. Bright Futures, Ivy Tech, WorkOne" autocomplete="off">
+                </label>
+
+                <div class="provider-search-status" id="orgSearchStatus" aria-live="polite">
+                    Type at least 2 characters to search.
+                </div>
+
+                <div class="provider-org-results" id="orgSearchResults" hidden></div>
+
+                <div class="provider-form-actions provider-form-actions--search">
+                    <button type="button" class="builder-btn builder-btn--secondary" id="createNewOrgBtn" hidden>
+                        No match — set up a new organization
+                    </button>
+                    <br><br>
+                    <a href="provider-login.html" class="detail-actions__back">Already have an account?</a>
+                </div>
+            </div>
+
+            <!-- Step: join existing -->
+            <div data-signup-step="join" hidden>
+                <button type="button" class="provider-back-link js-signup-back">← Back to search</button>
+                <h2 class="portal-section__title">Request to join</h2>
+                <p class="portal-section__desc">You’re asking to join an organization that already has a Compass provider account. Next you’ll create or sign in to your account, then an owner can approve your request.</p>
+
+                <div class="provider-org-selected" id="selectedOrgCard"></div>
+
+                <div class="provider-form-actions">
+                    <button type="button" class="builder-btn builder-btn--primary" id="submitJoinBtn">
+                        Continue to create account
+                    </button>
+                    <a href="provider-login.html" class="detail-actions__back">Cancel</a>
+                </div>
+            </div>
+
+            <!-- Step: create new org -->
+            <div data-signup-step="create" hidden>
+                <button type="button" class="provider-back-link js-signup-back">← Back to search</button>
+                <h2 class="portal-section__title">Set up a new organization</h2>
+                <p class="portal-section__desc">Confirm the organization details below. Next you’ll create your account and become the owner.</p>
+
+                <form class="provider-form-grid" id="createOrgForm">
+                    <label class="builder-field builder-field--full">
+                        <span class="builder-field__label">Organization name</span>
+                        <input type="text" class="builder-input" id="createOrgName" value="Bright Futures Community Foundation">
+                    </label>
+                    <label class="builder-field">
+                        <span class="builder-field__label">Organization type</span>
+                        <select class="builder-input" id="createOrgType">
+                            <option>Community foundation</option>
+                            <option>Scholarship provider</option>
+                            <option>Training provider</option>
+                            <option>Support service provider</option>
+                        </select>
+                    </label>
+                    <label class="builder-field builder-field--full">
+                        <span class="builder-field__label">Services you plan to manage</span>
+                        <textarea class="builder-input provider-textarea" id="createServices">Scholarships, emergency grants, and renewable awards for Northeast Indiana learners.</textarea>
+                    </label>
+                </form>
+
+                <div class="provider-form-actions">
+                    <button type="button" class="builder-btn builder-btn--primary" id="submitCreateBtn">
+                        Continue to create account
+                    </button>
+                    <a href="provider-login.html" class="detail-actions__back">Cancel</a>
+                </div>
+            </div>
+
+            <!-- Step: join success (after account creation return) -->
+            <div data-signup-step="joined" hidden>
+                <div class="provider-success-panel">
+                    <h2 class="portal-section__title">Join request submitted</h2>
+                    <p class="portal-section__desc" id="joinSuccessText">
+                        Your request is waiting for an organization owner to approve. You’ll get access to manage listings once they accept you.
+                    </p>
+                    <p class="provider-form-note">
+                        Tip for demos: sign in as the Bright Futures <strong>owner</strong> from Provider Login to review this request on the Account page.
+                    </p>
+                    <div class="provider-form-actions">
+                        <a href="provider-login.html" class="builder-btn builder-btn--primary">Go to Provider Login</a>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -103,13 +155,8 @@
         </nav>
     </footer>
 
-    <script src="auth.js?v=1.0.28"></script>
-    <script>
-      document.getElementById('createProviderBtn').addEventListener('click', () => {
-        CompassAuth.login({ initials: 'AP', firstName: 'Alex', lastName: 'Provider', role: 'provider' });
-        alert('Provider account created. Welcome email/setup steps would be sent here. (prototype demo)');
-        window.location.assign('provider-resources.html');
-      });
-    </script>
+    <script src="provider-org-data.js?v=1.0.30"></script>
+    <script src="auth.js?v=1.0.30"></script>
+    <script src="provider-create-account.js?v=1.0.30"></script>
 </body>
 </html>

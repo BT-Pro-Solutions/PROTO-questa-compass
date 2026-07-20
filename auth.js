@@ -1,5 +1,6 @@
 (function (global) {
   const STORAGE_KEY = 'compass-session';
+  const KEYCLOAK_PENDING_KEY = 'compass-keycloak-pending';
   const DEFAULT_USER = { initials: 'KT', firstName: 'Kevin', lastName: 'Test', role: 'student' };
 
   const STUDENT_NAV_ITEMS = [
@@ -97,6 +98,107 @@
     sessionStorage.removeItem(STORAGE_KEY);
   }
 
+  function isProviderOwner() {
+    const user = getUser();
+    return user.role === 'provider' && user.orgRole === 'owner';
+  }
+
+  function getKeycloakPending() {
+    try {
+      const raw = sessionStorage.getItem(KEYCLOAK_PENDING_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function clearKeycloakPending() {
+    sessionStorage.removeItem(KEYCLOAK_PENDING_KEY);
+  }
+
+  /**
+   * Simulate hopping out to Keycloak for sign-in or account creation.
+   * Stores pending auth context, then navigates to the matching sim page.
+   *
+   * @param {object} options
+   * @param {'login'|'register'} options.intent
+   * @param {string} options.returnTo - page to land on after Keycloak
+   * @param {string} [options.cancelTo] - page if user cancels
+   * @param {object} [options.user] - session user to apply on success
+   * @param {object} [options.joinRequest] - pending org join request to record
+   * @param {string} [options.flashMessage] - optional one-time message after return
+   */
+  function startKeycloakAuth(options) {
+    const {
+      intent = 'login',
+      returnTo = 'index.html',
+      cancelTo = 'provider-login.html',
+      user = null,
+      joinRequest = null,
+      flashMessage = '',
+    } = options || {};
+
+    sessionStorage.setItem(
+      KEYCLOAK_PENDING_KEY,
+      JSON.stringify({ intent, returnTo, cancelTo, user, joinRequest, flashMessage })
+    );
+
+    const page = intent === 'register'
+      ? 'keycloak-sim-register.html'
+      : 'keycloak-sim-login.html';
+    window.location.assign(page);
+  }
+
+  function completeKeycloakAuth() {
+    const pending = getKeycloakPending();
+    if (!pending) {
+      window.location.assign('provider-login.html');
+      return;
+    }
+
+    if (pending.joinRequest && typeof CompassProviderOrgs !== 'undefined') {
+      CompassProviderOrgs.addJoinRequest(
+        pending.joinRequest.organizationId,
+        pending.joinRequest
+      );
+    }
+
+    if (pending.user) {
+      login(pending.user);
+
+      if (
+        pending.user.role === 'provider'
+        && pending.user.orgRole === 'owner'
+        && pending.user.organizationId
+        && typeof CompassProviderOrgs !== 'undefined'
+      ) {
+        const members = CompassProviderOrgs.getMembers(pending.user.organizationId);
+        if (!members.length) {
+          CompassProviderOrgs.addMember(pending.user.organizationId, {
+            firstName: pending.user.firstName,
+            lastName: pending.user.lastName,
+            email: pending.user.email,
+            role: 'owner',
+          });
+        }
+      }
+    }
+
+    if (pending.flashMessage) {
+      sessionStorage.setItem('compass-flash', pending.flashMessage);
+    }
+
+    const returnTo = pending.returnTo || 'index.html';
+    clearKeycloakPending();
+    window.location.assign(returnTo);
+  }
+
+  function consumeFlashMessage() {
+    const message = sessionStorage.getItem('compass-flash');
+    if (message) sessionStorage.removeItem('compass-flash');
+    return message;
+  }
+
   function getCurrentPage() {
     const path = window.location.pathname.split('/').pop() || 'index.html';
     return path;
@@ -129,13 +231,34 @@
     return STUDENT_NAV_ITEMS;
   }
 
+  function hasProviderJoinRequests() {
+    const user = getUser();
+    if (user.role !== 'provider' || user.orgRole !== 'owner') return false;
+
+    const orgId = user.organizationId || 'bright-futures';
+    if (typeof CompassProviderOrgs !== 'undefined') {
+      return CompassProviderOrgs.getJoinRequests(orgId).length > 0;
+    }
+
+    try {
+      const raw = sessionStorage.getItem('compass-provider-join-requests');
+      if (!raw) return orgId === 'bright-futures';
+      const store = JSON.parse(raw);
+      return Array.isArray(store[orgId]) && store[orgId].length > 0;
+    } catch {
+      return false;
+    }
+  }
+
   function renderUserNav(activeId) {
+    const showAccountDot = hasProviderJoinRequests();
     const tabs = getNavItemsForRole(getUser().role).map((item) => {
       const isActive = item.id === activeId;
+      const showDot = showAccountDot && item.id === 'provider-account';
       return `
-        <a href="${item.href}" class="user-nav__tab${isActive ? ' is-active' : ''}"${isActive ? ' aria-current="page"' : ''}>
+        <a href="${item.href}" class="user-nav__tab${isActive ? ' is-active' : ''}${showDot ? ' has-notification' : ''}"${isActive ? ' aria-current="page"' : ''}${showDot ? ' aria-label="Account, new join requests"' : ''}>
           <span class="user-nav__icon">${item.icon}</span>
-          <span class="user-nav__label">${item.label}</span>
+          <span class="user-nav__label">${item.label}${showDot ? '<span class="user-nav__dot" aria-hidden="true"></span>' : ''}</span>
         </a>`;
     }).join('');
 
@@ -154,7 +277,7 @@
 
   function renderLoggedInActions(user) {
     const dashboardHref = user.role === 'provider'
-      ? 'provider-resources.html'
+      ? 'provider-account.html'
       : user.role === 'admin'
         ? 'admin-dashboard.html'
         : 'dashboard.html';
@@ -468,17 +591,95 @@
     }
   }
 
+  function injectProductSwitcher() {
+    const header = document.querySelector('.site-header');
+    const logo = header?.querySelector('.site-logo');
+    if (!header || !logo || header.querySelector('.site-product-switcher')) return;
+
+    const switcher = document.createElement('div');
+    switcher.className = 'site-product-switcher';
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'site-product-switcher__toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-haspopup', 'true');
+    toggle.setAttribute('aria-label', 'Open related Compass products');
+    toggle.innerHTML = `
+      <svg class="site-product-switcher__caret" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+
+    const menu = document.createElement('div');
+    menu.className = 'site-product-switcher__menu';
+    menu.hidden = true;
+    menu.innerHTML = `
+      <a
+        href="https://compass.questafoundation.org/fund-finder"
+        class="site-product-switcher__item"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="assets/FundFinderLogo.svg" alt="Compass Fund Finder" class="site-product-switcher__logo">
+      </a>`;
+
+    logo.replaceWith(switcher);
+    switcher.appendChild(logo);
+    switcher.appendChild(toggle);
+    switcher.appendChild(menu);
+
+    function closeMenu() {
+      menu.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      switcher.classList.remove('is-open');
+    }
+
+    function openMenu() {
+      menu.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+      switcher.classList.add('is-open');
+    }
+
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (menu.hidden) openMenu();
+      else closeMenu();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!switcher.contains(e.target)) closeMenu();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+  }
+
   function init() {
     guardProtectedPages();
     injectSearchModal();
     bindSearchModal();
+    injectProductSwitcher();
     updateHeader();
     injectUserNav();
     bindLoginTriggers();
     bindLogout();
   }
 
-  global.CompassAuth = { isLoggedIn, login, logout, getUser, init };
+  global.CompassAuth = {
+    isLoggedIn,
+    login,
+    logout,
+    getUser,
+    isProviderOwner,
+    startKeycloakAuth,
+    completeKeycloakAuth,
+    getKeycloakPending,
+    clearKeycloakPending,
+    consumeFlashMessage,
+    init,
+  };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

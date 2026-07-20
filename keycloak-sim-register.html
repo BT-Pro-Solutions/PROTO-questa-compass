@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account — Questa Compass</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.30">
+</head>
+<body class="page-keycloak">
+    <main class="keycloak-shell">
+        <div class="keycloak-card">
+            <div class="keycloak-card__brand">
+                <p class="keycloak-card__product">Questa Compass</p>
+                <p class="keycloak-card__provider">Secure account setup</p>
+            </div>
+
+            <div id="keycloakLoading" class="keycloak-loading">
+                <div class="keycloak-loading__spinner" aria-hidden="true"></div>
+                <h1 class="keycloak-card__title">Redirecting to create account…</h1>
+                <p class="keycloak-card__text">You’ll create your account credentials, then return to Compass.</p>
+            </div>
+
+            <div id="keycloakForm" class="keycloak-form" hidden>
+                <h1 class="keycloak-card__title">Create account</h1>
+                <p class="keycloak-card__text">Create your account to continue to Questa Compass.</p>
+
+                <label class="builder-field">
+                    <span class="builder-field__label">First name</span>
+                    <input type="text" class="builder-input" id="keycloakFirstName" autocomplete="given-name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Last name</span>
+                    <input type="text" class="builder-input" id="keycloakLastName" autocomplete="family-name">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Email</span>
+                    <input type="email" class="builder-input" id="keycloakEmail" autocomplete="email">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Password</span>
+                    <input type="password" class="builder-input" id="keycloakPassword" value="••••••••" autocomplete="new-password">
+                </label>
+                <label class="builder-field">
+                    <span class="builder-field__label">Confirm password</span>
+                    <input type="password" class="builder-input" id="keycloakPasswordConfirm" value="••••••••" autocomplete="new-password">
+                </label>
+<br><br>
+                <button type="button" class="builder-btn builder-btn--primary builder-btn--full" id="keycloakContinueBtn">
+                    Create Account
+                </button>
+                <button type="button" class="keycloak-cancel" id="keycloakCancelBtn">Cancel and return</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="provider-org-data.js?v=1.0.30"></script>
+    <script src="auth.js?v=1.0.30"></script>
+    <script>
+      (function () {
+        const loading = document.getElementById('keycloakLoading');
+        const form = document.getElementById('keycloakForm');
+        const firstNameInput = document.getElementById('keycloakFirstName');
+        const lastNameInput = document.getElementById('keycloakLastName');
+        const emailInput = document.getElementById('keycloakEmail');
+        const pending = CompassAuth.getKeycloakPending();
+
+        const profile = pending?.user || pending?.joinRequest || {};
+        firstNameInput.value = profile.firstName || 'Alex';
+        lastNameInput.value = profile.lastName || 'Provider';
+        emailInput.value = profile.email || 'user@example.org';
+
+        window.setTimeout(() => {
+          loading.hidden = true;
+          form.hidden = false;
+          firstNameInput.focus();
+        }, 900);
+
+        document.getElementById('keycloakContinueBtn').addEventListener('click', () => {
+          CompassAuth.completeKeycloakAuth();
+        });
+
+        document.getElementById('keycloakCancelBtn').addEventListener('click', () => {
+          const cancelTo = pending?.cancelTo || 'provider-create-account.html';
+          CompassAuth.clearKeycloakPending();
+          window.location.assign(cancelTo);
+        });
+      })();
+    </script>
+</body>
+</html>

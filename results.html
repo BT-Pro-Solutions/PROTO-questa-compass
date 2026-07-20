@@ -44,11 +44,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div id="profileSummaryRoot"></div>
-                    <div id="topicFilterRoot"></div>
-                    <h3 class="results-filters__subheading">Refine Results</h3>
-                    <div id="filtersRoot"></div>
-                    <button type="button" class="results-clear-btn" id="clearFiltersBtn">Clear All</button>
+                    <div id="profileFiltersRoot"></div>
                     <p class="results-filters__add-listing">Know about a resource we should include? <a href="provider-add-listing.html">Add a listing for Questa review</a>.</p>
 
                     <div class="builder-help-card results-filters-login" data-auth-prompt data-auth-prompt-class="results-filters-login">
@@ -65,7 +61,7 @@
 
                     <div class="results-prompt" id="resultsPrompt" hidden>
                         <h2 class="results-prompt__title">Select a topic to get started</h2>
-                        <p class="results-prompt__text">Choose one or more main topics to browse resources and refine your results.</p>
+                        <p class="results-prompt__text">Choose one or more main topics to browse resources and update your profile filters.</p>
                         <button type="button" class="builder-btn builder-btn--secondary results-prompt__btn" id="promptFiltersBtn">Choose Topics</button>
                     </div>
 
@@ -91,6 +87,26 @@
             </div>
         </div>
     </main>
+
+    <div class="builder-modal builder-modal--multiselect" id="multiselectModal" hidden>
+        <div class="builder-modal__backdrop js-close-multiselect"></div>
+        <div class="builder-modal__panel builder-modal__panel--multiselect" role="dialog" aria-labelledby="multiselectTitle">
+            <button type="button" class="builder-modal__close js-close-multiselect" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="multiselectTitle"></h2>
+            <p class="builder-modal__text" id="multiselectDesc"></p>
+            <div class="builder-ms-search-area">
+                <label class="builder-ms-search-label" for="multiselectSearch">Search</label>
+                <input type="search" class="builder-ms-search-input" id="multiselectSearch" placeholder="Type to search…" autocomplete="off">
+                <p class="builder-ms-count" id="multiselectCount"></p>
+                <div class="builder-ms-selected" id="multiselectSelected"></div>
+            </div>
+            <div class="builder-ms-list" id="multiselectList" role="listbox" aria-multiselectable="true"></div>
+            <div class="builder-modal__actions builder-modal__actions--end">
+                <button type="button" class="builder-btn builder-btn--cancel" id="multiselectCancelBtn">Cancel</button>
+                <button type="button" class="builder-btn builder-btn--apply" id="multiselectApplyBtn">Apply</button>
+            </div>
+        </div>
+    </div>
 
     <div class="builder-modal" id="createAccountModal" hidden>
         <div class="builder-modal__backdrop js-close-account"></div>
