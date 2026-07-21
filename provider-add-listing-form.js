@@ -1,4 +1,6 @@
 (function (global) {
+  const AGREEMENT_STORAGE_KEY = 'compass-provider-agreement';
+
   const PRIMARY_CATEGORIES = [
     'Careers',
     'Education Readiness',
@@ -6,21 +8,6 @@
     'Funding',
     'Learning Help',
     'Personal Help',
-  ];
-
-  const COUNTIES = [
-    'Adams',
-    'Allen',
-    'DeKalb',
-    'Grant',
-    'Huntington',
-    'Kosciusko',
-    'LaGrange',
-    'Noble',
-    'Steuben',
-    'Wabash',
-    'Wells',
-    'Whitley',
   ];
 
   const COUNTIES_SERVED = [
@@ -37,16 +24,6 @@
     'Wabash County',
     'Wells County',
     'Whitley County',
-  ];
-
-  const PRIMARY_AUDIENCE = [
-    'Community Organizations',
-    'Employers',
-    'Educators',
-    'Education Intermediary',
-    'Parents',
-    'Students',
-    'Other',
   ];
 
   const STUDENT_LEVELS = [
@@ -176,7 +153,7 @@
   let formState = {};
   let activeField = null;
   let pendingSelections = [];
-  let currentStep = 1;
+  let formMode = 'listing';
 
   const modal = {};
 
@@ -377,6 +354,11 @@
       </div>`;
   }
 
+  function updateTopicResourceSections() {
+    if (formMode !== 'listing') return;
+    renderTopicResourceSections();
+  }
+
   function renderTopicResourceSections() {
     const root = document.getElementById('topicResourceSections');
     if (!root) return;
@@ -416,36 +398,40 @@
     if (genderWrap) genderWrap.hidden = !demo.includes('Specific Gender and/or Gender Identity');
   }
 
-  function showStep(step) {
-    currentStep = step;
-    document.querySelectorAll('[data-form-step]').forEach((el) => {
-      el.hidden = Number(el.dataset.formStep) !== step;
-    });
-    document.getElementById('formStepBackBtn').hidden = step === 1;
-    document.getElementById('formStepNextBtn').hidden = step === 2;
-    document.getElementById('formStepSubmitBtn').hidden = step !== 2;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  function loadAgreementPrefill() {
+    if (formMode !== 'listing') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('from') !== 'agreement') return;
+
+    try {
+      const raw = sessionStorage.getItem(AGREEMENT_STORAGE_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw);
+      if (Array.isArray(draft.primaryCategories) && draft.primaryCategories.length) {
+        formState.primaryCategories = [...draft.primaryCategories];
+        updateMultiselectDisplay('primaryCategories');
+        updateTopicResourceSections();
+      }
+    } catch {
+      /* ignore bad draft */
+    }
   }
 
-  function bindSteps() {
-    document.getElementById('formStepNextBtn')?.addEventListener('click', () => {
-      renderTopicResourceSections();
-      showStep(2);
-    });
-    document.getElementById('formStepBackBtn')?.addEventListener('click', () => showStep(1));
-  }
-
-  function init() {
+  function init(options = {}) {
+    formMode = options.mode === 'agreement' ? 'agreement' : 'listing';
     initState();
     bindModal();
     bindMultiselectTriggers(document);
-    bindSteps();
-    renderTopicResourceSections();
-    updateConditionalDemographics();
+    if (formMode === 'listing') {
+      loadAgreementPrefill();
+      updateTopicResourceSections();
+      updateConditionalDemographics();
+    }
   }
 
   global.CompassProviderAddListingForm = {
     init,
     getFormData: () => ({ ...formState }),
+    AGREEMENT_STORAGE_KEY,
   };
 })(window);

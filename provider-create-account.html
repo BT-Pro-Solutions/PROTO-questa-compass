@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compass — Create Provider Account</title>
+    <title>Compass — Provider Agreement</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.30">
+    <link rel="stylesheet" href="styles.css?v=1.0.31">
 </head>
 <body class="page-provider">
     <header class="site-header">
@@ -26,124 +26,208 @@
     <section class="portal-hero">
         <div class="portal-hero__icon" aria-hidden="true">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="13" r="6" stroke="currentColor" stroke-width="2.5"/>
-                <path d="M9 32c1-6 5-10 11-10s10 4 11 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M31 8v8M27 12h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <rect x="8" y="8" width="24" height="24" rx="3" stroke="currentColor" stroke-width="2.5"/>
+                <path d="M14 18h12M14 23h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
         </div>
-        <h1 class="portal-hero__title">Join as a Provider</h1>
-        <p class="portal-hero__subtitle">Find your organization first so we avoid duplicate accounts. You’ll create or sign in to your account next.</p>
+        <h1 class="portal-hero__title">Compass Agreement</h1>
+        <p class="portal-hero__subtitle">Sign the Resource Provider Participation Agreement to create your provider account.</p>
     </section>
 
     <main class="portal-content">
         <div class="provider-flash" id="providerFlash" hidden></div>
 
-        <section class="portal-section provider-form-card" id="signupWizard">
-            <div class="provider-onboarding-paths">
-                <article>
-                    <span class="provider-step-badge">1</span>
-                    <h2>Match an existing org</h2>
-                    <p>Search Compass for your organization. If it’s already set up, request to join so an owner can approve you.</p>
-                </article>
-                <article>
-                    <span class="provider-step-badge">2</span>
-                    <h2>Or create a new one</h2>
-                    <p>No match? Set up a new provider organization. You’ll become the owner and can invite teammates later.</p>
-                </article>
+        <!-- Join existing org (from invite link) — skips agreement -->
+        <section class="portal-section provider-form-card" id="joinOrgPanel" hidden>
+            <h2 class="portal-section__title">Request to join</h2>
+            <p class="portal-section__desc" id="joinOrgDesc">
+                You&rsquo;re requesting access to an organization that already signed the Compass Agreement. An owner will approve your request.
+            </p>
+            <div class="provider-org-selected" id="joinOrgCard"></div>
+            <div class="provider-form-actions">
+                <button type="button" class="builder-btn builder-btn--primary" id="joinOrgSubmitBtn">
+                    Continue to Create Account
+                </button>
+                <a href="provider-login.html" class="detail-actions__back">Already have an account?</a>
             </div>
+        </section>
 
-            <!-- Step: search -->
-            <div data-signup-step="search">
-                <h2 class="portal-section__title">Find your organization</h2>
-                <p class="portal-section__desc">Start typing a name. We'll attempt to find a matching organization in Compass.</p>
+        <section class="portal-section provider-form-card" id="agreementPanel">
+            <p class="provider-form-note provider-form-note--full">
+                Already have a provider account and signed this agreement?
+                <a href="provider-login.html">Sign in</a> to add listings.
+                Joining a teammate&rsquo;s organization? Use the invite link they shared — you won&rsquo;t need to re-sign this agreement.
+            </p>
 
-                <label class="builder-field">
-                    <span class="builder-field__label">Organization name</span>
-                    <input type="search" class="builder-input" id="orgSearchInput" placeholder="e.g. Bright Futures, Ivy Tech, WorkOne" autocomplete="off">
+            <form class="provider-form-grid" id="compassAgreementForm" novalidate>
+                <div class="provider-agreement">
+                    <h2 class="provider-agreement__title">Compass Resource Provider Participation Agreement</h2>
+                    <p><strong>The Compass Resource Directory</strong> is an online tool designed to help students, families, and student supporters find the resources they need to pursue further education and training after high school.</p>
+                    <p>The <strong>goals</strong> of the Compass Directory are to:</p>
+                    <ul>
+                        <li>Create a coordinated regional system to leverage local student resources more effectively, ultimately increasing postsecondary enrollment and completion</li>
+                        <li>Help students and their supporters find trustworthy resources</li>
+                        <li>Create multiple &ldquo;front doors&rdquo; where students, families, and supporters can get help</li>
+                        <li>Foster referrals and collaboration among resource providers</li>
+                        <li>Improve availability and impact of local resources</li>
+                    </ul>
+                    <p><strong>Resource Providers</strong> are organizations, primarily serving northeast Indiana, that provide one or more resources that aid students in achieving postsecondary education.</p>
+                    <p><strong>Commitments</strong> of Resource Providers:</p>
+                    <ul>
+                        <li>Provide resources that are free and/or have subsidized access for students with financial need OR</li>
+                        <li>Provide education and training programs as a non-profit, accredited organization or employer-provided program</li>
+                        <li>Communicate services offered and any limitations or restrictions with transparency</li>
+                        <li>Respond in a timely way to student and network member inquiries</li>
+                        <li>Avoid unlawful discrimination in provision of resources and services</li>
+                        <li>Designate a point person to provide periodic updates and ensure organization&rsquo;s resources are current in the Compass Directory</li>
+                        <li>Provide an easily accessible link to the full Compass Directory on their website (Alternative: If your organization cannot add a link on your website, please commit to promote the Compass directory in other ways &ndash; e.g. through handouts, presentations, word-of-mouth, etc.)</li>
+                    </ul>
+                    <p><strong>Resource Categories</strong></p>
+                    <ol class="provider-agreement__categories">
+                        <li><em><strong>Learning Help</strong></em> &ndash; resources that help learners develop the academic skills they need to enroll and succeed in further education after high school.</li>
+                        <li><em><strong>Careers</strong></em> &ndash; resources that help learners identify potential careers that fit them, explore career paths and related majors or training programs, develop the skills needed for professional success, and/or find opportunities to observe or gain experience in various careers.</li>
+                        <li><em><strong>Education Readiness</strong></em> &ndash; resources that help learners explore college and training options, prepare for success in further education, and/or leverage college credit opportunities</li>
+                        <li><em><strong>Funding</strong></em> &ndash; resources that help learners understand and plan for education expenses, complete the FAFSA, and/or provide funding assistance for education (scholarships and other aid)</li>
+                        <li><em><strong>Personal Help</strong></em> &ndash; resources that help learners address personal needs (such as childcare, transportation, wellness, or social connections) to help them succeed in further education</li>
+                        <li><em><strong>Education &amp; Training</strong></em> &ndash; colleges, universities, training programs, and other providers of education and training beyond high school</li>
+                    </ol>
+                    <p><strong>Benefits &amp; Tools</strong> for Resource Providers:</p>
+                    <ul>
+                        <li>Promotion of your organization and resources</li>
+                        <li>Referrals from network members &amp; navigators</li>
+                        <li>Learn More Earn More Marketing Assets</li>
+                        <li>Learn More Earn More Discussion Guides</li>
+                        <li>Compass Icon for marketing use</li>
+                        <li>Compass network convenings and best practice sharing</li>
+                    </ul>
+                    <p>The <strong>Compass Icon</strong> is a visual identifier designed to:</p>
+                    <ul>
+                        <li>Help students, families, and student supporters quickly identify resource providers and the type of resources offered at an organization</li>
+                        <li>Visually demonstrate the breadth and depth of local resources available to help students achieve further education</li>
+                        <li>Identify a starting point for students, families, and student advocates to get information and referrals to other resources</li>
+                    </ul>
+                    <p><strong>Use of the Compass Icon:</strong> Resource Providers can use the appropriate Compass Icon to designate what learners will find at their organizations. Questa will provide a brand guide and high-resolution images for resource providers to use on websites, digital and print marketing, as desired.</p>
+                </div>
+
+                <div class="builder-field builder-field--full">
+                    <div class="builder-field__head">
+                        <span class="builder-field__label" data-field-label="primaryCategories">Primary Resource Category(ies) &ndash; Please select all that apply:<span class="builder-field__required" aria-hidden="true">*</span></span>
+                    </div>
+                    <div class="builder-multiselect" role="button" tabindex="0" data-field="primaryCategories" aria-haspopup="dialog">
+                        <span class="builder-multiselect__inner"><span class="builder-multiselect__placeholder">Click to select&hellip;</span></span>
+                    </div>
+                </div>
+
+                <h3 class="provider-form-section__title provider-form-section__title--full">Primary Contact for Compass &amp; Directory Updates</h3>
+                <p class="provider-form-note provider-form-note--full">Your name and email will not be published, but you will receive email updates from Questa and access to edit and update your Compass listing(s).</p>
+
+                <fieldset class="provider-form-fieldset provider-form-fieldset--full">
+                    <legend class="builder-field__label">Primary Contact Information<span class="builder-field__required" aria-hidden="true">*</span></legend>
+                    <div class="provider-form-name-row">
+                        <label class="builder-field">
+                            <span class="builder-field__label">First Name</span>
+                            <input type="text" class="builder-input" name="contactFirstName" required>
+                        </label>
+                        <label class="builder-field">
+                            <span class="builder-field__label">Last Name</span>
+                            <input type="text" class="builder-input" name="contactLastName" required>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Primary Contact Email<span class="builder-field__required" aria-hidden="true">*</span></span>
+                    <input type="email" class="builder-input" name="contactEmail" placeholder="example@example.com" required>
                 </label>
 
-                <div class="provider-search-status" id="orgSearchStatus" aria-live="polite">
-                    Type at least 2 characters to search.
-                </div>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Title:<span class="builder-field__required" aria-hidden="true">*</span></span>
+                    <input type="text" class="builder-input" name="contactTitle" required>
+                </label>
 
-                <div class="provider-org-results" id="orgSearchResults" hidden></div>
-
-                <div class="provider-form-actions provider-form-actions--search">
-                    <button type="button" class="builder-btn builder-btn--secondary" id="createNewOrgBtn" hidden>
-                        No match — set up a new organization
-                    </button>
-                    <br><br>
-                    <a href="provider-login.html" class="detail-actions__back">Already have an account?</a>
-                </div>
-            </div>
-
-            <!-- Step: join existing -->
-            <div data-signup-step="join" hidden>
-                <button type="button" class="provider-back-link js-signup-back">← Back to search</button>
-                <h2 class="portal-section__title">Request to join</h2>
-                <p class="portal-section__desc">You’re asking to join an organization that already has a Compass provider account. Next you’ll create or sign in to your account, then an owner can approve your request.</p>
-
-                <div class="provider-org-selected" id="selectedOrgCard"></div>
-
-                <div class="provider-form-actions">
-                    <button type="button" class="builder-btn builder-btn--primary" id="submitJoinBtn">
-                        Continue to create account
-                    </button>
-                    <a href="provider-login.html" class="detail-actions__back">Cancel</a>
-                </div>
-            </div>
-
-            <!-- Step: create new org -->
-            <div data-signup-step="create" hidden>
-                <button type="button" class="provider-back-link js-signup-back">← Back to search</button>
-                <h2 class="portal-section__title">Set up a new organization</h2>
-                <p class="portal-section__desc">Confirm the organization details below. Next you’ll create your account and become the owner.</p>
-
-                <form class="provider-form-grid" id="createOrgForm">
-                    <label class="builder-field builder-field--full">
-                        <span class="builder-field__label">Organization name</span>
-                        <input type="text" class="builder-input" id="createOrgName" value="Bright Futures Community Foundation">
+                <div class="builder-field builder-field--full">
+                    <label class="provider-form-check">
+                        <input type="checkbox" class="provider-form-check__input" name="agreementCommitment" required>
+                        <span class="provider-form-check__text">Our organization agrees to meet all commitments outlined on page one, ensuring thar our resource listings in the Compass Directory are updated and we help connect students and others with the full Compass Directory for other supports.</span>
                     </label>
-                    <label class="builder-field">
-                        <span class="builder-field__label">Organization type</span>
-                        <select class="builder-input" id="createOrgType">
-                            <option>Community foundation</option>
-                            <option>Scholarship provider</option>
-                            <option>Training provider</option>
-                            <option>Support service provider</option>
-                        </select>
-                    </label>
-                    <label class="builder-field builder-field--full">
-                        <span class="builder-field__label">Services you plan to manage</span>
-                        <textarea class="builder-input provider-textarea" id="createServices">Scholarships, emergency grants, and renewable awards for Northeast Indiana learners.</textarea>
-                    </label>
-                </form>
-
-                <div class="provider-form-actions">
-                    <button type="button" class="builder-btn builder-btn--primary" id="submitCreateBtn">
-                        Continue to create account
-                    </button>
-                    <a href="provider-login.html" class="detail-actions__back">Cancel</a>
                 </div>
-            </div>
 
-            <!-- Step: join success (after account creation return) -->
-            <div data-signup-step="joined" hidden>
-                <div class="provider-success-panel">
-                    <h2 class="portal-section__title">Join request submitted</h2>
-                    <p class="portal-section__desc" id="joinSuccessText">
-                        Your request is waiting for an organization owner to approve. You’ll get access to manage listings once they accept you.
-                    </p>
-                    <p class="provider-form-note">
-                        Tip for demos: sign in as the Bright Futures <strong>owner</strong> from Provider Login to review this request on the Account page.
-                    </p>
-                    <div class="provider-form-actions">
-                        <a href="provider-login.html" class="builder-btn builder-btn--primary">Go to Provider Login</a>
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Organization<span class="builder-field__required" aria-hidden="true">*</span></span>
+                    <input type="text" class="builder-input" name="organization" required>
+                </label>
+
+                <label class="builder-field builder-field--full">
+                    <span class="builder-field__label">Authorized Signature:<span class="builder-field__required" aria-hidden="true">*</span></span>
+                    <input type="text" class="builder-input" name="authorizedSignature" required>
+                </label>
+
+                <fieldset class="provider-form-fieldset provider-form-fieldset--full">
+                    <legend class="builder-field__label">Date<span class="builder-field__required" aria-hidden="true">*</span></legend>
+                    <div class="provider-form-date-row">
+                        <label class="builder-field">
+                            <span class="builder-field__label">Month</span>
+                            <input type="number" class="builder-input" name="dateMonth" min="1" max="12" placeholder="MM" required>
+                        </label>
+                        <label class="builder-field">
+                            <span class="builder-field__label">Day</span>
+                            <input type="number" class="builder-input" name="dateDay" min="1" max="31" placeholder="DD" required>
+                        </label>
+                        <label class="builder-field">
+                            <span class="builder-field__label">Year</span>
+                            <input type="number" class="builder-input" name="dateYear" min="1900" max="2100" placeholder="YYYY" required>
+                        </label>
                     </div>
+                </fieldset>
+
+                <div class="builder-field builder-field--full">
+                    <span class="builder-field__label">Have a logo? Upload it here so we can make sure everything looks just right. (Max height and width 1500px)</span>
+                    <label class="provider-file-upload">
+                        <input type="file" class="provider-file-upload__input" name="logo" accept="image/*">
+                        <span class="provider-file-upload__label">Browse Files</span>
+                        <span class="provider-file-upload__hint">Drag and drop files here or choose a file</span>
+                    </label>
+                </div>
+            </form>
+
+            <div class="provider-form-actions">
+                <button type="button" class="builder-btn builder-btn--primary" id="agreementSubmitBtn">Continue to Create Account</button>
+                <a href="provider-login.html" class="detail-actions__back">Already have an account?</a>
+            </div>
+        </section>
+
+        <section class="portal-section provider-form-card" id="joinSuccessPanel" hidden>
+            <div class="provider-success-panel">
+                <h2 class="portal-section__title">Join request submitted</h2>
+                <p class="portal-section__desc" id="joinSuccessText">
+                    Your request is waiting for an organization owner to approve. You&rsquo;ll get access to manage listings once they accept you.
+                </p>
+                <div class="provider-form-actions">
+                    <a href="provider-login.html" class="builder-btn builder-btn--primary">Go to Provider Login</a>
                 </div>
             </div>
         </section>
     </main>
+
+    <div class="builder-modal builder-modal--multiselect" id="providerMultiselectModal" hidden>
+        <div class="builder-modal__backdrop js-close-provider-multiselect"></div>
+        <div class="builder-modal__panel builder-modal__panel--multiselect" role="dialog" aria-labelledby="providerMultiselectTitle">
+            <button type="button" class="builder-modal__close js-close-provider-multiselect" aria-label="Close">&times;</button>
+            <h2 class="builder-modal__title" id="providerMultiselectTitle"></h2>
+            <p class="builder-modal__text" id="providerMultiselectDesc"></p>
+            <div class="builder-ms-search-area">
+                <label class="builder-ms-search-label" for="providerMultiselectSearch">Search</label>
+                <input type="search" class="builder-ms-search-input" id="providerMultiselectSearch" placeholder="Type to search&hellip;" autocomplete="off">
+                <p class="builder-ms-count" id="providerMultiselectCount"></p>
+                <div class="builder-ms-selected" id="providerMultiselectSelected"></div>
+            </div>
+            <div class="builder-ms-list" id="providerMultiselectList" role="listbox" aria-multiselectable="true"></div>
+            <div class="builder-modal__actions builder-modal__actions--end">
+                <button type="button" class="builder-btn builder-btn--cancel" id="providerMultiselectCancelBtn">Cancel</button>
+                <button type="button" class="builder-btn builder-btn--apply" id="providerMultiselectApplyBtn">Apply</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="site-footer">
         <p class="site-footer__copyright">&copy; 2026 Questa Education Foundation</p>
@@ -155,8 +239,9 @@
         </nav>
     </footer>
 
-    <script src="provider-org-data.js?v=1.0.30"></script>
-    <script src="auth.js?v=1.0.30"></script>
-    <script src="provider-create-account.js?v=1.0.30"></script>
+    <script src="provider-org-data.js?v=1.0.31"></script>
+    <script src="auth.js?v=1.0.31"></script>
+    <script src="provider-add-listing-form.js?v=1.0.31"></script>
+    <script src="provider-create-account.js?v=1.0.31"></script>
 </body>
 </html>

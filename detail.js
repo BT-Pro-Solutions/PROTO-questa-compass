@@ -138,7 +138,7 @@
 
   if (opp.providerApprovalStatus !== 'unclaimed' && opp.providerName) {
     providerSection.hidden = false;
-    providerText.textContent = `Managed by ${opp.providerName}. Listing approved by Questa staff.`;
+    providerText.textContent = `Managed by ${opp.providerName}. Listing approved by the Compass Committee.`;
   }
 
   document.getElementById('backLinkBottom').href = returnUrl;

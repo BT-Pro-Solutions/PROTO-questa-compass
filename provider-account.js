@@ -22,7 +22,7 @@
   }
 
   function getInviteLink() {
-    return new URL('provider-create-account.html', window.location.href).href;
+    return new URL(`provider-create-account.html?join=${encodeURIComponent(orgId)}`, window.location.href).href;
   }
 
   function hydrateAccountFields() {
